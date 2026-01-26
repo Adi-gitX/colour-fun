@@ -59,6 +59,17 @@ interface AppState {
     isSidebarOpen: boolean;
     toggleSidebar: () => void;
     closeSidebar: () => void;
+
+    // Toasts
+    toasts: Toast[];
+    showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
+    removeToast: (id: string) => void;
+}
+
+export interface Toast {
+    id: string;
+    message: string;
+    type: 'success' | 'error' | 'info';
 }
 
 export const useAppStore = create<AppState>()(
@@ -135,6 +146,22 @@ export const useAppStore = create<AppState>()(
             isSidebarOpen: false,
             toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
             closeSidebar: () => set({ isSidebarOpen: false }),
+
+            // Toasts
+            toasts: [],
+            showToast: (message, type = 'success') => {
+                const id = Date.now().toString();
+                set((state) => ({
+                    toasts: [...state.toasts, { id, message, type }]
+                }));
+                // Auto dismiss
+                setTimeout(() => {
+                    get().removeToast(id);
+                }, 3000);
+            },
+            removeToast: (id) => set((state) => ({
+                toasts: state.toasts.filter(t => t.id !== id)
+            })),
         }),
         {
             name: 'colorfun-storage',

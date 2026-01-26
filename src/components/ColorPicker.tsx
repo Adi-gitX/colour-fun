@@ -14,7 +14,7 @@ export const ColorPicker = () => {
         setCustomColor,
         recentColors,
         addRecentColor,
-        selectedRatio,
+
         selectedResolution,
         selectedFormat,
         useCustomSize,

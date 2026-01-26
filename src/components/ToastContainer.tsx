@@ -9,7 +9,7 @@ export const ToastContainer = () => {
     return (
         <div className={styles.container}>
             <AnimatePresence>
-                {toasts.map((toast) => (
+                {toasts.map((toast: any) => (
                     <motion.div
                         key={toast.id}
                         layout
