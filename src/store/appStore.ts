@@ -61,6 +61,19 @@ interface AppState {
     toggleSidebar: () => void;
     closeSidebar: () => void;
 
+    // Settings
+    isSettingsOpen: boolean;
+    openSettings: () => void;
+    closeSettings: () => void;
+
+    // Preferences
+    highQualityDownloads: boolean;
+    setHighQualityDownloads: (enabled: boolean) => void;
+    reducedMotion: boolean;
+    setReducedMotion: (enabled: boolean) => void;
+    soundEffects: boolean;
+    setSoundEffects: (enabled: boolean) => void;
+
     // Toasts
     toasts: Toast[];
     showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
@@ -149,6 +162,19 @@ export const useAppStore = create<AppState>()(
             toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
             closeSidebar: () => set({ isSidebarOpen: false }),
 
+            // Settings
+            isSettingsOpen: false,
+            openSettings: () => set({ isSettingsOpen: true }),
+            closeSettings: () => set({ isSettingsOpen: false }),
+
+            // Preferences
+            highQualityDownloads: true,
+            setHighQualityDownloads: (enabled) => set({ highQualityDownloads: enabled }),
+            reducedMotion: false,
+            setReducedMotion: (enabled) => set({ reducedMotion: enabled }),
+            soundEffects: true,
+            setSoundEffects: (enabled) => set({ soundEffects: enabled }),
+
             // Toasts
             toasts: [],
             showToast: (message, type = 'success') => {
@@ -174,6 +200,9 @@ export const useAppStore = create<AppState>()(
                 currentSection: state.currentSection,
                 selectedFormat: state.selectedFormat,
                 selectedRatio: state.selectedRatio,
+                highQualityDownloads: state.highQualityDownloads,
+                reducedMotion: state.reducedMotion,
+                soundEffects: state.soundEffects,
             }),
         }
     )
