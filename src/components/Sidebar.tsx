@@ -26,7 +26,8 @@ export const Sidebar = () => {
         openPicker,
         customColor,
         currentSection,
-        setCurrentSection
+        setCurrentSection,
+        openSettings
     } = useAppStore();
 
     const [isExpanded, setIsExpanded] = useState(false);
@@ -176,7 +177,7 @@ export const Sidebar = () => {
                     </AnimatePresence>
                 </button>
 
-                <button className={styles.navItem}>
+                <button className={styles.navItem} onClick={openSettings}>
                     <Settings size={24} strokeWidth={1.5} />
                     <AnimatePresence>
                         {isExpanded && (
