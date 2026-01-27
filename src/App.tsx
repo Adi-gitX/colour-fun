@@ -4,13 +4,20 @@ import { Hero } from './components/Hero';
 import { ColorGrid } from './components/ColorGrid';
 import { DownloadModal } from './components/DownloadModal';
 import { ColorPicker } from './components/ColorPicker';
+import { SettingsModal } from './components/SettingsModal';
 import { ReloadPrompt } from './components/ReloadPrompt';
 import { ComingSoon } from './components/placeholders/ComingSoon';
 import { useAppStore } from './store/appStore';
+import { useEffect } from 'react';
 import './App.css';
 
 function App() {
-  const { currentSection } = useAppStore();
+  const { currentSection, theme } = useAppStore();
+
+  // Sync theme with document
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
 
   const renderContent = () => {
     switch (currentSection) {
@@ -76,6 +83,7 @@ function App() {
       </main>
       <DownloadModal />
       <ColorPicker />
+      <SettingsModal />
       <ReloadPrompt />
     </div>
   );
