@@ -17,6 +17,9 @@
   --text-tertiary: #666666;
   --text-inverse: #0a0a0a;
 
+  /* Status Colors */
+  --color-danger: #ff4757;
+
   /* Accent Colors */
   --accent-primary: #ff6b6b;
   --accent-secondary: #feca57;
@@ -59,6 +62,9 @@
   --text-secondary: #666666;
   --text-tertiary: #999999;
   --text-inverse: #ffffff;
+
+  /* Status Colors */
+  --color-danger: #ff4757;
 
   /* Accent Colors */
   --accent-primary: #e53935;
