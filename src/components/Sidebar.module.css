@@ -3,7 +3,7 @@
     left: 0;
     top: 0;
     bottom: 0;
-    background: var(--bg-primary);
+    bottom: 0;
     /* Changed to transparent/primary for sleek look */
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -14,6 +14,16 @@
     padding: 24px 12px;
     overflow: hidden;
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.02);
+}
+
+:global([data-theme="light"]) .sidebar {
+    background: rgba(255, 255, 255, 0.9);
+    border-right: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+:global([data-theme="dark"]) .sidebar {
+    background: rgba(20, 20, 20, 0.8);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .logoContainer {
