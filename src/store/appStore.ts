@@ -39,6 +39,7 @@ interface AppState {
     // Favorites (persisted)
     favorites: string[];
     toggleFavorite: (color: string) => void;
+    clearFavorites: () => void;
 
 
     // Download options
@@ -126,6 +127,7 @@ export const useAppStore = create<AppState>()(
                     : [...current, color];
                 set({ favorites: updated });
             },
+            clearFavorites: () => set({ favorites: [] }),
 
 
             // Download options
