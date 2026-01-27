@@ -1,36 +1,43 @@
 .header {
-  position: sticky;
-  top: 0;
-  height: 72px;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 32px;
-  background: rgba(5, 5, 5, 0.8);
-  /* Match new deep black theme */
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  padding: 0 24px;
+  /* Extremely subtle transparency */
+  backdrop-filter: blur(12px);
+  /* Glass blur */
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-subtle);
-  z-index: 40;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+:global([data-theme="light"]) .header {
+  background: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+:global([data-theme="dark"]) .header {
+  background: rgba(20, 20, 20, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .left {
-  flex: 1;
   display: flex;
   align-items: center;
   gap: 16px;
+  width: 250px;
+  /* specific width for layout balance */
 }
 
 .menuBtn {
-  display: none;
-  width: 40px;
-  height: 40px;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg-card);
-  border-radius: 10px;
+  padding: 8px;
+  border-radius: 8px;
   color: var(--text-secondary);
-  transition: all 0.2s ease;
+  display: none;
+  /* Hidden on desktop, shown on mobile */
 }
 
 .menuBtn:hover {
@@ -38,103 +45,96 @@
   color: var(--text-primary);
 }
 
-.menuBtn svg {
-  width: 20px;
-  height: 20px;
-}
-
 .logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -0.5px;
 }
 
 .logoIcon {
-  font-size: 24px;
   color: var(--accent-primary);
-  display: inline-block;
+  font-size: 14px;
 }
 
 .logoText {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  color: var(--text-primary);
+  background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .accent {
-  color: var(--accent-primary);
+  color: var(--accent-secondary);
+  -webkit-text-fill-color: var(--accent-secondary);
 }
 
 .center {
-  flex: 2;
+  flex: 1;
   display: flex;
   justify-content: center;
-  max-width: 560px;
 }
 
 .searchContainer {
   position: relative;
   width: 100%;
+  max-width: 480px;
 }
 
 .searchIcon {
   position: absolute;
-  left: 16px;
+  left: 12px;
   top: 50%;
   transform: translateY(-50%);
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   color: var(--text-tertiary);
-  pointer-events: none;
+  transition: color 0.2s;
 }
 
 .searchInput {
   width: 100%;
-  height: 48px;
-  padding: 0 100px 0 48px;
+  height: 40px;
+  padding: 0 40px;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
-  border-radius: 14px;
-  font-size: 14px;
+  border-radius: 12px;
   color: var(--text-primary);
-  transition: all 0.2s ease;
-}
-
-.searchInput::placeholder {
-  color: var(--text-tertiary);
+  font-size: 14px;
+  transition: all 0.2s;
 }
 
 .searchInput:focus {
-  background: var(--bg-card-hover);
+  background: var(--bg-elevated);
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.15);
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+}
+
+.searchInput:focus+.searchIcon {
+  color: var(--accent-primary);
 }
 
 .clearBtn {
   position: absolute;
-  right: 56px;
+  right: 40px;
+  /* Adjust based on shortcut position */
   top: 50%;
   transform: translateY(-50%);
-  width: 24px;
-  height: 24px;
+  padding: 2px;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-tertiary);
-  border-radius: 50%;
   color: var(--text-tertiary);
-  transition: all 0.2s ease;
 }
 
 .clearBtn:hover {
-  background: var(--accent-primary);
-  color: white;
-}
-
-.clearBtn svg {
-  width: 14px;
-  height: 14px;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
 }
 
 .shortcut {
@@ -142,51 +142,49 @@
   right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  display: flex;
-  align-items: center;
-  padding: 4px 10px;
+  padding: 2px 6px;
   background: var(--bg-tertiary);
-  border: 1px solid var(--border-light);
-  border-radius: 8px;
+  border-radius: 4px;
   font-size: 11px;
-  font-weight: 600;
   color: var(--text-tertiary);
+  border: 1px solid var(--border-subtle);
+  pointer-events: none;
 }
 
 .right {
-  flex: 1;
   display: flex;
-  justify-content: flex-end;
   align-items: center;
-  gap: 12px;
+  justify-content: flex-end;
+  gap: 16px;
+  width: 250px;
 }
 
 .colorCount {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  padding: 8px 14px;
-  background: var(--bg-card);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  background: var(--bg-tertiary);
+  padding: 4px 8px;
   border-radius: 20px;
 }
 
 .themeBtn {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: var(--text-secondary);
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  color: var(--text-secondary);
-  transition: all 0.2s ease;
+  transition: all 0.2s;
 }
 
 .themeBtn:hover {
-  background: var(--bg-card-hover);
-  color: var(--accent-primary);
-  border-color: var(--accent-primary);
+  background: var(--bg-elevated);
+  color: var(--accent-secondary);
+  border-color: var(--border-light);
 }
 
 .themeBtn svg {
@@ -194,47 +192,33 @@
   height: 20px;
 }
 
-@media (max-width: 1024px) {
-  .center {
-    max-width: 400px;
-  }
-}
-
 @media (max-width: 768px) {
   .header {
     padding: 0 16px;
+    gap: 12px;
   }
 
   .menuBtn {
-    display: flex;
+    display: block;
   }
 
-  .logoText {
-    font-size: 18px;
+  .left {
+    width: auto;
   }
 
-  .center {
-    flex: 1;
-    max-width: none;
-    margin: 0 12px;
-  }
-
-  .searchInput {
-    height: 42px;
-    padding: 0 48px;
-  }
-
-  .shortcut,
-  .clearBtn {
+  .logo {
     display: none;
+  }
+
+  .right {
+    width: auto;
   }
 
   .colorCount {
     display: none;
   }
 
-  .themeBtn {
-    width: 40px;
-    height: 40px;
+  .shortcut {
+    display: none;
   }
 }
