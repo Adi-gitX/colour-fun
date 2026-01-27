@@ -62,6 +62,7 @@ interface AppState {
     closeSidebar: () => void;
 
     // Settings
+    // State for managing the application settings modal visibility
     isSettingsOpen: boolean;
     openSettings: () => void;
     closeSettings: () => void;
