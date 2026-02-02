@@ -26,7 +26,7 @@
 ## 🛠 Practical: Working with AWS EC2
 
 ### 1. Connecting via SSH
-Use your private key (`.pem` file) to securely access your instance:
+Use your private key (`.pem` file ) to securely access your instance:
 ```bash
 ssh -i /path/to/labsuser.pem ec2-user@<public-ip>
 ```
