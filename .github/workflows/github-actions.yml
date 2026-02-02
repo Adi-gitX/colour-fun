@@ -1,22 +1,30 @@
 name: GitHub Actions
-on: 
+
+on:
   push:
     branches: ["main"]
+    paths-ignore:
+      - "**/*.md"
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: install dependencies
-        run: npm i 
+        run: npm ci
+
       - name: build
         run: npm run build
-    
+
   unit-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: install dependencies
-        run: npm i 
+        run: npm ci
+
       - name: run tests
         run: npm test
