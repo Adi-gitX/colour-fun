@@ -1,5 +1,5 @@
 ```markdown
-# DevOps Class 5: EC2 Setup and Node.js Deployment -- run.sh is related to this!q
+# DevOps Class 5: EC2 Setup and Node.js Deployment
 
 ## 1. Connection and Network
 Connect to the instance using SSH:
@@ -47,9 +47,9 @@ grep "node" cloud-init.log
 ```
 
 ## 4. Installation Scripts
-Note: Interactive commands (like `yum install` without flags) will fail in scripts. Always use the `-y` flag.
+> **Note:** Interactive commands (like `yum install` without flags) will fail in scripts. Always use the `-y` flag.
 
-### Node.js Installation Script
+### Node.js Installation Script (`run.sh`)
 ```bash
 #!/bin/bash
 # Update packages
@@ -79,35 +79,42 @@ fi
 echo "[INFO] Node is installed"
 exit 0
 ```
+
+## 6. Scripting Best Practices
+
+### Exit Codes
+Scripts must fail "loud and clear". Exit codes signal success or failure to the parent process.
+
+| Code | Meaning |
+| :--- | :--- |
+| `0` | Success |
+| `1` | General error |
+| `2` | Misuse of shell builtins |
+| `126` | Command found but not executable |
+| `127` | Command not found |
+| `128 + n` | Fatal error signal `n` |
+| `130` | Script terminated by Ctrl+C |
+
+### File and String Operators
+Used within `if` statements or test commands:
+
+| Operator | Description |
+| :--- | :--- |
+| `-d` | Directory exists |
+| `-f` | File exists |
+| `-e` | File or directory exists |
+| `-s` | File is not empty |
+| `-z` | File is empty (or string is empty) |
+| `-n` | String is not empty |
+
+### Useful Commands
+- `command -v <cmd>`: Checks the path of a command.
+- `grep -i`: Ignore case during search.
+
+### Idempotency
+A script is **idempotent** if:
+1. It works when run once.
+2. It still works (and doesn't break things) when run twice.
+3. It recovers correctly when run after a partial failure.
 ```
-
-# Exitcodes: how script signal success or failure
-# 0 --> success
-# 1 --> general error 
-# 2 --> misuse of shell builtins
-# 127 --> command not found
-# 126 --> command found but not executable
-# 128 + n --> fatal error signal n
-# 130 --> script terminated by Ctrl+C
-
-<!-- why exit codes matters- 
-scripts must fail loud and clear -->
-
--d --> directory exists
--f --> file exists
--e --> file or directory exists
--s --> file is not empty
--z --> file is empty
--n --> string is not empty
--z --> string is empty
-
-commmand -v check path 
--i --> ignore case
-command cat --> /bin/cat
-
-idempotency:
-run once --> works
-run twice --> still works
-run after partial failure --> recovers
-
-
+```
