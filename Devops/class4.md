@@ -1,7 +1,18 @@
+
+## Lab Overview
+### Use Case
+This lab simulates the professional deployment of a production-ready environment. It focuses on transitioning from manual server configuration to secure, automated setups, ensuring that applications run under restricted identities with strictly controlled file access to minimize the attack surface.
+
+### Key Objectives
+*   **System Auditing**: Baseline discovery of OS, hardware resources, and network state.
+*   **Environment Standardization**: Establishing a consistent directory structure following FHS conventions.
+*   **Security Hardening**: Implementing the Principle of Least Privilege by creating non-login system users and restricting sensitive file permissions (600 vs 644).
+*   **Automation**: Developing idempotent Bash scripts to ensure repeatable and error-free deployments across multiple environments.
+
+
+
+
 # Lab Assignment: Server Setup, Permissions, and Automation
-
-## Lab Notes & Concepts
-
 ### Lab Q1: Server Setup & Exploration
 *   **System Discovery**: Understanding the environment is the first step in server management. Key metrics include OS version (`lsb_release`), memory availability (`free`), disk utilization (`df`), and network identity (`hostname -I`).
 *   **Tooling**: Essential utilities like `git` (version control), `curl` (data transfer), and `tree` (directory visualization) are foundational for development workflows.
@@ -102,7 +113,4 @@ EOF
 
 # 2. Execute and Verify
 chmod +x ~/setup-service.sh
-sudo ./setup-service.sh
-tree /opt/webapp
-ls -la /opt/webapp/config
-``` 
+
