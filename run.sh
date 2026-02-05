@@ -39,3 +39,7 @@
 
 
 
+# touch backend
+# cd backend 
+# npm i 
+# ls
