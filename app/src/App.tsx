@@ -74,7 +74,7 @@ function App() {
         <footer className="footer">
           <div className="footer-content">
             <div className="footer-brand">
-              <span>Colour&Fun</span>
+              <span>colour-fun</span>
               <span className="version">v1.2.0</span>
             </div>
             <p>Premium Color Assets for Creators</p>

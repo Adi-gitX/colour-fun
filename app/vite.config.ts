@@ -11,8 +11,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-        name: 'Colour&Fun',
-        short_name: 'Colour&Fun',
+        name: 'colour-fun',
+        short_name: 'colour-fun',
         description: 'Premium Solid Color Backgrounds',
         theme_color: '#0a0a0a',
         background_color: '#0a0a0a',

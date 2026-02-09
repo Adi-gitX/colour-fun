@@ -46,7 +46,8 @@
 }
 
 .logo {
-  display: flex;
+  display: none;
+  /* Hidden on desktop since Sidebar has logo */
   align-items: center;
   gap: 8px;
   font-weight: 700;
@@ -207,7 +208,7 @@
   }
 
   .logo {
-    display: none;
+    display: flex;
   }
 
   .right {

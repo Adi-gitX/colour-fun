@@ -1,4 +1,4 @@
-# SolidBackgrounds
+# colour-fun
 
 A monorepo containing a modern background generator web application and DevOps learning resources.
 
