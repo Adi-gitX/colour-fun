@@ -4,46 +4,52 @@
 
 .gridHeader {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 24px;
-    padding: 0 4px;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 32px;
+    padding: 0 8px;
 }
 
 .gridTitle {
     font-size: 24px;
-    font-weight: 700;
+    font-weight: 600;
+    letter-spacing: -0.02em;
     color: var(--text-primary);
-    text-transform: capitalize;
+    margin: 0;
 }
 
 .gridCount {
     font-size: 14px;
-    font-weight: 500;
     color: var(--text-tertiary);
-    padding: 6px 14px;
-    background: var(--bg-card);
-    border-radius: 20px;
+    font-weight: 400;
 }
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 24px;
+    padding-bottom: 40px;
 }
 
 .card {
-    position: relative;
     aspect-ratio: 1;
     border-radius: 20px;
+    position: relative;
     cursor: pointer;
     overflow: hidden;
-    box-shadow: var(--shadow-md);
     transition: box-shadow 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    /* Subtle border for light mode */
+}
+
+/* Dark mode border */
+:global([data-theme="dark"]) .card {
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .card:hover {
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+    z-index: 10;
 }
 
 .cardGlow {
@@ -67,8 +73,8 @@
     padding: 16px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
+    gap: 2px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.4) 0%, transparent 100%);
     opacity: 0;
     transform: translateY(10px);
     transition: all 0.3s ease;
@@ -81,46 +87,21 @@
 
 .colorName {
     font-size: 14px;
-    font-weight: 700;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    font-weight: 600;
+    letter-spacing: -0.01em;
 }
 
 .colorHex {
     font-size: 12px;
-    font-weight: 500;
-    opacity: 0.9;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    font-family: 'SF Mono', 'Monaco', monospace;
+    opacity: 0.8;
+    font-family: monospace;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
 
+/* Hide the old download hint, overly cluttered */
 .downloadHint {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.card:hover .downloadHint {
-    opacity: 1;
-}
-
-.downloadHint svg {
-    width: 36px;
-    height: 36px;
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
-}
-
-.downloadHint span {
-    font-size: 13px;
-    font-weight: 700;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-    letter-spacing: 0.5px;
+    display: none;
 }
 
 .empty {
@@ -128,14 +109,15 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 100px 20px;
+    padding: 80px 0;
+    color: var(--text-secondary);
     text-align: center;
 }
 
 .emptyIcon {
-    font-size: 80px;
+    font-size: 48px;
     margin-bottom: 24px;
-    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+    opacity: 0.5;
 }
 
 .empty h3 {

@@ -1,153 +1,169 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Shuffle, Copy, Download, ArrowUpRight } from 'lucide-react';
+import { HexColorInput } from 'react-colorful';
 import { useAppStore } from '../store/appStore';
+import { generateAndDownload } from '../utils/imageGenerator';
 import styles from './GradientGenerator.module.css';
-
-const getRandomHex = () => {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-};
+import { Copy, Download, RefreshCw } from 'lucide-react';
 
 export const GradientGenerator = () => {
-    const { showToast } = useAppStore();
-    const [color1, setColor1] = useState('#FF6B6B');
-    const [color2, setColor2] = useState('#4ECDC4');
-    const [degree, setDegree] = useState(135);
-    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const {
+        selectedResolution,
+        selectedFormat,
+        useCustomSize,
+        customWidth,
+        customHeight,
+        addRecentColor
+    } = useAppStore();
 
-    const gradientStyle = {
-        background: `linear-gradient(${degree}deg, ${color1}, ${color2})`,
-    };
+    const [color1, setColor1] = useState('#FF512F');
+    const [color2, setColor2] = useState('#DD2476');
+    const [angle, setAngle] = useState(45);
+    const [isDownloading, setIsDownloading] = useState(false);
+
+    const gradientCSS = `linear-gradient(${angle}deg, ${color1}, ${color2})`;
 
     const handleRandomize = () => {
-        setColor1(getRandomHex());
-        setColor2(getRandomHex());
-        setDegree(Math.floor(Math.random() * 360));
+        const randomColor = () => '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+        setColor1(randomColor().toUpperCase());
+        setColor2(randomColor().toUpperCase());
+        setAngle(Math.floor(Math.random() * 360));
     };
 
-    const handleCopyCSS = () => {
-        const css = `background: linear-gradient(${degree}deg, ${color1}, ${color2});`;
-        navigator.clipboard.writeText(css);
-        showToast('CSS copied to clipboard!', 'success');
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(`background: ${gradientCSS};`);
+            // Could add toast here
+        } catch (err) {
+            console.error('Failed to copy', err);
+        }
     };
 
-    const handleDownload = () => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
+    const handleDownload = async () => {
+        setIsDownloading(true);
+        try {
+            const finalWidth = useCustomSize ? customWidth : selectedResolution.width;
+            const finalHeight = useCustomSize ? customHeight : selectedResolution.height;
 
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
+            await generateAndDownload({
+                gradient: { color1, color2, angle },
+                width: finalWidth,
+                height: finalHeight,
+                format: selectedFormat,
+                quality: 1.0,
+                filename: `Gradient_${color1.replace('#', '')}_${color2.replace('#', '')}`,
+            });
 
-        canvas.width = 3840;
-        canvas.height = 2160;
-
-        // Calculate vector for gradient direction (rough approx for linear gradient angle)
-        // For simplicity efficiently mapping current angle to canvas coordinates is complex, 
-        // so we'll use a diagonal fallback or simple linear interpolation logic if needed.
-        // However, createLinearGradient takes coords. 
-        // Let's simplified it: standard diagonal 135deg is mostly top-left to bottom-right.
-        // For true angle support we need proper trig.
-
-        const rad = (degree * Math.PI) / 180;
-        const x1 = canvas.width / 2 - Math.cos(rad) * canvas.width / 2;
-        const y1 = canvas.height / 2 + Math.sin(rad) * canvas.height / 2;
-        const x2 = canvas.width / 2 + Math.cos(rad) * canvas.width / 2;
-        const y2 = canvas.height / 2 - Math.sin(rad) * canvas.height / 2;
-
-        const grd = ctx.createLinearGradient(x1, y1, x2, y2);
-        grd.addColorStop(0, color1);
-        grd.addColorStop(1, color2);
-
-        ctx.fillStyle = grd;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        const link = document.createElement('a');
-        link.download = `gradient-${Date.now()}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-        showToast('Gradient downloaded successfully!', 'success');
+            // Add colors to recent
+            addRecentColor(color1);
+            addRecentColor(color2);
+        } catch (error) {
+            console.error('Download failed:', error);
+        } finally {
+            setIsDownloading(false);
+        }
     };
 
     return (
-        <div className={styles.container}>
-            <motion.div
-                className={styles.preview}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-            >
-                <div className={styles.gradientDisplay} style={gradientStyle}>
-                    <div className={styles.controlsOverlay}>
-                        <button className={styles.actionBtn} onClick={handleRandomize} title="Randomize">
-                            <Shuffle size={20} />
-                        </button>
-                        <button className={styles.actionBtn} onClick={handleCopyCSS} title="Copy CSS">
-                            <Copy size={20} />
-                        </button>
-                        <button className={styles.actionBtn} onClick={handleDownload} title="Download 4K">
-                            <Download size={20} />
-                        </button>
-                    </div>
-                </div>
-            </motion.div>
-
-            <div className={styles.controls}>
-                <div className={styles.colorInputs}>
-                    <div className={styles.inputGroup}>
-                        <label>Color 1</label>
-                        <div className={styles.colorPickerWrapper}>
-                            <input
-                                type="color"
-                                value={color1}
-                                onChange={(e) => setColor1(e.target.value)}
-                                className={styles.colorInput}
-                            />
-                            <span className={styles.colorHex}>{color1}</span>
-                        </div>
-                    </div>
-
-                    <div className={styles.swapBtn} onClick={() => {
-                        const temp = color1;
-                        setColor1(color2);
-                        setColor2(temp);
-                    }}>
-                        <ArrowUpRight size={20} />
-                    </div>
-
-                    <div className={styles.inputGroup}>
-                        <label>Color 2</label>
-                        <div className={styles.colorPickerWrapper}>
-                            <input
-                                type="color"
-                                value={color2}
-                                onChange={(e) => setColor2(e.target.value)}
-                                className={styles.colorInput}
-                            />
-                            <span className={styles.colorHex}>{color2}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div className={styles.angleControl}>
-                    <label>Angle: {degree}°</label>
-                    <input
-                        type="range"
-                        min="0"
-                        max="360"
-                        value={degree}
-                        onChange={(e) => setDegree(Number(e.target.value))}
-                        className={styles.rangeInput}
-                    />
-                </div>
+        <section className={styles.container}>
+            <div className={styles.header}>
+                <motion.h2
+                    className={styles.title}
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                >
+                    Gradient Generator
+                </motion.h2>
+                <motion.p
+                    className={styles.subtitle}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.1 }}
+                >
+                    Create beautiful, smooth gradients for your next project.
+                </motion.p>
             </div>
 
-            {/* Hidden canvas for export */}
-            <canvas ref={canvasRef} style={{ display: 'none' }} />
-        </div>
+            <div className={styles.workspace}>
+                <motion.div
+                    className={styles.controls}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 }}
+                >
+                    <div className={styles.controlGroup}>
+                        <label className={styles.label}>Colors</label>
+                        <div className={styles.colorInputs}>
+                            <div className={styles.colorRow}>
+                                <div className={styles.colorPreview} style={{ background: color1 }}>
+                                    <input
+                                        type="color"
+                                        value={color1}
+                                        onChange={(e) => setColor1(e.target.value.toUpperCase())}
+                                        className={styles.colorInput}
+                                    />
+                                </div>
+                                <div className={styles.hexInput}>
+                                    <HexColorInput color={color1} onChange={setColor1} prefixed />
+                                </div>
+                            </div>
+
+                            <div className={styles.colorRow}>
+                                <div className={styles.colorPreview} style={{ background: color2 }}>
+                                    <input
+                                        type="color"
+                                        value={color2}
+                                        onChange={(e) => setColor2(e.target.value.toUpperCase())}
+                                        className={styles.colorInput}
+                                    />
+                                </div>
+                                <div className={styles.hexInput}>
+                                    <HexColorInput color={color2} onChange={setColor2} prefixed />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className={styles.controlGroup}>
+                        <div className={styles.angleControl}>
+                            <label className={styles.label}>Angle</label>
+                            <span className={styles.angleValue}>{angle}°</span>
+                        </div>
+                        <input
+                            type="range"
+                            min="0"
+                            max="360"
+                            value={angle}
+                            onChange={(e) => setAngle(Number(e.target.value))}
+                            className={styles.angleSlider}
+                        />
+                    </div>
+
+                    <div className={styles.actions}>
+                        <button onClick={handleRandomize} className={`${styles.actionBtn} ${styles.secondaryBtn}`}>
+                            <RefreshCw size={18} /> Randomize
+                        </button>
+                        <button onClick={handleCopy} className={`${styles.actionBtn} ${styles.secondaryBtn}`}>
+                            <Copy size={18} /> Copy CSS
+                        </button>
+                        <button onClick={handleDownload} className={`${styles.actionBtn} ${styles.primaryBtn}`}>
+                            {isDownloading ? 'Exporting...' : <><Download size={18} /> Download Image</>}
+                        </button>
+                    </div>
+                </motion.div>
+
+                <motion.div
+                    className={styles.preview}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.3 }}
+                >
+                    <div
+                        className={styles.previewGradient}
+                        style={{ background: gradientCSS }}
+                    />
+                </motion.div>
+            </div>
+        </section>
     );
 };

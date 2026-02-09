@@ -26,11 +26,11 @@ const ColorCard = ({ color, index }: { color: Color; index: number }) => {
                 ease: [0.25, 0.46, 0.45, 0.94]
             }}
             whileHover={{
-                scale: 1.05,
-                y: -8,
+                scale: 1.03,
+                y: -5,
                 transition: { duration: 0.2 }
             }}
-            whileTap={{ scale: 0.95 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => openDownloadModal(color)}
         >
             <div className={styles.cardGlow} style={{ background: color.hex }} />
@@ -44,28 +44,16 @@ const ColorCard = ({ color, index }: { color: Color; index: number }) => {
                     e.stopPropagation();
                     toggleFavorite(color.hex);
                 }}
-                style={{ color: textColor }}
             >
-                <svg viewBox="0 0 24 24" fill={isFav ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
+                <svg viewBox="0 0 24 24" fill={isFav ? "white" : "none"} stroke="white" strokeWidth="2">
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                 </svg>
             </motion.button>
 
-            <div className={styles.cardContent} style={{ color: textColor }}>
-                <span className={styles.colorName}>{color.name}</span>
-                <span className={styles.colorHex}>{color.hex}</span>
+            <div className={styles.cardContent}>
+                <span className={styles.colorName} style={{ color: textColor }}>{color.name}</span>
+                <span className={styles.colorHex} style={{ color: textColor }}>{color.hex}</span>
             </div>
-            <motion.div
-                className={styles.downloadHint}
-                style={{ color: textColor }}
-                initial={{ opacity: 0, y: 10 }}
-                whileHover={{ opacity: 1, y: 0 }}
-            >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
-                </svg>
-                <span>Download</span>
-            </motion.div>
         </motion.div>
     );
 };
