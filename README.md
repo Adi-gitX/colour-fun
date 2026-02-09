@@ -1,145 +1,135 @@
-<p align="center">
-  <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=white" alt="React 19"/>
-  <img src="https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"/>
-  <img src="https://img.shields.io/badge/Vite-7-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite"/>
-  <img src="https://img.shields.io/badge/PWA-Ready-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white" alt="PWA"/>
-</p>
+# SolidBackgrounds
 
-# 🎨 SolidBackgrounds
-
-> A premium, modern web application for generating stunning solid color backgrounds with advanced customization options.
-
-<p align="center">
-  <img src="https://img.shields.io/github/license/Adi-gitX/colour-fun?style=flat-square" alt="License"/>
-  <img src="https://img.shields.io/github/stars/Adi-gitX/colour-fun?style=flat-square" alt="Stars"/>
-  <img src="https://img.shields.io/github/forks/Adi-gitX/colour-fun?style=flat-square" alt="Forks"/>
-</p>
+A monorepo containing a modern background generator web application and DevOps learning resources.
 
 ---
 
-## ✨ Features
-
-| Feature | Description |
-|---------|-------------|
-| 🎨 **Color Grid** | Browse curated, professional color palettes |
-| 🖌️ **Color Picker** | Fine-tune any color with precision controls |
-| 🌈 **Gradient Generator** | Create beautiful gradient backgrounds |
-| 📥 **High-Res Export** | Download in multiple resolutions (1080p, 4K, custom) |
-| ⚙️ **Settings Modal** | Customize app behavior and preferences |
-| 📱 **PWA Support** | Install as a native app on any device |
-| 🌙 **Modern UI** | Sleek, responsive interface with smooth animations |
-
----
-
-## 🛠️ Tech Stack
-
-```
-Frontend        → React 19 + TypeScript
-Build Tool      → Vite 7
-State           → Zustand
-Styling         → CSS Modules
-Animations      → Framer Motion
-Icons           → Lucide React
-PWA             → Vite PWA Plugin
-```
-
----
-
-## 📁 Project Structure
+## Repository Structure
 
 ```
 solidbackgrounds/
-├── app/                    # React Frontend Application
+│
+├── app/                        # Frontend Application
 │   ├── src/
-│   │   ├── components/     # UI Components
+│   │   ├── components/         # React UI Components
 │   │   │   ├── ColorGrid.tsx
 │   │   │   ├── ColorPicker.tsx
 │   │   │   ├── GradientGenerator.tsx
 │   │   │   ├── DownloadModal.tsx
+│   │   │   ├── SettingsModal.tsx
+│   │   │   ├── Header.tsx
+│   │   │   ├── Hero.tsx
+│   │   │   ├── Sidebar.tsx
 │   │   │   └── ...
-│   │   ├── store/          # Zustand State Management
-│   │   ├── utils/          # Helper Functions
-│   │   └── data/           # Color Data
-│   ├── public/             # Static Assets
-│   └── dist/               # Production Build
+│   │   ├── store/              # State Management (Zustand)
+│   │   ├── utils/              # Helper Functions
+│   │   │   ├── colorUtils.ts
+│   │   │   └── imageGenerator.ts
+│   │   └── data/               # Static Data
+│   ├── public/                 # Static Assets
+│   ├── package.json
+│   ├── vite.config.ts
+│   └── tsconfig.json
 │
-├── devops/                 # DevOps Resources
-│   ├── classNotes/         # Learning Documentation
-│   └── scripts/            # Automation Scripts (AWS EC2)
+├── devops/                     # DevOps Resources
+│   ├── classNotes/             # Daily Learning Notes
+│   │   ├── Class2.md
+│   │   ├── class3.md           # Linux & AWS EC2 Essentials
+│   │   ├── class4.md
+│   │   ├── class5.md
+│   │   └── class6.md
+│   └── scripts/                # Automation Scripts
+│       ├── run.sh              # Setup & Environment Scripts
+│       ├── run2.sh
+│       └── run5.sh             # AWS EC2 Instance Launcher
 │
-└── .github/                # CI/CD Workflows
+├── .github/
+│   └── workflows/              # CI/CD Pipelines
+│       └── github-actions.yml
+│
+├── .gitignore
+└── README.md
 ```
 
 ---
 
-## 🚀 Quick Start
+## App
 
-### Prerequisites
+Modern web application for generating solid color and gradient backgrounds.
 
-- **Node.js** v18+ 
-- **npm** or **yarn**
+### Tech Stack
 
-### Installation
+| Category | Technology |
+|----------|------------|
+| Framework | React 19 |
+| Language | TypeScript 5.9 |
+| Build | Vite 7 |
+| State | Zustand |
+| Styling | CSS Modules |
+| Animations | Framer Motion |
+| PWA | Vite PWA Plugin |
+
+### Features
+
+- Curated color palette selection
+- Custom color picker with precision controls
+- Gradient background generator
+- High-resolution image export (1080p, 4K, custom)
+- Progressive Web App support
+- Responsive design
+
+### Development
 
 ```bash
-# Clone the repository
-git clone https://github.com/Adi-gitX/colour-fun.git
-
-# Navigate to project
-cd solidbackgrounds/app
-
-# Install dependencies
+cd app
 npm install
-
-# Start development server
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser.
-
----
-
-## 📦 Build & Deploy
+### Build
 
 ```bash
-# Production build
-cd app && npm run build
-
-# Preview production build
-npm run preview
+cd app
+npm run build
 ```
 
-Build output will be in `app/dist/` folder.
+Output: `app/dist/`
 
 ---
 
-## 🔧 Available Scripts
+## DevOps
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Create production build |
-| `npm run preview` | Preview production build |
-| `npm run lint` | Run ESLint |
+Learning resources and automation scripts for DevOps practices.
+
+### Class Notes
+
+Daily documentation covering:
+
+- Linux fundamentals and CLI commands
+- AWS EC2 instance management
+- Cloud computing models (IaaS, PaaS, SaaS)
+- SSH and networking basics
+- Package management
+- Server deployment
+
+### Scripts
+
+Automation scripts for common operations:
+
+| Script | Purpose |
+|--------|---------|
+| `run.sh` | Environment setup and validation |
+| `run2.sh` | Development utilities |
+| `run5.sh` | AWS EC2 instance automation with Ubuntu 24.04 AMI |
 
 ---
 
-## 🤝 Contributing
+## License
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+MIT
 
 ---
 
-## 📄 License
+## Author
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-<p align="center">
-  Made with ❤️ by <a href="https://github.com/Adi-gitX">Adi-gitX</a>
-</p>
+[Adi-gitX](https://github.com/Adi-gitX)
