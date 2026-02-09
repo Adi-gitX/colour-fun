@@ -2,58 +2,55 @@
 #!/bin/bash
 set -euo pipefail
 
-KEY_NAME="vockey"
-SG_NAME="launch-wizard-1"
-INSTANCE_NAME="Terminal-EC2"
+# 1. Get the latest Ubuntu 24.04 AMI ID
+AMI_ID=$(aws ec2 describe-images \
+  --owners 099720109477 \
+  --filters "Name=name,Values=ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*" "Name=state,Values=available" \
+  --query 'reverse(sort_by(Images, &CreationDate))[0].ImageId' \
+  --output text)
 
-echo "Creating key pair..."
-aws ec2 create-key-pair \
-  --key-name "$KEY_NAME" \
-  --query "KeyMaterial" \
-  --output text > "${KEY_NAME}.pem"
-chmod 400 "${KEY_NAME}.pem"
+if [[ "$AMI_ID" == "None" || -z "$AMI_ID" ]]; then
+  echo "Error: Unable to find Ubuntu 24.04 AMI."
+  exit 1
+fi
 
-echo "Getting default VPC..."
+# 2. Get Default VPC ID
 VPC_ID=$(aws ec2 describe-vpcs \
-  --filters Name=isDefault,Values=true \
+  --filters "Name=isDefault,Values=true" \
   --query "Vpcs[0].VpcId" \
   --output text)
 
-echo "Creating security group..."
+if [[ "$VPC_ID" == "None" || -z "$VPC_ID" ]]; then
+  echo "Error: Default VPC not found."
+  exit 1
+fi
+
+# 3. Create Security Group
+SG_NAME="ubuntu-sg-$(date +%s)"
 SG_ID=$(aws ec2 create-security-group \
   --group-name "$SG_NAME" \
-  --description "Allow SSH" \
+  --description "Security group for Ubuntu CLI VM" \
   --vpc-id "$VPC_ID" \
-  --query "GroupId" \
+  --query 'GroupId' \
   --output text)
 
-echo "Allowing SSH access..."
-aws ec2 authorize-security-group-ingress \
-  --group-id "$SG_ID" \
-  --protocol tcp \
-  --port 22 \
-  --cidr 0.0.0.0/0
+# 4. Authorize Inbound Traffic (SSH & HTTP)
+aws ec2 authorize-security-group-ingress --group-id "$SG_ID" --protocol tcp --port 22 --cidr 0.0.0.0/0
+aws ec2 authorize-security-group-ingress --group-id "$SG_ID" --protocol tcp --port 80 --cidr 0.0.0.0/0
 
-echo "Fetching latest Amazon Linux AMI..."
-AMI_ID=$(aws ec2 describe-images \
-  --owners amazon \
-  --filters "Name=name,Values=al2023-ami-*-x86_64" \
-  --query "Images | sort_by(@, &CreationDate)[-1].ImageId" \
-  --output text)
-
-echo "Launching EC2 instance..."
+# 5. Launch Instance
 INSTANCE_ID=$(aws ec2 run-instances \
   --image-id "$AMI_ID" \
-  --instance-type t2.micro \
-  --key-name "$KEY_NAME" \
+  --instance-type t3.micro \
+  --key-name vockey \
   --security-group-ids "$SG_ID" \
-  --associate-public-ip-address \
-  --count 1 \
-  --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$INSTANCE_NAME}]" \
-  --query "Instances[0].InstanceId" \
+  --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=Ubuntu24-CLI}]" \
+  --query 'Instances[0].InstanceId' \
   --output text)
 
-echo "Waiting for instance to start..."
+echo "Instance $INSTANCE_ID is being created..."
+
+# 6. Wait for Instance to be running and get Public IP
 aws ec2 wait instance-running --instance-ids "$INSTANCE_ID"
 
 PUBLIC_IP=$(aws ec2 describe-instances \
@@ -61,9 +58,8 @@ PUBLIC_IP=$(aws ec2 describe-instances \
   --query "Reservations[0].Instances[0].PublicIpAddress" \
   --output text)
 
-echo ""
-echo "INSTANCE READY"
-echo "Public IP: $PUBLIC_IP"
-echo "SSH using:"
-echo "ssh -i ${KEY_NAME}.pem ec2-user@$PUBLIC_IP"
+echo "Instance is running!"
+echo "Instance ID: $INSTANCE_ID"
+echo "Public IP:   $PUBLIC_IP"
+echo "Connect via: ssh -i ~/Downloads/labsuser.pem ubuntu@$PUBLIC_IP"
 ```
