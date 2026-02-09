@@ -1,13 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAppStore } from '../store/appStore';
+import { useAppStore, type Toast } from '../store/appStore';
 import { X, CheckCircle, AlertCircle, Info } from 'lucide-react';
 import styles from './Toast.module.css';
-
-interface Toast {
-    id: string;
-    message: string;
-    type?: 'success' | 'error' | 'info';
-}
 
 export const ToastContainer = () => {
     const { toasts, removeToast } = useAppStore();
