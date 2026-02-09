@@ -1,0 +1,54 @@
+/* App Layout */
+.app {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  display: flex;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 80px;
+  /* Default sidebar width */
+  min-height: 100vh;
+  transition: margin-left 0.3s ease;
+  position: relative;
+
+  /* Modern Typography Updates */
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* Footer styling */
+.footer {
+  padding: 60px 40px;
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 60px;
+  background: transparent;
+}
+
+/* Make header more minimal/transparent */
+/* Update global vars for deep black theme */
+
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  letter-spacing: -0.02em;
+}
+
+/* Hide scrollbar for cleaner look but keep functionality */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}

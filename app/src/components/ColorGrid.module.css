@@ -1,0 +1,224 @@
+.gridWrapper {
+    padding: 0 32px 48px;
+}
+
+.gridHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding: 0 4px;
+}
+
+.gridTitle {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-transform: capitalize;
+}
+
+.gridCount {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    padding: 6px 14px;
+    background: var(--bg-card);
+    border-radius: 20px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+}
+
+.card {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 20px;
+    cursor: pointer;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+.cardGlow {
+    position: absolute;
+    inset: -50%;
+    opacity: 0;
+    filter: blur(60px);
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.card:hover .cardGlow {
+    opacity: 0.3;
+}
+
+.cardContent {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+}
+
+.card:hover .cardContent {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.colorName {
+    font-size: 14px;
+    font-weight: 700;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.colorHex {
+    font-size: 12px;
+    font-weight: 500;
+    opacity: 0.9;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    font-family: 'SF Mono', 'Monaco', monospace;
+}
+
+.downloadHint {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.card:hover .downloadHint {
+    opacity: 1;
+}
+
+.downloadHint svg {
+    width: 36px;
+    height: 36px;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+}
+
+.downloadHint span {
+    font-size: 13px;
+    font-weight: 700;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    letter-spacing: 0.5px;
+}
+
+.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 20px;
+    text-align: center;
+}
+
+.emptyIcon {
+    font-size: 80px;
+    margin-bottom: 24px;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+}
+
+.empty h3 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.empty p {
+    font-size: 16px;
+    color: var(--text-secondary);
+    max-width: 300px;
+}
+
+@media (max-width: 1200px) {
+    .grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 14px;
+    }
+}
+
+@media (max-width: 768px) {
+    .gridWrapper {
+        padding: 0 16px 32px;
+    }
+
+    .gridTitle {
+        font-size: 20px;
+    }
+
+    .grid {
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        gap: 12px;
+    }
+
+    .card {
+        border-radius: 16px;
+    }
+
+    .cardContent {
+        opacity: 1;
+        transform: translateY(0);
+        padding: 12px;
+    }
+
+    .colorName {
+        font-size: 12px;
+    }
+
+    .colorHex {
+        font-size: 10px;
+    }
+
+    .downloadHint {
+        display: none;
+    }
+}
+
+
+.favBtn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(4px);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+    transition: background 0.2s ease;
+}
+
+.favBtn:hover {
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.favBtn svg {
+    width: 18px;
+    height: 18px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
