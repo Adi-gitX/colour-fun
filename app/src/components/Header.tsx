@@ -46,7 +46,7 @@ export const Header = () => {
                         ◆
                     </motion.span>
                     <span className={styles.logoText}>
-                        Colour<span className={styles.accent}>&</span>Fun
+                        colour-fun
                     </span>
                 </div>
             </div>
