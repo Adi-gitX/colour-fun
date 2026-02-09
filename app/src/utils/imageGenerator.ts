@@ -1,6 +1,13 @@
 // Image Generation Utility - Canvas-based High-Quality Export
+export interface GradientOptions {
+    color1: string;
+    color2: string;
+    angle: number;
+}
+
 export interface DownloadOptions {
-    color: string;
+    color?: string;
+    gradient?: GradientOptions;
     width: number;
     height: number;
     format: 'png' | 'jpeg' | 'webp';
@@ -107,7 +114,7 @@ export const defaultPreset: SizePreset = {
 
 // Generate and download image
 export const generateAndDownload = async (options: DownloadOptions): Promise<void> => {
-    const { color, width, height, format, quality = 1.0, filename } = options;
+    const { color, gradient, width, height, format, quality = 1.0, filename } = options;
 
     // Create canvas
     const canvas = document.createElement('canvas');
@@ -119,8 +126,31 @@ export const generateAndDownload = async (options: DownloadOptions): Promise<voi
         throw new Error('Could not get canvas context');
     }
 
-    // Fill with solid color
-    ctx.fillStyle = color;
+    if (gradient) {
+        // Calculate gradient coordinates based on angle
+        const angleRad = (gradient.angle * Math.PI) / 180;
+        const length = Math.abs(width * Math.cos(angleRad)) + Math.abs(height * Math.sin(angleRad));
+
+        const cx = width / 2;
+        const cy = height / 2;
+
+        const x1 = cx - (Math.cos(angleRad) * length) / 2;
+        const y1 = cy - (Math.sin(angleRad) * length) / 2;
+        const x2 = cx + (Math.cos(angleRad) * length) / 2;
+        const y2 = cy + (Math.sin(angleRad) * length) / 2;
+
+        const grd = ctx.createLinearGradient(x1, y1, x2, y2);
+        grd.addColorStop(0, gradient.color1);
+        grd.addColorStop(1, gradient.color2);
+        ctx.fillStyle = grd;
+    } else if (color) {
+        // Fill with solid color
+        ctx.fillStyle = color;
+    } else {
+        // Default fallback
+        ctx.fillStyle = '#000000';
+    }
+
     ctx.fillRect(0, 0, width, height);
 
     // Determine MIME type
@@ -149,8 +179,13 @@ export const generateAndDownload = async (options: DownloadOptions): Promise<voi
     const link = document.createElement('a');
 
     // Generate filename
-    const colorName = color.replace('#', '').toUpperCase();
-    const defaultFilename = `${colorName}_${width}x${height}.${format}`;
+    let defaultFilename = `Image_${width}x${height}.${format}`;
+    if (color) {
+        const colorName = color.replace('#', '').toUpperCase();
+        defaultFilename = `${colorName}_${width}x${height}.${format}`;
+    } else if (gradient) {
+        defaultFilename = `Gradient_${width}x${height}.${format}`;
+    }
 
     link.href = url;
     link.download = filename || defaultFilename;

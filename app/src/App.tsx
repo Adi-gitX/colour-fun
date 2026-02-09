@@ -4,6 +4,7 @@ import { Hero } from './components/Hero';
 import { ColorGrid } from './components/ColorGrid';
 import { DownloadModal } from './components/DownloadModal';
 import { ColorPicker } from './components/ColorPicker';
+import { GradientGenerator } from './components/GradientGenerator';
 import { SettingsModal } from './components/SettingsModal';
 import { ReloadPrompt } from './components/ReloadPrompt';
 import { ComingSoon } from './components/placeholders/ComingSoon';
@@ -31,13 +32,7 @@ function App() {
           </>
         );
       case 'gradients':
-        return (
-          <ComingSoon
-            title="Gradient Generator"
-            icon="🌈"
-            description="Create beautiful, generated gradients for your next project."
-          />
-        );
+        return <GradientGenerator />;
       case 'images':
         return (
           <ComingSoon
