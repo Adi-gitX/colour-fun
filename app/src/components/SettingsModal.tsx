@@ -15,7 +15,7 @@ export const SettingsModal = () => {
         reducedMotion,
         setReducedMotion,
 
-        clearFavorites: _clearFavorites, // Use if available or add to store
+        clearFavorites,
         favorites
     } = useAppStore();
 
@@ -128,9 +128,7 @@ export const SettingsModal = () => {
                                             className="danger-btn"
                                             onClick={() => {
                                                 if (confirm('Are you sure? This cannot be undone.')) {
-                                                    // useAppStore.getState().favorites = []; // Direct mutation not recommended, use action if available
-                                                    // For now implementing a simple clear action if needed or just showing UI
-                                                    alert('Favorites cleared!');
+                                                    clearFavorites();
                                                 }
                                             }}
                                         >

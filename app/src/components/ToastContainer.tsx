@@ -3,13 +3,19 @@ import { useAppStore } from '../store/appStore';
 import { X, CheckCircle, AlertCircle, Info } from 'lucide-react';
 import styles from './Toast.module.css';
 
+interface Toast {
+    id: string;
+    message: string;
+    type?: 'success' | 'error' | 'info';
+}
+
 export const ToastContainer = () => {
     const { toasts, removeToast } = useAppStore();
 
     return (
         <div className={styles.container}>
             <AnimatePresence>
-                {toasts.map((toast: any) => (
+                {toasts.map((toast: Toast) => (
                     <motion.div
                         key={toast.id}
                         layout
