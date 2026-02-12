@@ -1,3 +1,4 @@
+name: Recap
 
 on:
   workflow_dispatch:
@@ -5,26 +6,28 @@ on:
       name:
         description: "Name"
         required: true
-        type: "string"
+        type: string
         default: "Aditya"
+
       country:
         description: "Country"
         required: true
-        type: "string"
+        type: string
         default: "India"
+
       city:
         description: "City"
         required: true
-        type: "string"
+        type: string
         default: "Hyderabad"
 
 jobs:
   greet:
     runs-on: ubuntu-latest
+
     steps:
-      - name: say hello 
-        run: echo "Hello ${{ inputs.name }} from ${{ inputs.city }}, ${{ inputs.country }}"
-      - name: list files 
-        run: ls -la
-      - name: checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Say Hello
+        run: echo "Hello ${{ inputs.name }} from ${{ inputs.city }}, ${{ inputs.country }}"
