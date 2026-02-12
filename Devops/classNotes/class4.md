@@ -21,7 +21,7 @@ This lab simulates the professional deployment of a production-ready environment
 
 ### Lab Q2: Users, Permissions & Configuration
 *   **Security Isolation**: Running applications as `root` is a security risk. Creating a system user (`useradd -r`) with no login shell (`-s /usr/sbin/nologin`) ensures that if the app is compromised, the attacker cannot easily gain shell access.
-*   **Principle of Least Privilege**: 
+*   **Principle of Least Privilege**:
     *   **644 (rw-r--r--)**: Allows the owner to read/write and others to read. Suitable for non-sensitive configs.
     *   **600 (rw-------)**: Restricts access strictly to the owner. Essential for files containing credentials (`secrets.env`).
 *   **Ownership**: Using `chown` to transfer directory control to the service user ensures the application can manage its own logs and temporary files without elevated privileges.
@@ -113,4 +113,3 @@ EOF
 
 # 2. Execute and Verify
 chmod +x ~/setup-service.sh
-

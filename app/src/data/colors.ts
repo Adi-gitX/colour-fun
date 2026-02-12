@@ -6,18 +6,18 @@ export interface Color {
   category: ColorCategory;
 }
 
-export type ColorCategory = 
-  | 'reds' 
-  | 'oranges' 
-  | 'yellows' 
-  | 'greens' 
-  | 'blues' 
-  | 'purples' 
-  | 'pinks' 
-  | 'browns' 
-  | 'grays' 
-  | 'blacks' 
-  | 'pastels' 
+export type ColorCategory =
+  | 'reds'
+  | 'oranges'
+  | 'yellows'
+  | 'greens'
+  | 'blues'
+  | 'purples'
+  | 'pinks'
+  | 'browns'
+  | 'grays'
+  | 'blacks'
+  | 'pastels'
   | 'neons';
 
 export const categoryLabels: Record<ColorCategory, string> = {
@@ -327,9 +327,9 @@ export const getColorsByCategory = (category: ColorCategory | 'all'): Color[] =>
 export const searchColors = (query: string): Color[] => {
   const q = query.toLowerCase().trim();
   if (!q) return colors;
-  
-  return colors.filter(c => 
-    c.name.toLowerCase().includes(q) || 
+
+  return colors.filter(c =>
+    c.name.toLowerCase().includes(q) ||
     c.hex.toLowerCase().includes(q) ||
     c.category.toLowerCase().includes(q)
   );

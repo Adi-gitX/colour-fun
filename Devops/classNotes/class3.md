@@ -34,7 +34,7 @@ ssh -i /path/to/labsuser.pem ec2-user@<public-ip>
 ### 2. Essential Linux Commands
 - **Switch to Root**: `sudo su` (Full administrative access).
 - **Navigation**: `pwd` (Print working directory), `cd <dir>` (Change directory).
-- **Listing Files**: 
+- **Listing Files**:
   - `ls -l`: Detailed list.
   - `ls -alt`: Includes hidden files and timestamps.
 - **File Creation**: `touch <filename>` (Create empty file), `mkdir <dirname>` (Create directory).

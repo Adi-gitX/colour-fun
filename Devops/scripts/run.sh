@@ -3,7 +3,7 @@
 # ENV=$1
 # PORT=$2
 # echo "Running on $ENV port $PORT"
-# $ENV $PORT 
+# $ENV $PORT
 
 # APP_NAME = "solidBackgrounds"
 # ENV=${1:-"dev"}
@@ -40,6 +40,6 @@
 
 
 # touch backend
-# cd backend 
-# npm i 
+# cd backend
+# npm i
 # ls
