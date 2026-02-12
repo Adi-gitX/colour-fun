@@ -1,19 +1,30 @@
+
 on:
-   workflow_dispatch:
+  workflow_dispatch:
     inputs:
-        name:
-            city:"hyderabad"
-            description: "Name"
-            required: true
-            type: "string"
-            default: "Aditya"
+      name:
+        description: "Name"
+        required: true
+        type: "string"
+        default: "Aditya"
+      country:
+        description: "Country"
+        required: true
+        type: "string"
+        default: "India"
+      city:
+        description: "City"
+        required: true
+        type: "string"
+        default: "Hyderabad"
 
 jobs:
-   greet:
-      runs-on: ubuntu-latest
-      steps:
-         - name: checkout
-           uses: actions/checkout@v4
-
-         - name: greet
-           run: echo "Hello World"
+  greet:
+    runs-on: ubuntu-latest
+    steps:
+      - name: say hello 
+        run: echo "Hello ${{ inputs.name }} from ${{ inputs.city }}, ${{ inputs.country }}"
+      - name: list files 
+        run: ls -la
+      - name: checkout
+        uses: actions/checkout@v4
