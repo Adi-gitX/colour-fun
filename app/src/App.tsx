@@ -56,9 +56,9 @@ function App() {
 
   return (
     <div className="app">
-      {/* Header removed as requested for sidebar-centric navigation, or make it minimal if needed. 
-          User said "no ai looking full app... sidebar design...". 
-          The reference shows NO top header, just sidebar. 
+      {/* Header removed as requested for sidebar-centric navigation, or make it minimal if needed.
+          User said "no ai looking full app... sidebar design...".
+          The reference shows NO top header, just sidebar.
           But I need search... I'll put search in the main content top right or keep header but make it transparent/minimal.
           I'll keep Header but modify layout.
       */}
