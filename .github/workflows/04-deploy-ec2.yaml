@@ -48,5 +48,3 @@ jobs:
             pm2 save
 
             echo "✅ Deployment complete! App running on port 3000"
-
-            echo "✅ Deployment complete!"
