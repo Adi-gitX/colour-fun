@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "test": "jest ../tests/app.test.js",
+    "test": "jest tests/app.test.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },
