@@ -37,13 +37,16 @@ jobs:
             echo "🏗️ Building frontend..."
             npm run build
 
-            echo "🧹 Clearing old site..."
-            sudo rm -rf /var/www/html/*
+            echo "🧹 Clearing old PM2 process..."
+            pm2 delete colour-fun || true
 
-            echo "📤 Deploying new build..."
-            sudo cp -r dist/* /var/www/html/
+            echo "🚀 Starting PM2 Static Server..."
+            # Serve 'dist' folder on port 3000 for Single Page Application
+            pm2 serve dist 3000 --name "colour-fun" --spa
 
-            echo "🔄 Restarting nginx..."
-            sudo systemctl restart nginx
+            echo "💾 Saving PM2 list..."
+            pm2 save
+
+            echo "✅ Deployment complete! App running on port 3000"
 
             echo "✅ Deployment complete!"
