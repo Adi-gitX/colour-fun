@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "test": "jest tests/app.test.js",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest tests/app.test.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -34,6 +34,3 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
     "vite": "^7.2.4",
-    "vite-plugin-pwa": "^1.2.0"
-  }
-}
