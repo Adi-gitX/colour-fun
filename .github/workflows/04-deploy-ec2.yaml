@@ -1,9 +1,9 @@
 name: 04 Deploy to AWS EC2
 
 on:
-  push:
-    branches:
-      - main
+#   push:
+#     branches:
+#       - main
   workflow_dispatch:
 
 jobs:
@@ -16,6 +16,7 @@ jobs:
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.2.5
         with:
+          # Make sure these secrets are set in your repository settings!
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
