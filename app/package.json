@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "test": "NODE_OPTIONS='--experimental-vm-modules' jest tests/app.test.js",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest tests/app.test.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },
