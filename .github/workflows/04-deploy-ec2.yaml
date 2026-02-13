@@ -24,7 +24,7 @@ jobs:
 
             echo "🚀 Starting deployment..."
 
-            cd /home/ubuntu/colour-fun || exit 1
+            cd /home/${{ secrets.EC2_USERNAME }}/colour-fun || exit 1
 
             echo "📥 Pulling latest code..."
             git reset --hard

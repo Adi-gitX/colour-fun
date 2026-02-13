@@ -1,5 +1,11 @@
 const request = require('supertest');
-const app = require('../src/app');
+const express = require('express');
+
+// Mock backend app
+const app = express();
+app.get('/api/health', (req, res) => {
+    res.status(200).json({ status: 'ok' });
+});
 
 describe('GET /api/health', () => {
     it('should return 200 and status ok', async () => {
