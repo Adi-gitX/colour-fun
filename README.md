@@ -1,5 +1,8 @@
 # colour-fun
 
+![Integration](https://github.com/Adi-gitX/colour-fun/actions/workflows/integration.yml/badge.svg)
+
+
 A monorepo containing a modern background generator web application and DevOps learning resources.
 
 ---
