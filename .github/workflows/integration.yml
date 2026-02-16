@@ -42,17 +42,11 @@ jobs:
       run: npm run build
 
     - name: Slack Notification (Success)
-      uses: craftech-io/slack-action@v1
-      with:
-        slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-        status: success
-        slack_username: GitHub Actions (Success)
       if: success()
+      run: |
+        curl -X POST -H 'Content-type: application/json' --data '{"attachments": [{"color": "good", "text": "GitHub Actions Workflow Succeeded! All test cases passed."}]}' ${{ secrets.SLACK_WEBHOOK_URL }}
 
     - name: Slack Notification (Failure)
-      uses: craftech-io/slack-action@v1
-      with:
-        slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-        status: failure
-        slack_username: GitHub Actions (Failure)
       if: failure()
+      run: |
+        curl -X POST -H 'Content-type: application/json' --data '{"attachments": [{"color": "danger", "text": "GitHub Actions Workflow Failed."}]}' ${{ secrets.SLACK_WEBHOOK_URL }}
