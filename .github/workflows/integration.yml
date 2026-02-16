@@ -41,8 +41,18 @@ jobs:
       working-directory: ./app
       run: npm run build
 
-    - name: Slack Notification
+    - name: Slack Notification (Success)
       uses: craftech-io/slack-action@v1
       with:
         slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-      if: always()
+        status: success
+        slack_username: GitHub Actions (Success)
+      if: success()
+
+    - name: Slack Notification (Failure)
+      uses: craftech-io/slack-action@v1
+      with:
+        slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+        status: failure
+        slack_username: GitHub Actions (Failure)
+      if: failure()
