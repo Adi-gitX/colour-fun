@@ -24,6 +24,11 @@ jobs:
 
             echo "Starting deployment..."
 
+            # Ensure git is installed
+            echo "Installing Git..."
+            sudo yum update -y
+            sudo yum install git -y
+
             # Define target directory
             TARGET_DIR="/home/${{ secrets.EC2_USERNAME }}/colour-fun"
 
