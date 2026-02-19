@@ -23,22 +23,22 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-        cache-dependency-path: app/package-lock.json
+        cache-dependency-path: solid-colour/package-lock.json
 
     - name: Install dependencies
-      working-directory: ./app
+      working-directory: ./solid-colour
       run: npm i
 
     - name: Run Linter
-      working-directory: ./app
+      working-directory: ./solid-colour
       run: npm run lint
 
     - name: Run Tests
-      working-directory: ./app
+      working-directory: ./solid-colour
       run: npm run test
 
     - name: Build Project
-      working-directory: ./app
+      working-directory: ./solid-colour
       run: npm run build
 
     - name: Slack Notification (Success)
