@@ -1,0 +1,14 @@
+name: Recap Workflow
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  recap-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Say Hello
+        run: echo "Hello World!"
+      - name: List Files
+        run: ls -la
