@@ -320,7 +320,7 @@ export const colorCount = colors.length;
 // Get colors by category
 export const getColorsByCategory = (category: ColorCategory | 'all'): Color[] => {
   if (category === 'all') return colors;
-  return colors.filter(c => c.category === category);
+  return colors.filter((c) => c.category === category);
 };
 
 // Search colors
@@ -328,9 +328,10 @@ export const searchColors = (query: string): Color[] => {
   const q = query.toLowerCase().trim();
   if (!q) return colors;
 
-  return colors.filter(c =>
-    c.name.toLowerCase().includes(q) ||
-    c.hex.toLowerCase().includes(q) ||
-    c.category.toLowerCase().includes(q)
+  return colors.filter(
+    (c) =>
+      c.name.toLowerCase().includes(q) ||
+      c.hex.toLowerCase().includes(q) ||
+      c.category.toLowerCase().includes(q)
   );
 };
