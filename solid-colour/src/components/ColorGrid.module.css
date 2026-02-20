@@ -1,206 +1,205 @@
 .gridWrapper {
-    padding: 0 32px 48px;
+  padding: 0 32px 48px;
 }
 
 .gridHeader {
-    display: flex;
-    align-items: baseline;
-    gap: 12px;
-    margin-bottom: 32px;
-    padding: 0 8px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 32px;
+  padding: 0 8px;
 }
 
 .gridTitle {
-    font-size: 24px;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    color: var(--text-primary);
-    margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0;
 }
 
 .gridCount {
-    font-size: 14px;
-    color: var(--text-tertiary);
-    font-weight: 400;
+  font-size: 14px;
+  color: var(--text-tertiary);
+  font-weight: 400;
 }
 
 .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 24px;
-    padding-bottom: 40px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 24px;
+  padding-bottom: 40px;
 }
 
 .card {
-    aspect-ratio: 1;
-    border-radius: 20px;
-    position: relative;
-    cursor: pointer;
-    overflow: hidden;
-    transition: box-shadow 0.3s ease;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    /* Subtle border for light mode */
+  aspect-ratio: 1;
+  border-radius: 20px;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  /* Subtle border for light mode */
 }
 
 /* Dark mode border */
-:global([data-theme="dark"]) .card {
-    border: 1px solid rgba(255, 255, 255, 0.05);
+:global([data-theme='dark']) .card {
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .card:hover {
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-    z-index: 10;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  z-index: 10;
 }
 
 .cardGlow {
-    position: absolute;
-    inset: -50%;
-    opacity: 0;
-    filter: blur(60px);
-    transition: opacity 0.3s ease;
-    pointer-events: none;
+  position: absolute;
+  inset: -50%;
+  opacity: 0;
+  filter: blur(60px);
+  transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
 .card:hover .cardGlow {
-    opacity: 0.3;
+  opacity: 0.3;
 }
 
 .cardContent {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.4) 0%, transparent 100%);
-    opacity: 0;
-    transform: translateY(10px);
-    transition: all 0.3s ease;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.4) 0%, transparent 100%);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
 }
 
 .card:hover .cardContent {
-    opacity: 1;
-    transform: translateY(0);
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .colorName {
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .colorHex {
-    font-size: 12px;
-    opacity: 0.8;
-    font-family: monospace;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
+  font-size: 12px;
+  opacity: 0.8;
+  font-family: monospace;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 /* Hide the old download hint, overly cluttered */
 .downloadHint {
-    display: none;
+  display: none;
 }
 
 .empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 80px 0;
-    color: var(--text-secondary);
-    text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 0;
+  color: var(--text-secondary);
+  text-align: center;
 }
 
 .emptyIcon {
-    font-size: 48px;
-    margin-bottom: 24px;
-    opacity: 0.5;
+  font-size: 48px;
+  margin-bottom: 24px;
+  opacity: 0.5;
 }
 
 .empty h3 {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 8px;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
 }
 
 .empty p {
-    font-size: 16px;
-    color: var(--text-secondary);
-    max-width: 300px;
+  font-size: 16px;
+  color: var(--text-secondary);
+  max-width: 300px;
 }
 
 @media (max-width: 1200px) {
-    .grid {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 14px;
-    }
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 14px;
+  }
 }
 
 @media (max-width: 768px) {
-    .gridWrapper {
-        padding: 0 16px 32px;
-    }
+  .gridWrapper {
+    padding: 0 16px 32px;
+  }
 
-    .gridTitle {
-        font-size: 20px;
-    }
+  .gridTitle {
+    font-size: 20px;
+  }
 
-    .grid {
-        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-        gap: 12px;
-    }
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 12px;
+  }
 
-    .card {
-        border-radius: 16px;
-    }
+  .card {
+    border-radius: 16px;
+  }
 
-    .cardContent {
-        opacity: 1;
-        transform: translateY(0);
-        padding: 12px;
-    }
+  .cardContent {
+    opacity: 1;
+    transform: translateY(0);
+    padding: 12px;
+  }
 
-    .colorName {
-        font-size: 12px;
-    }
+  .colorName {
+    font-size: 12px;
+  }
 
-    .colorHex {
-        font-size: 10px;
-    }
+  .colorHex {
+    font-size: 10px;
+  }
 
-    .downloadHint {
-        display: none;
-    }
+  .downloadHint {
+    display: none;
+  }
 }
 
-
 .favBtn {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(4px);
-    border-radius: 50%;
-    cursor: pointer;
-    z-index: 10;
-    transition: background 0.2s ease;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4px);
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.2s ease;
 }
 
 .favBtn:hover {
-    background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.4);
 }
 
 .favBtn svg {
-    width: 18px;
-    height: 18px;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  width: 18px;
+  height: 18px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
