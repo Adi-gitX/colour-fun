@@ -11,6 +11,8 @@
     "test:e2e": "playwright test",
     "test:coverage": "vitest run --coverage",
     "lint": "eslint .",
+    "format": "prettier --write 'src/**/*.{ts,tsx,css}'",
+    "format:check": "prettier --check 'src/**/*.{ts,tsx,css}'",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -36,6 +38,7 @@
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
     "jsdom": "^28.1.0",
+    "prettier": "^3.8.1",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
     "vite": "^7.2.4",
