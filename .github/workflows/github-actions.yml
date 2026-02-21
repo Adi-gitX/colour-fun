@@ -6,6 +6,11 @@ on:
     paths-ignore:
       - "**/*.md"
       - "devops/**"
+  pull_request:
+    branches: ["main"]
+    paths-ignore:
+      - "**/*.md"
+      - "devops/**"
 
 jobs:
   build:
@@ -49,3 +54,24 @@ jobs:
 
       - name: Lint
         run: npm run lint
+
+  format:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./solid-colour
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: solid-colour/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check formatting
+        run: npx prettier --check 'src/**/*.{ts,tsx,css}'
