@@ -1,45 +1,34 @@
 #!/bin/bash
+set -euo pipefail
 
-# ENV=$1
-# PORT=$2
-# echo "Running on $ENV port $PORT"
-# $ENV $PORT
+APP_NAME="colour-fun"
+ENV=${1:-"dev"}
+PORT=${2:-5173}
 
-# APP_NAME = "solidBackgrounds"
-# ENV=${1:-"dev"}
-# "dev"
-# echo "[INFO] Starting setup for $APP_NAME "
-# echo "[INFO] Setting up $ENV environment"
+echo "Starting setup for $APP_NAME ($ENV)..."
 
+command -v node >/dev/null 2>&1 || { echo "Node.js not installed"; exit 1; }
+command -v npm >/dev/null 2>&1 || { echo "npm not installed"; exit 1; }
+echo "Node $(node -v), npm $(npm -v)"
 
-#!/usr/bin/env bash
+APP_DIR="$(cd "$(dirname "$0")/../.." && pwd)/solid-colour"
+[ -d "$APP_DIR" ] || { echo "App directory not found: $APP_DIR"; exit 1; }
+cd "$APP_DIR"
 
-# node --version >/dev/null 2>&1
-# if [ $? -ne 0 ]; then
-#   echo "[ERROR] Node is not installed"
-#   exit 1
-# fi
-# echo "[INFO] Node is installed"
-# exit 0
+if [ ! -d "node_modules" ] || [ package.json -nt node_modules ]; then
+    echo "Installing dependencies..."
+    npm install
+else
+    echo "Dependencies up to date"
+fi
 
-# if [ -d "backend" ]; then
-#   echo "[INFO] backend directory found"
-# else
-#   echo "[ERROR] backend directory missing"
-#   mkdir backend
-#   exit 0
-# fi
+mkdir -p ./logs
 
-# if ! command -v node >/dev/null 2>&1; then
-#   echo "[ERROR] Node is not found"
-#   exit 1
-# fi
+if [ ! -f ".env.local" ]; then
+    echo "VITE_APP_ENV=$ENV" > .env.local
+    echo "Created .env.local"
+else
+    echo ".env.local exists, skipping"
+fi
 
-# echo "[INFO] Node is found"
-
-
-
-# touch backend
-# cd backend
-# npm i
-# ls
+echo "Setup complete for $APP_NAME"
