@@ -1,4 +1,3 @@
-```bash
 #!/bin/bash
 set -euo pipefail
 
@@ -62,4 +61,3 @@ echo "Instance is running!"
 echo "Instance ID: $INSTANCE_ID"
 echo "Public IP:   $PUBLIC_IP"
 echo "Connect via: ssh -i ~/Downloads/labsuser.pem ubuntu@$PUBLIC_IP"
-```
