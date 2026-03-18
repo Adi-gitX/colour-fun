@@ -32,8 +32,8 @@ test.describe('Color Download Flow', () => {
   test('can open different color modals sequentially', async ({ page }) => {
     await page.locator('text=Pure Red').first().click();
     await expect(page.locator('text=#FF0000').first()).toBeVisible();
-    await page.keyboard.press('Escape');
-
+    await page.locator('[aria-label="Close"]').click();
+    await expect(page.locator('text=Aspect Ratio')).toBeHidden();
     const searchInput = page.getByPlaceholder(/search colors/i);
     await searchInput.fill('crimson');
     await page.locator('text=Crimson').click();

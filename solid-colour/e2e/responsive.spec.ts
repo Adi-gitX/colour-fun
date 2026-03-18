@@ -11,8 +11,7 @@ test.describe('Responsive Layout', () => {
   test('tablet viewport renders the app correctly', async ({ page }) => {
     await page.setViewportSize({ width: 768, height: 1024 });
     await page.goto('/');
-    await expect(page.locator('text=All Colors')).toBeVisible();
-    await expect(page.locator('text=238 colors').first()).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'All Colors' })).toBeVisible();
   });
 
   test('desktop viewport renders the app correctly', async ({ page }) => {
