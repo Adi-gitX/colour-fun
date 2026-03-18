@@ -127,6 +127,12 @@ describe('colors data', () => {
       expect(results.length).toBe(22);
     });
 
+    it('searches for strict names and ignores broad category matches', () => {
+      const results = searchColors('black');
+      expect(results.every(c => c.name.toLowerCase().includes('black'))).toBe(true);
+      expect(results.length).toBe(2);
+    });
+
     it('is case insensitive', () => {
       const upper = searchColors('BLUE');
       const lower = searchColors('blue');

@@ -356,44 +356,93 @@ input[type='number'] {
   justify-content: center;
   gap: 8px;
   padding: 12px 24px;
-  border-radius: 12px;
+  border-radius: 100px;
   font-size: 14px;
   font-weight: 600;
-  transition: all 0.2s ease;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .btn-primary {
-  background: var(--accent-gradient);
+  background: rgba(255, 255, 255, 0.15);
   color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='light'] .btn-primary {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text-primary);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-glow);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+[data-theme='light'] .btn-primary:hover {
+  background: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .btn-secondary {
-  background: var(--bg-card);
-  color: var(--text-secondary);
-  border: 1px solid var(--border-light);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+[data-theme='light'] .btn-secondary {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text-primary);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .btn-secondary:hover {
-  background: var(--bg-card-hover);
-  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='light'] .btn-secondary:hover {
+  background: rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+.btn:active {
+  transform: translateY(0);
 }
 
 /* Card Base Styles */
 .card {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-subtle);
+  background: rgba(20, 20, 20, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+[data-theme='light'] .card {
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .card:hover {
-  border-color: var(--border-light);
-  box-shadow: var(--shadow-md);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  background: rgba(20, 20, 20, 0.6);
+  transform: translateY(-2px);
+}
+
+[data-theme='light'] .card:hover {
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.8);
 }
 
 /* Loading Skeleton */

@@ -332,6 +332,6 @@ export const searchColors = (query: string): Color[] => {
     (c) =>
       c.name.toLowerCase().includes(q) ||
       c.hex.toLowerCase().includes(q) ||
-      c.category.toLowerCase().includes(q)
+      c.category.toLowerCase() === q
   );
 };

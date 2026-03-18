@@ -1,11 +1,34 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Download } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Download, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { imageUrls } from '../data/images';
 import styles from './ImageGallery.module.css';
 
 export const ImageGallery = () => {
   const [downloadingUrl, setDownloadingUrl] = useState<string | null>(null);
+  const [previewIndex, setPreviewIndex] = useState<number | null>(null);
+  const [imageLoading, setImageLoading] = useState(true);
+
+  useEffect(() => {
+    if (previewIndex !== null) {
+      setImageLoading(true);
+    }
+  }, [previewIndex]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (previewIndex === null) return;
+      if (e.key === 'ArrowRight') {
+        setPreviewIndex((prev) => (prev !== null && prev < imageUrls.length - 1 ? prev + 1 : prev));
+      } else if (e.key === 'ArrowLeft') {
+        setPreviewIndex((prev) => (prev !== null && prev > 0 ? prev - 1 : prev));
+      } else if (e.key === 'Escape') {
+        setPreviewIndex(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [previewIndex]);
 
   const handleDownload = async (url: string, index: number) => {
     setDownloadingUrl(url);
@@ -63,10 +86,16 @@ export const ImageGallery = () => {
               loading="lazy"
               className={styles.image}
             />
-            <div className={styles.overlay}>
+            <div className={styles.overlay} onClick={(e) => {
+              e.stopPropagation();
+              setPreviewIndex(index);
+            }}>
               <button
                 className={styles.downloadBtn}
-                onClick={() => handleDownload(url, index)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDownload(url, index);
+                }}
                 disabled={downloadingUrl === url}
                 aria-label={`Download high-res version of background ${index + 1}`}
               >
@@ -83,6 +112,77 @@ export const ImageGallery = () => {
           </motion.div>
         ))}
       </div>
+
+      <AnimatePresence>
+        {previewIndex !== null && (
+          <motion.div
+            className={styles.previewModal}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <div className={styles.previewBackdrop} onClick={() => setPreviewIndex(null)} />
+
+            <button
+              className={styles.navBtnLeft}
+              onClick={(e) => { e.stopPropagation(); setPreviewIndex(previewIndex > 0 ? previewIndex - 1 : previewIndex); }}
+              disabled={previewIndex === 0}
+            >
+              <ChevronLeft size={32} />
+            </button>
+            <button
+              className={styles.navBtnRight}
+              onClick={(e) => { e.stopPropagation(); setPreviewIndex(previewIndex < imageUrls.length - 1 ? previewIndex + 1 : previewIndex); }}
+              disabled={previewIndex === imageUrls.length - 1}
+            >
+              <ChevronRight size={32} />
+            </button>
+
+            <motion.div
+              className={styles.previewContent}
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              <button className={styles.closeBtn} onClick={() => setPreviewIndex(null)}>
+                <X size={24} />
+              </button>
+
+              {imageLoading && (
+                <div className={styles.imageLoader}>
+                  <span className={styles.spinnerLg} />
+                </div>
+              )}
+
+              <img
+                src={`${imageUrls[previewIndex]}?fm=webp&q=100`}
+                alt="High Quality Preview"
+                className={`${styles.previewImageFull} ${imageLoading ? styles.hidden : ''}`}
+                onLoad={() => setImageLoading(false)}
+              />
+              <div className={styles.previewActions}>
+                <button
+                  className={styles.downloadBtnFull}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDownload(imageUrls[previewIndex], previewIndex);
+                  }}
+                  disabled={downloadingUrl === imageUrls[previewIndex]}
+                >
+                  {downloadingUrl === imageUrls[previewIndex] ? (
+                    <span className={styles.spinner} />
+                  ) : (
+                    <>
+                      <Download size={20} /> Download High-Res
+                    </>
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

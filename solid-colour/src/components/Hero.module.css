@@ -94,33 +94,17 @@
   gap: 24px;
 }
 
-.textLink {
-  background: none;
-  border: none;
-  color: var(--text-secondary);
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: color 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 100px;
+.heroBtn {
+  margin-top: 10px;
 }
 
-.textLink:hover {
-  color: var(--text-primary);
-  background: var(--bg-tertiary);
+.heroBtn:hover .arrow {
+  transform: translateX(4px);
 }
 
 .arrow {
   font-size: 16px;
   transition: transform 0.2s;
-}
-
-.textLink:hover .arrow {
-  transform: translateX(4px);
 }
 
 /* Gradients for atmosphere */
