@@ -3,15 +3,22 @@
   bottom: 24px;
   right: 24px;
   padding: 16px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-light);
-  border-radius: 12px;
-  box-shadow: var(--shadow-lg);
+  background: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
   z-index: 1000;
   display: flex;
   align-items: center;
   gap: 12px;
   max-width: 400px;
+}
+[data-theme='light'] .prompt {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 .message {
@@ -21,35 +28,45 @@
 }
 
 .reloadBtn {
-  padding: 6px 12px;
-  background: var(--accent-primary);
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 100px;
   color: white;
-  border-radius: 6px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-
 .reloadBtn:hover {
-  opacity: 0.9;
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+[data-theme='light'] .reloadBtn {
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: var(--text-primary);
 }
 
 .closeBtn {
-  padding: 6px 12px;
-  background: transparent;
-  color: var(--text-secondary);
-  border: 1px solid var(--border-light);
-  border-radius: 6px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border-radius: 100px;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-
 .closeBtn:hover {
-  background: var(--bg-card);
-  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.15);
+}
+[data-theme='light'] .closeBtn {
+  background: transparent;
+  border-color: rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 480px) {

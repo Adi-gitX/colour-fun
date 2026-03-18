@@ -32,7 +32,7 @@ export const Hero = () => {
         </div>
 
         <div className={styles.actions}>
-          <button onClick={openPicker} className={styles.textLink}>
+          <button onClick={openPicker} className={`btn btn-primary ${styles.heroBtn}`}>
             Open Generator <span className={styles.arrow}>→</span>
           </button>
         </div>

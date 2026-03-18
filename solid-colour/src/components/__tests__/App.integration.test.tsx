@@ -99,12 +99,12 @@ describe('App Integration', () => {
     expect(document.querySelector('.app')).toBeInTheDocument();
   });
 
-  it('renders images coming soon section', () => {
+  it('renders images gallery section', () => {
     act(() => {
       useAppStore.setState({ currentSection: 'images' });
     });
     render(<App />);
-    expect(screen.getByText('Background Images')).toBeInTheDocument();
+    expect(screen.getByText('Curated Backgrounds')).toBeInTheDocument();
   });
 
   it('renders ui-themes coming soon section', () => {

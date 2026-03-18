@@ -3,27 +3,24 @@
   left: 0;
   top: 0;
   bottom: 0;
-  bottom: 0;
-  /* Changed to transparent/primary for sleek look */
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-right: 1px solid var(--border-subtle);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
   z-index: 1000;
   display: flex;
   flex-direction: column;
   padding: 24px 12px;
   overflow: hidden;
-  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.02);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2);
 }
 
 :global([data-theme='light']) .sidebar {
-  background: rgba(255, 255, 255, 0.9);
-  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.85);
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 :global([data-theme='dark']) .sidebar {
-  background: rgba(20, 20, 20, 0.8);
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(20, 20, 20, 0.75);
 }
 
 .logoContainer {
@@ -87,13 +84,19 @@
 }
 
 .navItem:hover {
-  background: var(--bg-card-hover);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--text-primary);
 }
 
 .navItem.active {
-  color: var(--text-primary);
-  background: var(--bg-card);
+  background: rgba(255, 255, 255, 0.9);
+  color: black;
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.15);
+}
+
+:global([data-theme='light']) .navItem.active {
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
 }
 
 .navLabel {
@@ -151,13 +154,19 @@
 }
 
 .catItem:hover {
-  background: var(--bg-card-hover);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--text-primary);
 }
 
 .catItem.activeCat {
-  background: var(--bg-card);
-  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.9);
+  color: black;
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.15);
+}
+
+:global([data-theme='light']) .catItem.activeCat {
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
 }
 
 .catDot {
