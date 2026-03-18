@@ -15,9 +15,9 @@ test.describe('Navigation', () => {
     await expect(page.locator('text=Gradient Generator')).toBeVisible();
   });
 
-  test('clicking Backgrounds shows coming soon', async ({ page }) => {
+  test('clicking Backgrounds navigates to image gallery', async ({ page }) => {
     await page.getByRole('button', { name: 'Backgrounds' }).click();
-    await expect(page.getByRole('heading', { name: 'Background Images' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Curated Backgrounds' })).toBeVisible();
   });
 
   test('clicking UI Themes shows coming soon', async ({ page }) => {

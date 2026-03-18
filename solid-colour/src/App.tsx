@@ -6,6 +6,7 @@ import { DownloadModal } from './components/DownloadModal';
 import { ColorPicker } from './components/ColorPicker';
 import { GradientGenerator } from './components/GradientGenerator';
 import { SettingsModal } from './components/SettingsModal';
+import { ImageGallery } from './components/ImageGallery';
 import { ReloadPrompt } from './components/ReloadPrompt';
 import { ComingSoon } from './components/placeholders/ComingSoon';
 import { useAppStore } from './store/appStore';
@@ -34,13 +35,7 @@ function App() {
       case 'gradients':
         return <GradientGenerator />;
       case 'images':
-        return (
-          <ComingSoon
-            title="Background Images"
-            icon="🖼️"
-            description="High-quality, curated background images and textures."
-          />
-        );
+        return <ImageGallery />;
       case 'ui-themes':
         return (
           <ComingSoon
