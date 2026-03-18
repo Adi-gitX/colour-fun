@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Gradient Generator', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    await page.getByText('Gradients').click();
+    await page.getByRole('button', { name: 'Gradients' }).click();
   });
 
   test('renders gradient generator heading', async ({ page }) => {

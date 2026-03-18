@@ -81,6 +81,8 @@ export const Sidebar = () => {
                 key={item.id}
                 className={`${styles.navItem} ${currentSection === item.id ? styles.active : ''}`}
                 onClick={() => setCurrentSection(item.id)}
+                title={item.label}
+                aria-label={item.label}
               >
                 <item.icon size={24} strokeWidth={1.5} />
                 <AnimatePresence>
@@ -169,7 +171,12 @@ export const Sidebar = () => {
         </nav>
 
         <div className={styles.footer}>
-          <button className={styles.navItem} onClick={openPicker}>
+          <button
+            className={styles.navItem}
+            onClick={openPicker}
+            title="Custom Color"
+            aria-label="Custom Color"
+          >
             <div className={styles.pickerPreview} style={{ background: customColor }} />
             <AnimatePresence>
               {isExpanded && (
@@ -185,7 +192,12 @@ export const Sidebar = () => {
             </AnimatePresence>
           </button>
 
-          <button className={styles.navItem} onClick={openSettings}>
+          <button
+            className={styles.navItem}
+            onClick={openSettings}
+            title="Settings"
+            aria-label="Settings"
+          >
             <Settings size={24} strokeWidth={1.5} />
             <AnimatePresence>
               {isExpanded && (
