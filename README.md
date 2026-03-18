@@ -19,7 +19,7 @@ solidbackgrounds/
 │   ├── dependabot.yml            # Automated dependency updates
 │   └── workflows/
 │       ├── github-actions.yml    # CI: Build + Lint + Format check
-│       ├── integration.yml       # Matrix test (Node 18/20/22) + Slack
+│       ├── integration.yml       # Matrix test (Node 20/22) + Slack
 │       ├── frontend-tests.yml    # Unit/Integration → E2E pipeline
 │       ├── unit-integration.yaml # Combined test + E2E workflow
 │       ├── gh-pages.yml          # Deploy to GitHub Pages
@@ -125,7 +125,7 @@ The project uses multiple GitHub Actions workflows forming a comprehensive pipel
 
 ```
   Push to main ──┬──→ CI (build + lint + format check)
-                 ├──→ Integration (matrix: Node 18/20/22 + Slack notification)
+                 ├──→ Integration (matrix: Node 20/22 + Slack notification)
                  ├──→ Frontend Tests (unit/integration → E2E)
                  ├──→ GitHub Pages (build + deploy)
                  └──→ EC2 Deploy (SSH → pull → build → nginx)
@@ -137,7 +137,7 @@ The project uses multiple GitHub Actions workflows forming a comprehensive pipel
 
 **CI (`github-actions.yml`):** Runs build, ESLint, and Prettier format check in parallel jobs. Triggers on both push and pull request to main.
 
-**Integration (`integration.yml`):** Tests across Node 18, 20, and 22 using matrix strategy. Sends Slack notifications on success/failure.
+**Integration (`integration.yml`):** Tests across Node 20 and 22 using matrix strategy. Sends Slack notifications on success/failure.
 
 **Frontend Tests (`frontend-tests.yml`):** Two-stage pipeline — unit/integration tests run first (fast, ~3s), and E2E tests follow only if they pass (slower, ~30s with Chromium).
 
@@ -195,7 +195,7 @@ See [TESTING.md](solid-colour/TESTING.md) for detailed test documentation with p
 
 ## Challenges
 
-**CI Matrix Testing:** Getting tests to pass consistently across Node 18, 20, and 22 required careful dependency management. Some packages had different behavior across versions, leading to the `fail-fast: false` strategy so all versions get tested even if one fails.
+**CI Matrix Testing:** Getting tests to pass consistently across Node 20, and 22 required careful dependency management. Some packages had different behavior across versions, leading to the `fail-fast: false` strategy so all versions get tested even if one fails.
 
 **E2E in CI:** Playwright tests in GitHub Actions required explicit browser installation (`playwright install --with-deps chromium`), increased timeouts for slower CI runners, and building the app before running tests since Playwright serves from the build output.
 
@@ -250,5 +250,3 @@ MIT
 ## Author
 
 [Adi-gitX](https://github.com/Adi-gitX)
-
-
