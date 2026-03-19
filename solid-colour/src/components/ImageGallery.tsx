@@ -86,10 +86,13 @@ export const ImageGallery = () => {
               loading="lazy"
               className={styles.image}
             />
-            <div className={styles.overlay} onClick={(e) => {
-              e.stopPropagation();
-              setPreviewIndex(index);
-            }}>
+            <div
+              className={styles.overlay}
+              onClick={(e) => {
+                e.stopPropagation();
+                setPreviewIndex(index);
+              }}
+            >
               <button
                 className={styles.downloadBtn}
                 onClick={(e) => {
@@ -125,14 +128,22 @@ export const ImageGallery = () => {
 
             <button
               className={styles.navBtnLeft}
-              onClick={(e) => { e.stopPropagation(); setPreviewIndex(previewIndex > 0 ? previewIndex - 1 : previewIndex); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setPreviewIndex(previewIndex > 0 ? previewIndex - 1 : previewIndex);
+              }}
               disabled={previewIndex === 0}
             >
               <ChevronLeft size={32} />
             </button>
             <button
               className={styles.navBtnRight}
-              onClick={(e) => { e.stopPropagation(); setPreviewIndex(previewIndex < imageUrls.length - 1 ? previewIndex + 1 : previewIndex); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setPreviewIndex(
+                  previewIndex < imageUrls.length - 1 ? previewIndex + 1 : previewIndex
+                );
+              }}
               disabled={previewIndex === imageUrls.length - 1}
             >
               <ChevronRight size={32} />
@@ -143,7 +154,7 @@ export const ImageGallery = () => {
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             >
               <button className={styles.closeBtn} onClick={() => setPreviewIndex(null)}>
                 <X size={24} />
