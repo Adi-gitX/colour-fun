@@ -8,6 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -21,7 +22,17 @@ jobs:
       - name: Deploy Application
         run: |
           ssh -i ~/.ssh/deploy_key ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
-            cd ~/colour-fun || exit 1
+
+            # install git + node + nginx if missing
+            sudo apt update -y
+            sudo apt install -y git nodejs npm nginx
+
+            # clone repo if not exists
+            if [ ! -d ~/colour-fun ]; then
+              git clone https://github.com/Adi-gitX/colour-fun.git ~/colour-fun
+            fi
+
+            cd ~/colour-fun
             git pull origin main
 
             cd solid-colour
@@ -33,5 +44,7 @@ jobs:
             sudo cp -r dist /var/www/colour-fun/
 
             sudo systemctl restart nginx || true
+
             echo "Deployment complete"
+
           EOF
