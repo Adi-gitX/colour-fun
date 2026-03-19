@@ -129,7 +129,7 @@ describe('colors data', () => {
 
     it('searches for strict names and ignores broad category matches', () => {
       const results = searchColors('black');
-      expect(results.every(c => c.name.toLowerCase().includes('black'))).toBe(true);
+      expect(results.every((c) => c.name.toLowerCase().includes('black'))).toBe(true);
       expect(results.length).toBe(2);
     });
 
