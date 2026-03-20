@@ -25,7 +25,8 @@ jobs:
 
             # install git + node + nginx if missing
             sudo apt update -y
-            sudo apt install -y git nodejs npm nginx
+            curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+            sudo apt install -y git nodejs nginx
 
             # clone repo if not exists
             if [ ! -d ~/colour-fun ]; then
