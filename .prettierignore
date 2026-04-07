@@ -1,0 +1,11 @@
+node_modules
+solid-colour/node_modules
+solid-colour/dist
+solid-colour/coverage
+solid-colour/playwright-report
+solid-colour/test-results
+package-lock.json
+solid-colour/package-lock.json
+.husky
+ec2_html
+devops/classNotes
