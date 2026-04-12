@@ -237,7 +237,9 @@
   border: none;
   flex-shrink: 0;
   cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
 }
 
 .favBtn:hover {

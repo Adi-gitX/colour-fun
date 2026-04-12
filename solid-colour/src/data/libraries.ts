@@ -64,8 +64,7 @@ export const libraries: Library[] = [
   {
     id: 'chakra-ui',
     name: 'Chakra UI',
-    description:
-      'Simple, modular and accessible component library for React applications.',
+    description: 'Simple, modular and accessible component library for React applications.',
     url: 'https://chakra-ui.com',
     framework: ['React'],
     styling: 'CSS-in-JS',
@@ -76,8 +75,7 @@ export const libraries: Library[] = [
   {
     id: 'mui',
     name: 'Material UI',
-    description:
-      'Comprehensive React UI library implementing Google Material Design with theming.',
+    description: 'Comprehensive React UI library implementing Google Material Design with theming.',
     url: 'https://mui.com',
     framework: ['React'],
     styling: 'CSS-in-JS',
@@ -149,8 +147,7 @@ export const libraries: Library[] = [
   {
     id: 'magic-ui',
     name: 'Magic UI',
-    description:
-      '50+ free animated components built with React, Tailwind and Framer Motion.',
+    description: '50+ free animated components built with React, Tailwind and Framer Motion.',
     url: 'https://magicui.design',
     framework: ['React'],
     styling: 'Tailwind',
@@ -199,8 +196,7 @@ export const libraries: Library[] = [
   {
     id: 'daisyui',
     name: 'DaisyUI',
-    description:
-      'Tailwind plugin that adds class-name component utilities like btn, card, modal.',
+    description: 'Tailwind plugin that adds class-name component utilities like btn, card, modal.',
     url: 'https://daisyui.com',
     framework: ['Universal', 'CSS'],
     styling: 'Tailwind',
@@ -211,8 +207,7 @@ export const libraries: Library[] = [
   {
     id: 'flowbite',
     name: 'Flowbite',
-    description:
-      'Tailwind component library with React, Vue, Svelte and Angular bindings.',
+    description: 'Tailwind component library with React, Vue, Svelte and Angular bindings.',
     url: 'https://flowbite.com',
     framework: ['React', 'Vue', 'Svelte'],
     styling: 'Tailwind',
@@ -259,8 +254,7 @@ export const libraries: Library[] = [
   {
     id: 'geist-ui',
     name: 'Geist UI',
-    description:
-      'Vercel’s open Geist design system — minimal, monochrome React components.',
+    description: 'Vercel’s open Geist design system — minimal, monochrome React components.',
     url: 'https://geist-ui.dev',
     framework: ['React'],
     styling: 'CSS-in-JS',
@@ -271,8 +265,7 @@ export const libraries: Library[] = [
   {
     id: 'arco',
     name: 'Arco Design',
-    description:
-      'ByteDance’s enterprise UI library with rich data primitives and an admin theme.',
+    description: 'ByteDance’s enterprise UI library with rich data primitives and an admin theme.',
     url: 'https://arco.design',
     framework: ['React', 'Vue'],
     styling: 'CSS-in-JS',
@@ -307,8 +300,7 @@ export const libraries: Library[] = [
   {
     id: 'preline',
     name: 'Preline UI',
-    description:
-      'Open-source Tailwind component library with 1,000+ examples and admin templates.',
+    description: 'Open-source Tailwind component library with 1,000+ examples and admin templates.',
     url: 'https://preline.co',
     framework: ['Universal'],
     styling: 'Tailwind',

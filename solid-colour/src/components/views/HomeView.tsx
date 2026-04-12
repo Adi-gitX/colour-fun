@@ -25,21 +25,15 @@ export const HomeView = () => {
             The fastest way to find a component, a system, or a spark.
           </h1>
           <p className={styles.heroLede}>
-            Stax curates the best component libraries, design systems and UI
-            inspiration in one place. Bookmark what you like and ship faster.
+            Stax curates the best component libraries, design systems and UI inspiration in one
+            place. Bookmark what you like and ship faster.
           </p>
           <div className={styles.heroActions}>
-            <button
-              className={styles.btnPrimary}
-              onClick={() => setCurrentSection('components')}
-            >
+            <button className={styles.btnPrimary} onClick={() => setCurrentSection('components')}>
               Browse components
               <ArrowRight size={13} strokeWidth={2} />
             </button>
-            <button
-              className={styles.btnSecondary}
-              onClick={() => setCurrentSection('libraries')}
-            >
+            <button className={styles.btnSecondary} onClick={() => setCurrentSection('libraries')}>
               Explore libraries
             </button>
           </div>
@@ -53,10 +47,7 @@ export const HomeView = () => {
           title="Featured this week"
           description="Hand-picked component recipes — copy, fork, ship."
           trailing={
-            <button
-              className={styles.viewAll}
-              onClick={() => setCurrentSection('components')}
-            >
+            <button className={styles.viewAll} onClick={() => setCurrentSection('components')}>
               View all
               <ArrowRight size={12} strokeWidth={2} />
             </button>
@@ -76,10 +67,7 @@ export const HomeView = () => {
           title="Popular component libraries"
           description="The component libraries everyone’s shipping with."
           trailing={
-            <button
-              className={styles.viewAll}
-              onClick={() => setCurrentSection('libraries')}
-            >
+            <button className={styles.viewAll} onClick={() => setCurrentSection('libraries')}>
               View all
               <ArrowRight size={12} strokeWidth={2} />
             </button>
@@ -112,10 +100,7 @@ export const HomeView = () => {
           title="Trending from the community"
           description="Submissions from designers and engineers building in public."
           trailing={
-            <button
-              className={styles.viewAll}
-              onClick={() => setCurrentSection('community')}
-            >
+            <button className={styles.viewAll} onClick={() => setCurrentSection('community')}>
               View all
               <ArrowRight size={12} strokeWidth={2} />
             </button>

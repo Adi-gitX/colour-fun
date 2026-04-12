@@ -1,11 +1,7 @@
 import { useMemo } from 'react';
 import { ComponentCard } from '../ComponentCard';
 import { SectionHeader } from './SectionHeader';
-import {
-  components,
-  categories,
-  type ComponentEntry,
-} from '../../data/components';
+import { components, categories, type ComponentEntry } from '../../data/components';
 import { useAppStore } from '../../store/appStore';
 import styles from './BrowseView.module.css';
 
@@ -21,9 +17,7 @@ export const BrowseView = ({ scope, title, eyebrow, description }: Props) => {
 
   const filtered = useMemo(() => {
     let list: ComponentEntry[] =
-      scope === 'community'
-        ? components.filter((c) => c.community)
-        : components;
+      scope === 'community' ? components.filter((c) => c.community) : components;
     if (selectedCategory !== 'all') {
       list = list.filter((c) => c.category === selectedCategory);
     }
@@ -50,9 +44,7 @@ export const BrowseView = ({ scope, title, eyebrow, description }: Props) => {
 
       <div className={styles.filterBar}>
         <button
-          className={`${styles.chip} ${
-            selectedCategory === 'all' ? styles.chipActive : ''
-          }`}
+          className={`${styles.chip} ${selectedCategory === 'all' ? styles.chipActive : ''}`}
           onClick={() => setSelectedCategory('all')}
         >
           All
@@ -60,9 +52,7 @@ export const BrowseView = ({ scope, title, eyebrow, description }: Props) => {
         {categories.map((cat) => (
           <button
             key={cat}
-            className={`${styles.chip} ${
-              selectedCategory === cat ? styles.chipActive : ''
-            }`}
+            className={`${styles.chip} ${selectedCategory === cat ? styles.chipActive : ''}`}
             onClick={() => setSelectedCategory(cat)}
           >
             {cat}

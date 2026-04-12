@@ -14,10 +14,7 @@ interface Props {
   variant: Variant;
 }
 
-const meta: Record<
-  Variant,
-  { eyebrow: string; title: string; description: string }
-> = {
+const meta: Record<Variant, { eyebrow: string; title: string; description: string }> = {
   libraries: {
     eyebrow: 'Discover',
     title: 'Component Libraries',
@@ -39,8 +36,7 @@ const meta: Record<
   tools: {
     eyebrow: 'Discover',
     title: 'Tools',
-    description:
-      'Icons, fonts, color, animation, AI — the toolbox around your component library.',
+    description: 'Icons, fonts, color, animation, AI — the toolbox around your component library.',
   },
 };
 

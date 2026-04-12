@@ -156,10 +156,8 @@ export const useAppStore = create<AppState>()(
 
       selectedColor: null,
       isDownloadModalOpen: false,
-      openDownloadModal: (color) =>
-        set({ selectedColor: color, isDownloadModalOpen: true }),
-      closeDownloadModal: () =>
-        set({ isDownloadModalOpen: false, selectedColor: null }),
+      openDownloadModal: (color) => set({ selectedColor: color, isDownloadModalOpen: true }),
+      closeDownloadModal: () => set({ isDownloadModalOpen: false, selectedColor: null }),
 
       isPickerOpen: false,
       customColor: '#FF0000',
@@ -198,8 +196,7 @@ export const useAppStore = create<AppState>()(
       reducedMotion: false,
       setReducedMotion: (enabled) => set({ reducedMotion: enabled }),
       highQualityDownloads: true,
-      setHighQualityDownloads: (enabled) =>
-        set({ highQualityDownloads: enabled }),
+      setHighQualityDownloads: (enabled) => set({ highQualityDownloads: enabled }),
 
       toasts: [],
       showToast: (message, type = 'success') => {
@@ -207,8 +204,7 @@ export const useAppStore = create<AppState>()(
         set((s) => ({ toasts: [...s.toasts, { id, message, type }] }));
         setTimeout(() => get().removeToast(id), 3000);
       },
-      removeToast: (id) =>
-        set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
+      removeToast: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
     }),
     {
       name: 'stax-storage',

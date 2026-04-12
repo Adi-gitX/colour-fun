@@ -24,8 +24,7 @@ export const tools: Tool[] = [
   {
     id: 'heroicons',
     name: 'Heroicons',
-    description:
-      '24×24 SVG icons by the makers of Tailwind. Outline + solid + mini variants.',
+    description: '24×24 SVG icons by the makers of Tailwind. Outline + solid + mini variants.',
     url: 'https://heroicons.com',
     category: 'Icons',
     pricing: 'Free',
@@ -35,8 +34,7 @@ export const tools: Tool[] = [
   {
     id: 'phosphor',
     name: 'Phosphor Icons',
-    description:
-      '6,000+ icons in six weights — thin, light, regular, bold, fill, duotone.',
+    description: '6,000+ icons in six weights — thin, light, regular, bold, fill, duotone.',
     url: 'https://phosphoricons.com',
     category: 'Icons',
     pricing: 'Free',
@@ -56,8 +54,7 @@ export const tools: Tool[] = [
   {
     id: 'iconify',
     name: 'Iconify',
-    description:
-      '200,000+ icons from 150+ icon sets, on demand. Single API, every framework.',
+    description: '200,000+ icons from 150+ icon sets, on demand. Single API, every framework.',
     url: 'https://iconify.design',
     category: 'Icons',
     pricing: 'Free',
@@ -67,8 +64,7 @@ export const tools: Tool[] = [
   {
     id: 'radix-icons',
     name: 'Radix Icons',
-    description:
-      '15×15 SVG icons designed by the WorkOS / Radix team — clean, geometric.',
+    description: '15×15 SVG icons designed by the WorkOS / Radix team — clean, geometric.',
     url: 'https://www.radix-ui.com/icons',
     category: 'Icons',
     pricing: 'Free',
@@ -80,8 +76,7 @@ export const tools: Tool[] = [
   {
     id: 'google-fonts',
     name: 'Google Fonts',
-    description:
-      '1,500+ open-source font families with variable weights. Free for any use.',
+    description: '1,500+ open-source font families with variable weights. Free for any use.',
     url: 'https://fonts.google.com',
     category: 'Fonts',
     pricing: 'Free',
@@ -102,8 +97,7 @@ export const tools: Tool[] = [
   {
     id: 'use-and-modify',
     name: 'Use & Modify',
-    description:
-      'Curated open-source fonts. Editable licenses, professional quality.',
+    description: 'Curated open-source fonts. Editable licenses, professional quality.',
     url: 'https://usemodify.com',
     category: 'Fonts',
     pricing: 'Free',
@@ -126,8 +120,7 @@ export const tools: Tool[] = [
   {
     id: 'coolors',
     name: 'Coolors',
-    description:
-      'Generate palettes and explore trending color schemes. Quick contrast checks.',
+    description: 'Generate palettes and explore trending color schemes. Quick contrast checks.',
     url: 'https://coolors.co',
     category: 'Color',
     pricing: 'Free + Pro',
@@ -137,8 +130,7 @@ export const tools: Tool[] = [
   {
     id: 'realtime-colors',
     name: 'Realtime Colors',
-    description:
-      'Test color palettes on a real-looking site. See contrast, hierarchy, vibe live.',
+    description: 'Test color palettes on a real-looking site. See contrast, hierarchy, vibe live.',
     url: 'https://realtimecolors.com',
     category: 'Color',
     pricing: 'Free',
@@ -148,8 +140,7 @@ export const tools: Tool[] = [
   {
     id: 'uicolors',
     name: 'UI Colors',
-    description:
-      'Generate Tailwind color shades from a single hex. Snap-to-WCAG palette tool.',
+    description: 'Generate Tailwind color shades from a single hex. Snap-to-WCAG palette tool.',
     url: 'https://uicolors.app',
     category: 'Color',
     pricing: 'Free',
@@ -159,8 +150,7 @@ export const tools: Tool[] = [
   {
     id: 'khroma',
     name: 'Khroma',
-    description:
-      'AI color tool that learns your taste from 50 picks, then suggests palettes.',
+    description: 'AI color tool that learns your taste from 50 picks, then suggests palettes.',
     url: 'https://www.khroma.co',
     category: 'Color',
     pricing: 'Free',
@@ -172,8 +162,7 @@ export const tools: Tool[] = [
   {
     id: 'lottiefiles',
     name: 'LottieFiles',
-    description:
-      'Free Lottie animations and an editor. JSON animations for web, iOS and Android.',
+    description: 'Free Lottie animations and an editor. JSON animations for web, iOS and Android.',
     url: 'https://lottiefiles.com',
     category: 'Animation',
     pricing: 'Free + Pro',
@@ -207,8 +196,7 @@ export const tools: Tool[] = [
   {
     id: 'tailwindcss',
     name: 'Tailwind CSS',
-    description:
-      'Utility-first CSS framework. The default for component libraries in this list.',
+    description: 'Utility-first CSS framework. The default for component libraries in this list.',
     url: 'https://tailwindcss.com',
     category: 'CSS',
     pricing: 'Free',
@@ -218,8 +206,7 @@ export const tools: Tool[] = [
   {
     id: 'unocss',
     name: 'UnoCSS',
-    description:
-      'Instant on-demand atomic CSS engine. Tailwind-compatible, dramatically faster.',
+    description: 'Instant on-demand atomic CSS engine. Tailwind-compatible, dramatically faster.',
     url: 'https://unocss.dev',
     category: 'CSS',
     pricing: 'Free',
@@ -253,8 +240,7 @@ export const tools: Tool[] = [
   {
     id: 'cursor',
     name: 'Cursor',
-    description:
-      'AI-first code editor — paste designs, ask for components, refactor in-place.',
+    description: 'AI-first code editor — paste designs, ask for components, refactor in-place.',
     url: 'https://cursor.com',
     category: 'AI',
     pricing: 'Free + Pro',
@@ -264,8 +250,7 @@ export const tools: Tool[] = [
   {
     id: 'figma-make',
     name: 'Figma Make',
-    description:
-      'AI prompt-to-app inside Figma. Turn designs and prompts into working code.',
+    description: 'AI prompt-to-app inside Figma. Turn designs and prompts into working code.',
     url: 'https://www.figma.com/make',
     category: 'AI',
     pricing: 'Free + Pro',

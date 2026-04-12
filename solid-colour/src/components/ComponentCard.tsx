@@ -35,31 +35,20 @@ export const ComponentCard = ({ entry, index = 0 }: Props) => {
     >
       <div className={styles.thumb} style={{ background: entry.thumb }} />
       <div className={styles.footer}>
-        <div
-          className={styles.avatar}
-          style={{ background: entry.authorColor }}
-        >
+        <div className={styles.avatar} style={{ background: entry.authorColor }}>
           {entry.authorInitials}
         </div>
         <span className={styles.name}>{entry.name}</span>
         <button
-          className={`${styles.bookmark} ${
-            isBookmarked ? styles.bookmarkOn : ''
-          }`}
+          className={`${styles.bookmark} ${isBookmarked ? styles.bookmarkOn : ''}`}
           onClick={(e) => {
             e.stopPropagation();
             toggleBookmark(entry.id);
           }}
           aria-label={isBookmarked ? 'Remove bookmark' : 'Bookmark'}
         >
-          <Bookmark
-            size={12}
-            strokeWidth={1.75}
-            fill={isBookmarked ? 'currentColor' : 'none'}
-          />
-          <span className={styles.bookmarkCount}>
-            {formatCount(entry.bookmarks)}
-          </span>
+          <Bookmark size={12} strokeWidth={1.75} fill={isBookmarked ? 'currentColor' : 'none'} />
+          <span className={styles.bookmarkCount}>{formatCount(entry.bookmarks)}</span>
         </button>
       </div>
     </motion.div>

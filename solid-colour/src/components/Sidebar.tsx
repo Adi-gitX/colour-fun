@@ -89,9 +89,7 @@ export const Sidebar = () => {
   const renderItem = (item: NavItem) => (
     <button
       key={item.id}
-      className={`${styles.navItem} ${
-        currentSection === item.id ? styles.navItemActive : ''
-      }`}
+      className={`${styles.navItem} ${currentSection === item.id ? styles.navItemActive : ''}`}
       onClick={() => {
         setCurrentSection(item.id);
         closeSidebar();
@@ -197,10 +195,7 @@ export const Sidebar = () => {
             >
               <Pipette size={15} strokeWidth={1.75} />
               <span>Custom color</span>
-              <div
-                className={styles.swatch}
-                style={{ background: customColor }}
-              />
+              <div className={styles.swatch} style={{ background: customColor }} />
             </button>
           </div>
 
@@ -218,9 +213,7 @@ export const Sidebar = () => {
             >
               <Bookmark size={15} strokeWidth={1.75} />
               <span>Bookmarks</span>
-              {bookmarks.length > 0 && (
-                <span className={styles.count}>{bookmarks.length}</span>
-              )}
+              {bookmarks.length > 0 && <span className={styles.count}>{bookmarks.length}</span>}
             </button>
             <button className={styles.navItem} onClick={openSettings}>
               <Settings size={15} strokeWidth={1.75} />
