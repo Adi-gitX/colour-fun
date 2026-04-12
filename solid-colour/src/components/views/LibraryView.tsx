@@ -73,8 +73,7 @@ export const LibraryView = () => {
     return out;
   }, [bookmarks]);
 
-  const isEmpty =
-    bookmarkedComponents.length === 0 && bookmarkedDiscover.length === 0;
+  const isEmpty = bookmarkedComponents.length === 0 && bookmarkedDiscover.length === 0;
 
   if (isEmpty) {
     return (
@@ -87,13 +86,8 @@ export const LibraryView = () => {
         <div className={styles.empty}>
           <div className={styles.emptyIcon}>○</div>
           <h3>No bookmarks yet</h3>
-          <p>
-            Tap the bookmark icon on any card to save it here for quick access.
-          </p>
-          <button
-            className={styles.cta}
-            onClick={() => setCurrentSection('home')}
-          >
+          <p>Tap the bookmark icon on any card to save it here for quick access.</p>
+          <button className={styles.cta} onClick={() => setCurrentSection('home')}>
             Discover something
             <ArrowRight size={13} strokeWidth={2} />
           </button>
@@ -113,10 +107,7 @@ export const LibraryView = () => {
 
       {bookmarkedComponents.length > 0 && (
         <section className={styles.section}>
-          <SectionHeader
-            title="Components"
-            count={bookmarkedComponents.length}
-          />
+          <SectionHeader title="Components" count={bookmarkedComponents.length} />
           <div className={styles.cardGrid}>
             {bookmarkedComponents.map((c, i) => (
               <ComponentCard key={c.id} entry={c} index={i} />
@@ -127,10 +118,7 @@ export const LibraryView = () => {
 
       {bookmarkedDiscover.length > 0 && (
         <section className={styles.section}>
-          <SectionHeader
-            title="Libraries, systems & tools"
-            count={bookmarkedDiscover.length}
-          />
+          <SectionHeader title="Libraries, systems & tools" count={bookmarkedDiscover.length} />
           <div className={styles.discoverGrid}>
             {bookmarkedDiscover.map((e, i) => (
               <DiscoverCard key={e.id} entry={e} index={i} />

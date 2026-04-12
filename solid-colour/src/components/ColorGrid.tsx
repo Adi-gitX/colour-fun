@@ -37,10 +37,7 @@ const ColorCard = ({ color, index }: { color: Color; index: number }) => {
         aria-label={color.name}
       />
       <div className={styles.cardFooter}>
-        <div
-          className={styles.colorDot}
-          style={{ backgroundColor: color.hex }}
-        />
+        <div className={styles.colorDot} style={{ backgroundColor: color.hex }} />
         <div className={styles.cardMeta}>
           <span className={styles.colorName}>{color.name}</span>
           <span className={styles.colorHex}>{color.hex}</span>
@@ -53,11 +50,7 @@ const ColorCard = ({ color, index }: { color: Color; index: number }) => {
           }}
           aria-label={isFav ? 'Remove favorite' : 'Add favorite'}
         >
-          <Bookmark
-            size={13}
-            strokeWidth={1.75}
-            fill={isFav ? 'currentColor' : 'none'}
-          />
+          <Bookmark size={13} strokeWidth={1.75} fill={isFav ? 'currentColor' : 'none'} />
         </button>
       </div>
     </motion.div>
@@ -65,8 +58,7 @@ const ColorCard = ({ color, index }: { color: Color; index: number }) => {
 };
 
 export const ColorGrid = () => {
-  const { searchQuery, colorCategory, setColorCategory, openPicker } =
-    useAppStore();
+  const { searchQuery, colorCategory, setColorCategory, openPicker } = useAppStore();
   const containerRef = useRef<HTMLDivElement>(null);
 
   const filteredColors = useMemo(() => {
@@ -93,15 +85,10 @@ export const ColorGrid = () => {
             <span className={styles.gridCount}>{filteredColors.length}</span>
           </div>
           <p className={styles.headDescription}>
-            238 curated colors plus a custom picker — export at up to 8K in PNG,
-            JPEG or WebP.
+            238 curated colors plus a custom picker — export at up to 8K in PNG, JPEG or WebP.
           </p>
         </div>
-        <button
-          className={styles.pickerBtn}
-          type="button"
-          onClick={openPicker}
-        >
+        <button className={styles.pickerBtn} type="button" onClick={openPicker}>
           <Pipette size={13} strokeWidth={1.75} />
           Custom color
           <ChevronRight size={13} strokeWidth={1.75} />
@@ -110,9 +97,7 @@ export const ColorGrid = () => {
 
       <div className={styles.filterBar}>
         <button
-          className={`${styles.chip} ${
-            colorCategory === 'all' ? styles.chipActive : ''
-          }`}
+          className={`${styles.chip} ${colorCategory === 'all' ? styles.chipActive : ''}`}
           onClick={() => setColorCategory('all')}
         >
           <span
@@ -127,15 +112,10 @@ export const ColorGrid = () => {
         {allCategories.map((cat) => (
           <button
             key={cat}
-            className={`${styles.chip} ${
-              colorCategory === cat ? styles.chipActive : ''
-            }`}
+            className={`${styles.chip} ${colorCategory === cat ? styles.chipActive : ''}`}
             onClick={() => setColorCategory(cat)}
           >
-            <span
-              className={styles.chipDot}
-              style={{ background: categoryColors[cat] }}
-            />
+            <span className={styles.chipDot} style={{ background: categoryColors[cat] }} />
             {categoryLabels[cat]}
           </button>
         ))}

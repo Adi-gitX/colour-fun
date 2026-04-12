@@ -84,8 +84,7 @@ export const designSystems: DesignSystem[] = [
     id: 'fluent',
     name: 'Fluent',
     org: 'Microsoft',
-    description:
-      'Microsoft’s cross-platform system — Web, Windows, Office. Rich token model.',
+    description: 'Microsoft’s cross-platform system — Web, Windows, Office. Rich token model.',
     url: 'https://fluent2.microsoft.design',
     initials: 'Fu',
     accent: '#0078D4',
@@ -114,8 +113,7 @@ export const designSystems: DesignSystem[] = [
     id: 'garden',
     name: 'Garden',
     org: 'Zendesk',
-    description:
-      'Zendesk’s React design system — calm, content-first, accessible patterns.',
+    description: 'Zendesk’s React design system — calm, content-first, accessible patterns.',
     url: 'https://garden.zendesk.com',
     initials: 'Gd',
     accent: '#03363D',
@@ -134,8 +132,7 @@ export const designSystems: DesignSystem[] = [
     id: 'canvas',
     name: 'Workday Canvas',
     org: 'Workday',
-    description:
-      'Workday’s enterprise system — careful information density, rich form patterns.',
+    description: 'Workday’s enterprise system — careful information density, rich form patterns.',
     url: 'https://canvas.workday.com',
     initials: 'Wc',
     accent: '#0875E1',

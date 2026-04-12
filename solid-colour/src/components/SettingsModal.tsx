@@ -1,16 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  X,
-  Moon,
-  Sun,
-  Trash2,
-  Database,
-  Info,
-  Monitor,
-  Bookmark,
-  Github,
-} from 'lucide-react';
+import { X, Moon, Sun, Trash2, Database, Info, Monitor, Bookmark, Github } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import './SettingsModal.css';
 
@@ -26,9 +16,7 @@ export const SettingsModal = () => {
     clearBookmarks,
   } = useAppStore();
 
-  const [activeTab, setActiveTab] = React.useState<
-    'appearance' | 'data' | 'about'
-  >('appearance');
+  const [activeTab, setActiveTab] = React.useState<'appearance' | 'data' | 'about'>('appearance');
 
   React.useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -66,9 +54,7 @@ export const SettingsModal = () => {
           <div className="settings-c">
             <div className="settings-sidebar">
               <button
-                className={`tab-btn ${
-                  activeTab === 'appearance' ? 'active' : ''
-                }`}
+                className={`tab-btn ${activeTab === 'appearance' ? 'active' : ''}`}
                 onClick={() => setActiveTab('appearance')}
               >
                 <Monitor size={15} strokeWidth={1.75} />
@@ -95,19 +81,11 @@ export const SettingsModal = () => {
                 <div className="settings-section">
                   <h3>Theme</h3>
                   <div className="theme-toggle-large" onClick={toggleTheme}>
-                    <div
-                      className={`theme-option ${
-                        theme === 'light' ? 'active' : ''
-                      }`}
-                    >
+                    <div className={`theme-option ${theme === 'light' ? 'active' : ''}`}>
                       <Sun size={15} strokeWidth={1.75} />
                       Light
                     </div>
-                    <div
-                      className={`theme-option ${
-                        theme === 'dark' ? 'active' : ''
-                      }`}
-                    >
+                    <div className={`theme-option ${theme === 'dark' ? 'active' : ''}`}>
                       <Moon size={15} strokeWidth={1.75} />
                       Dark
                     </div>
@@ -135,9 +113,7 @@ export const SettingsModal = () => {
                     <button
                       className="danger-btn"
                       onClick={() => {
-                        if (
-                          confirm('Clear all bookmarks? This cannot be undone.')
-                        ) {
+                        if (confirm('Clear all bookmarks? This cannot be undone.')) {
                           clearBookmarks();
                         }
                       }}
@@ -183,17 +159,8 @@ export const SettingsModal = () => {
   );
 };
 
-const Toggle = ({
-  value,
-  onChange,
-}: {
-  value: boolean;
-  onChange: (v: boolean) => void;
-}) => (
-  <button
-    className={`toggle-switch ${value ? 'on' : 'off'}`}
-    onClick={() => onChange(!value)}
-  >
+const Toggle = ({ value, onChange }: { value: boolean; onChange: (v: boolean) => void }) => (
+  <button className={`toggle-switch ${value ? 'on' : 'off'}`} onClick={() => onChange(!value)}>
     <motion.div
       className="toggle-handle"
       layout

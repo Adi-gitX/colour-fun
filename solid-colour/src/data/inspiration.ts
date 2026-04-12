@@ -35,8 +35,7 @@ export const inspirationSites: InspirationSite[] = [
   {
     id: 'awwwards',
     name: 'Awwwards',
-    description:
-      'Awards for the best designers, developers and agencies. Daily site of the day.',
+    description: 'Awards for the best designers, developers and agencies. Daily site of the day.',
     url: 'https://www.awwwards.com',
     category: 'Web',
     pricing: 'Free + Pro',
@@ -46,8 +45,7 @@ export const inspirationSites: InspirationSite[] = [
   {
     id: 'land-book',
     name: 'Land-book',
-    description:
-      'Hand-picked landing page gallery. Filter by industry, style, color and section.',
+    description: 'Hand-picked landing page gallery. Filter by industry, style, color and section.',
     url: 'https://land-book.com',
     category: 'Web',
     pricing: 'Free',
@@ -57,8 +55,7 @@ export const inspirationSites: InspirationSite[] = [
   {
     id: 'page-flows',
     name: 'Page Flows',
-    description:
-      'User-flow recordings of real product onboarding, signup, payment — searchable.',
+    description: 'User-flow recordings of real product onboarding, signup, payment — searchable.',
     url: 'https://pageflows.com',
     category: 'Patterns',
     pricing: 'Paid',
@@ -79,8 +76,7 @@ export const inspirationSites: InspirationSite[] = [
   {
     id: 'refero',
     name: 'Refero',
-    description:
-      'UI references for designers — patterns from real production apps, taggable.',
+    description: 'UI references for designers — patterns from real production apps, taggable.',
     url: 'https://refero.design',
     category: 'Patterns',
     pricing: 'Free + Pro',
@@ -90,8 +86,7 @@ export const inspirationSites: InspirationSite[] = [
   {
     id: 'screenlane',
     name: 'ScreenLane',
-    description:
-      'Real screens from real products — searchable inspiration for app interfaces.',
+    description: 'Real screens from real products — searchable inspiration for app interfaces.',
     url: 'https://screenlane.com',
     category: 'Mobile',
     pricing: 'Free',
@@ -101,8 +96,7 @@ export const inspirationSites: InspirationSite[] = [
   {
     id: 'lapaninja',
     name: 'Lapa Ninja',
-    description:
-      'Best landing pages on the internet, curated and tagged by section.',
+    description: 'Best landing pages on the internet, curated and tagged by section.',
     url: 'https://www.lapa.ninja',
     category: 'Web',
     pricing: 'Free',
@@ -156,8 +150,7 @@ export const inspirationSites: InspirationSite[] = [
   {
     id: 'siteinspire',
     name: 'SiteInspire',
-    description:
-      'A curated showcase of the best web and interactive design.',
+    description: 'A curated showcase of the best web and interactive design.',
     url: 'https://www.siteinspire.com',
     category: 'Web',
     pricing: 'Free',
@@ -167,8 +160,7 @@ export const inspirationSites: InspirationSite[] = [
   {
     id: 'designspiration',
     name: 'Designspiration',
-    description:
-      'Discover and save creative design ideas. Visual mood-boarding for designers.',
+    description: 'Discover and save creative design ideas. Visual mood-boarding for designers.',
     url: 'https://www.designspiration.com',
     category: 'Web',
     pricing: 'Free',
@@ -178,8 +170,7 @@ export const inspirationSites: InspirationSite[] = [
   {
     id: 'brutalist',
     name: 'Brutalist Websites',
-    description:
-      'Curated brutalist web design. Raw, aggressive, intentionally ugly.',
+    description: 'Curated brutalist web design. Raw, aggressive, intentionally ugly.',
     url: 'https://brutalistwebsites.com',
     category: 'Brutalist',
     pricing: 'Free',
@@ -189,8 +180,7 @@ export const inspirationSites: InspirationSite[] = [
   {
     id: 'typewolf',
     name: 'Typewolf',
-    description:
-      'Site of the day with a typography lens. Font pairings and recommendations.',
+    description: 'Site of the day with a typography lens. Font pairings and recommendations.',
     url: 'https://www.typewolf.com',
     category: 'Typography',
     pricing: 'Free + Pro',

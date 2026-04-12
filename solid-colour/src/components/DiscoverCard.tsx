@@ -18,13 +18,7 @@ export interface DiscoverEntry {
   highlight?: string;
 }
 
-export const DiscoverCard = ({
-  entry,
-  index = 0,
-}: {
-  entry: DiscoverEntry;
-  index?: number;
-}) => {
+export const DiscoverCard = ({ entry, index = 0 }: { entry: DiscoverEntry; index?: number }) => {
   const { bookmarks, toggleBookmark } = useAppStore();
   const isBookmarked = bookmarks.includes(entry.id);
   const ref = useRef<HTMLAnchorElement>(null);
@@ -52,18 +46,12 @@ export const DiscoverCard = ({
         <div className={styles.titleBlock}>
           <div className={styles.name}>
             {entry.name}
-            {entry.highlight && (
-              <span className={styles.highlight}>{entry.highlight}</span>
-            )}
+            {entry.highlight && <span className={styles.highlight}>{entry.highlight}</span>}
           </div>
-          {entry.subline && (
-            <div className={styles.subline}>{entry.subline}</div>
-          )}
+          {entry.subline && <div className={styles.subline}>{entry.subline}</div>}
         </div>
         <button
-          className={`${styles.bookmark} ${
-            isBookmarked ? styles.bookmarkOn : ''
-          }`}
+          className={`${styles.bookmark} ${isBookmarked ? styles.bookmarkOn : ''}`}
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -71,11 +59,7 @@ export const DiscoverCard = ({
           }}
           aria-label={isBookmarked ? 'Remove bookmark' : 'Bookmark'}
         >
-          <Bookmark
-            size={13}
-            strokeWidth={1.75}
-            fill={isBookmarked ? 'currentColor' : 'none'}
-          />
+          <Bookmark size={13} strokeWidth={1.75} fill={isBookmarked ? 'currentColor' : 'none'} />
         </button>
       </div>
       <p className={styles.description}>{entry.description}</p>

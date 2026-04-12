@@ -28,11 +28,7 @@ export const Header = () => {
   return (
     <header className={styles.header}>
       <div className={styles.left}>
-        <button
-          className={styles.menuBtn}
-          onClick={toggleSidebar}
-          aria-label="Toggle menu"
-        >
+        <button className={styles.menuBtn} onClick={toggleSidebar} aria-label="Toggle menu">
           <Menu size={18} strokeWidth={2} />
         </button>
       </div>

@@ -1,6 +1,6 @@
 {
-    "buildCommand": "cd solid-colour && npm install && npm run build",
-    "outputDirectory": "solid-colour/dist",
-    "installCommand": "cd solid-colour && npm install",
-    "framework": "vite"
+  "buildCommand": "cd solid-colour && npm install && npm run build",
+  "outputDirectory": "solid-colour/dist",
+  "installCommand": "cd solid-colour && npm install",
+  "framework": "vite"
 }

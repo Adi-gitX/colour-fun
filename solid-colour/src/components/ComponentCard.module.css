@@ -42,11 +42,7 @@
   align-items: center;
   gap: 8px;
   padding: 10px 12px;
-  background: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.85) 30%,
-    rgba(0, 0, 0, 0)
-  );
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 30%, rgba(0, 0, 0, 0));
   opacity: 0;
   transform: translateY(6px);
   transition:
@@ -56,11 +52,7 @@
 }
 
 [data-theme='light'] .footer {
-  background: linear-gradient(
-    to top,
-    rgba(255, 255, 255, 0.95) 30%,
-    rgba(255, 255, 255, 0)
-  );
+  background: linear-gradient(to top, rgba(255, 255, 255, 0.95) 30%, rgba(255, 255, 255, 0));
 }
 
 .card:hover .footer {
