@@ -1,10 +1,7 @@
 name: Integration
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  # Triggers disabled — requires SLACK_WEBHOOK_URL secret. Manual runs only.
   workflow_dispatch:
 
 jobs:
@@ -16,37 +13,37 @@ jobs:
         node-version: [20.x, 22.x]
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        cache-dependency-path: solid-colour/package-lock.json
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+          cache-dependency-path: solid-colour/package-lock.json
 
-    - name: Install dependencies
-      working-directory: ./solid-colour
-      run: npm i
+      - name: Install dependencies
+        working-directory: ./solid-colour
+        run: npm i
 
-    - name: Run Linter
-      working-directory: ./solid-colour
-      run: npm run lint
+      - name: Run Linter
+        working-directory: ./solid-colour
+        run: npm run lint
 
-    - name: Run Tests
-      working-directory: ./solid-colour
-      run: npm run test
+      - name: Run Tests
+        working-directory: ./solid-colour
+        run: npm run test
 
-    - name: Build Project
-      working-directory: ./solid-colour
-      run: npm run build
+      - name: Build Project
+        working-directory: ./solid-colour
+        run: npm run build
 
-    - name: Slack Notification (Success)
-      if: success()
-      run: |
-        curl -X POST -H 'Content-type: application/json' --data '{"attachments": [{"color": "good", "text": "GitHub Actions Workflow Succeeded! All test cases passed."}]}' ${{ secrets.SLACK_WEBHOOK_URL }}
+      - name: Slack Notification (Success)
+        if: success()
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{"attachments": [{"color": "good", "text": "GitHub Actions Workflow Succeeded! All test cases passed."}]}' ${{ secrets.SLACK_WEBHOOK_URL }}
 
-    - name: Slack Notification (Failure)
-      if: failure()
-      run: |
-        curl -X POST -H 'Content-type: application/json' --data '{"attachments": [{"color": "danger", "text": "GitHub Actions Workflow Failed."}]}' ${{ secrets.SLACK_WEBHOOK_URL }}
+      - name: Slack Notification (Failure)
+        if: failure()
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{"attachments": [{"color": "danger", "text": "GitHub Actions Workflow Failed."}]}' ${{ secrets.SLACK_WEBHOOK_URL }}
