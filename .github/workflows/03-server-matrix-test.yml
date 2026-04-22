@@ -1,11 +1,8 @@
 name: 03 Matrix Strategies
 
 on:
+  # Triggers disabled — kept as a lecture demo. Manual runs only.
   workflow_dispatch:
-  push:
-    branches:
-      - main
-  pull_request:
 
 jobs:
   test-server:
@@ -22,8 +19,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-          cache-dependency-path: './solid-colour/package-lock.json'
+          cache: "npm"
+          cache-dependency-path: "./solid-colour/package-lock.json"
 
       - name: Install Dependencies
         working-directory: ./solid-colour
