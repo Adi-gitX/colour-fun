@@ -1,16 +1,8 @@
 name: CI
 
 on:
-  push:
-    branches: ["main"]
-    paths-ignore:
-      - "**/*.md"
-      - "devops/**"
-  pull_request:
-    branches: ["main"]
-    paths-ignore:
-      - "**/*.md"
-      - "devops/**"
+  # Triggers disabled — superseded by tests.yml. Manual runs only.
+  workflow_dispatch:
 
 jobs:
   build:
