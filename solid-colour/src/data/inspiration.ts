@@ -1,0 +1,211 @@
+export interface InspirationSite {
+  id: string;
+  name: string;
+  description: string;
+  url: string;
+  category: 'Web' | 'Mobile' | 'SaaS' | 'Patterns' | 'Typography' | 'Brutalist';
+  pricing: 'Free' | 'Free + Pro' | 'Paid';
+  initials: string;
+  accent: string;
+}
+
+export const inspirationSites: InspirationSite[] = [
+  {
+    id: 'mobbin',
+    name: 'Mobbin',
+    description:
+      'Hand-curated screenshots of mobile apps and websites. The reference for product flows.',
+    url: 'https://mobbin.com',
+    category: 'Mobile',
+    pricing: 'Free + Pro',
+    initials: 'Mb',
+    accent: '#000000',
+  },
+  {
+    id: 'godly',
+    name: 'Godly',
+    description:
+      'Divine website inspiration — the most striking landing pages on the web, curated daily.',
+    url: 'https://godly.website',
+    category: 'Web',
+    pricing: 'Free',
+    initials: 'Gy',
+    accent: '#FF6B35',
+  },
+  {
+    id: 'awwwards',
+    name: 'Awwwards',
+    description:
+      'Awards for the best designers, developers and agencies. Daily site of the day.',
+    url: 'https://www.awwwards.com',
+    category: 'Web',
+    pricing: 'Free + Pro',
+    initials: 'Aw',
+    accent: '#0D0D0D',
+  },
+  {
+    id: 'land-book',
+    name: 'Land-book',
+    description:
+      'Hand-picked landing page gallery. Filter by industry, style, color and section.',
+    url: 'https://land-book.com',
+    category: 'Web',
+    pricing: 'Free',
+    initials: 'Lb',
+    accent: '#FF4F40',
+  },
+  {
+    id: 'page-flows',
+    name: 'Page Flows',
+    description:
+      'User-flow recordings of real product onboarding, signup, payment — searchable.',
+    url: 'https://pageflows.com',
+    category: 'Patterns',
+    pricing: 'Paid',
+    initials: 'Pf',
+    accent: '#5B6CFF',
+  },
+  {
+    id: 'saaspages',
+    name: 'SaaS Pages',
+    description:
+      'Library of SaaS landing-page sections — pricing, hero, testimonials, FAQ, social proof.',
+    url: 'https://saaspages.xyz',
+    category: 'SaaS',
+    pricing: 'Free',
+    initials: 'Sp',
+    accent: '#7C3AED',
+  },
+  {
+    id: 'refero',
+    name: 'Refero',
+    description:
+      'UI references for designers — patterns from real production apps, taggable.',
+    url: 'https://refero.design',
+    category: 'Patterns',
+    pricing: 'Free + Pro',
+    initials: 'Rf',
+    accent: '#111827',
+  },
+  {
+    id: 'screenlane',
+    name: 'ScreenLane',
+    description:
+      'Real screens from real products — searchable inspiration for app interfaces.',
+    url: 'https://screenlane.com',
+    category: 'Mobile',
+    pricing: 'Free',
+    initials: 'Sl',
+    accent: '#1F2937',
+  },
+  {
+    id: 'lapaninja',
+    name: 'Lapa Ninja',
+    description:
+      'Best landing pages on the internet, curated and tagged by section.',
+    url: 'https://www.lapa.ninja',
+    category: 'Web',
+    pricing: 'Free',
+    initials: 'Ln',
+    accent: '#FF003B',
+  },
+  {
+    id: 'one-page-love',
+    name: 'One Page Love',
+    description:
+      'Single-page website gallery, since 2008. Templates and inspiration filtered by type.',
+    url: 'https://onepagelove.com',
+    category: 'Web',
+    pricing: 'Free',
+    initials: 'Op',
+    accent: '#E94E77',
+  },
+  {
+    id: 'httpster',
+    name: 'Httpster',
+    description:
+      'Inspiration resource showcasing top-quality websites designed by people from all over the world.',
+    url: 'https://httpster.net',
+    category: 'Web',
+    pricing: 'Free',
+    initials: 'Ht',
+    accent: '#000000',
+  },
+  {
+    id: 'dribbble',
+    name: 'Dribbble',
+    description:
+      'Designer community and portfolio platform. Useful for visual exploration, less for live UX.',
+    url: 'https://dribbble.com',
+    category: 'Web',
+    pricing: 'Free + Pro',
+    initials: 'Db',
+    accent: '#EA4C89',
+  },
+  {
+    id: 'cosmos',
+    name: 'Cosmos',
+    description:
+      'Visual search engine for taste — explore connected ideas in screenshots and references.',
+    url: 'https://www.cosmos.so',
+    category: 'Patterns',
+    pricing: 'Free',
+    initials: 'Co',
+    accent: '#0A0A0A',
+  },
+  {
+    id: 'siteinspire',
+    name: 'SiteInspire',
+    description:
+      'A curated showcase of the best web and interactive design.',
+    url: 'https://www.siteinspire.com',
+    category: 'Web',
+    pricing: 'Free',
+    initials: 'Si',
+    accent: '#1A1A1A',
+  },
+  {
+    id: 'designspiration',
+    name: 'Designspiration',
+    description:
+      'Discover and save creative design ideas. Visual mood-boarding for designers.',
+    url: 'https://www.designspiration.com',
+    category: 'Web',
+    pricing: 'Free',
+    initials: 'Ds',
+    accent: '#000000',
+  },
+  {
+    id: 'brutalist',
+    name: 'Brutalist Websites',
+    description:
+      'Curated brutalist web design. Raw, aggressive, intentionally ugly.',
+    url: 'https://brutalistwebsites.com',
+    category: 'Brutalist',
+    pricing: 'Free',
+    initials: 'Br',
+    accent: '#FF0000',
+  },
+  {
+    id: 'typewolf',
+    name: 'Typewolf',
+    description:
+      'Site of the day with a typography lens. Font pairings and recommendations.',
+    url: 'https://www.typewolf.com',
+    category: 'Typography',
+    pricing: 'Free + Pro',
+    initials: 'Tw',
+    accent: '#1B1B1B',
+  },
+  {
+    id: 'fonts-in-use',
+    name: 'Fonts In Use',
+    description:
+      'Real-world typography in print, web and identity — searchable by industry and font.',
+    url: 'https://fontsinuse.com',
+    category: 'Typography',
+    pricing: 'Free',
+    initials: 'Fi',
+    accent: '#0066CC',
+  },
+];
