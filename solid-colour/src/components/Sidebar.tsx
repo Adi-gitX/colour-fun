@@ -1,40 +1,114 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Palette, Sparkles, Image as ImageIcon, LayoutTemplate, Settings } from 'lucide-react';
+import {
+  Home,
+  Boxes,
+  LayoutGrid,
+  FileCode2,
+  Cable,
+  Users,
+  Library,
+  Sparkles,
+  Wrench,
+  Settings,
+  Bookmark,
+  Search,
+  Palette,
+  Image as ImageIcon,
+  Pipette,
+} from 'lucide-react';
+import { useEffect, useRef } from 'react';
 import { useAppStore } from '../store/appStore';
-import { categoryLabels, categoryColors } from '../data/colors';
-import type { ColorCategory } from '../data/colors';
+import type { Section } from '../store/appStore';
+import { components } from '../data/components';
+import { libraries } from '../data/libraries';
+import { designSystems } from '../data/designSystems';
+import { inspirationSites } from '../data/inspiration';
+import { tools } from '../data/tools';
+import { colors } from '../data/colors';
+import { imageUrls } from '../data/images';
 import styles from './Sidebar.module.css';
-import { useState } from 'react';
 
-const mainNavItems = [
-  { id: 'solid-colors', label: 'Solid Colors', icon: Palette },
+interface NavItem {
+  id: Section;
+  label: string;
+  icon: React.ComponentType<{ size?: number; strokeWidth?: number }>;
+  count?: number | 'soon';
+}
+
+const browseItems: NavItem[] = [
+  { id: 'components', label: 'Components', icon: Boxes, count: components.length },
+  { id: 'blocks', label: 'Blocks', icon: LayoutGrid, count: 'soon' },
+  { id: 'templates', label: 'Templates', icon: FileCode2, count: 'soon' },
+  { id: 'hooks', label: 'Hooks', icon: Cable, count: 'soon' },
+];
+
+const discoverItems: NavItem[] = [
+  { id: 'libraries', label: 'Component Libraries', icon: Library, count: libraries.length },
+  { id: 'design-systems', label: 'Design Systems', icon: LayoutGrid, count: designSystems.length },
+  { id: 'inspiration', label: 'UI Inspiration', icon: Sparkles, count: inspirationSites.length },
+  { id: 'tools', label: 'Tools', icon: Wrench, count: tools.length },
+];
+
+const studioItems: NavItem[] = [
+  { id: 'solid-colors', label: 'Solid Colors', icon: Palette, count: colors.length },
   { id: 'gradients', label: 'Gradients', icon: Sparkles },
-  { id: 'images', label: 'Backgrounds', icon: ImageIcon },
-  { id: 'ui-themes', label: 'UI Themes', icon: LayoutTemplate },
-] as const;
+  { id: 'backgrounds', label: 'Backgrounds', icon: ImageIcon, count: imageUrls.length },
+];
 
 export const Sidebar = () => {
   const {
-    selectedCategory,
-    setSelectedCategory,
-    openPicker,
-    customColor,
     currentSection,
     setCurrentSection,
     openSettings,
+    openPicker,
+    customColor,
     isSidebarOpen,
     closeSidebar,
+    searchQuery,
+    setSearchQuery,
+    bookmarks,
   } = useAppStore();
 
-  const [isHovered, setIsHovered] = useState(false);
+  const searchRef = useRef<HTMLInputElement>(null);
 
-  // Combined state: open if toggled via button OR hovered (on desktop)
-  // On mobile, isHovered is irrelevant, relies on isSidebarOpen
-  const isExpanded = isSidebarOpen || isHovered;
+  useEffect(() => {
+    const handle = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        searchRef.current?.focus();
+      }
+      if (e.key === 'Escape' && document.activeElement === searchRef.current) {
+        searchRef.current?.blur();
+        setSearchQuery('');
+      }
+    };
+    window.addEventListener('keydown', handle);
+    return () => window.removeEventListener('keydown', handle);
+  }, [setSearchQuery]);
+
+  const renderItem = (item: NavItem) => (
+    <button
+      key={item.id}
+      className={`${styles.navItem} ${
+        currentSection === item.id ? styles.navItemActive : ''
+      }`}
+      onClick={() => {
+        setCurrentSection(item.id);
+        closeSidebar();
+      }}
+    >
+      <item.icon size={15} strokeWidth={1.75} />
+      <span>{item.label}</span>
+      {item.count === 'soon' ? (
+        <span className={styles.countSoon}>soon</span>
+      ) : typeof item.count === 'number' ? (
+        <span className={styles.count}>{item.count}</span>
+      ) : null}
+    </button>
+  );
 
   return (
     <>
-      {/* Mobile Overlay */}
       <AnimatePresence>
         {isSidebarOpen && (
           <motion.div
@@ -47,173 +121,119 @@ export const Sidebar = () => {
         )}
       </AnimatePresence>
 
-      <motion.aside
-        className={`${styles.sidebar} ${isSidebarOpen ? styles.open : ''}`}
-        initial={{ width: 80 }}
-        animate={{
-          width: isExpanded ? 280 : 80,
-          x: 0, // Reset transform for mobile handling
-        }}
-        transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <div className={styles.logoContainer}>
-          <div className={styles.logoIcon}>◆</div>
-          <AnimatePresence>
-            {isExpanded && (
-              <motion.span
-                className={styles.logoText}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-              >
-                colour-fun
-              </motion.span>
-            )}
-          </AnimatePresence>
+      <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.open : ''}`}>
+        {/* Brand */}
+        <div className={styles.brand}>
+          <div className={styles.brandMark}>S</div>
+          <span className={styles.brandText}>Stax</span>
+        </div>
+
+        {/* Search */}
+        <div className={styles.searchBox}>
+          <Search size={14} className={styles.searchIcon} strokeWidth={2} />
+          <input
+            ref={searchRef}
+            type="text"
+            placeholder="Search"
+            className={styles.searchInput}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <span className={styles.kbd}>⌘K</span>
         </div>
 
         <nav className={styles.nav}>
-          <div className={styles.section}>
-            {mainNavItems.map((item) => (
-              <button
-                key={item.id}
-                className={`${styles.navItem} ${currentSection === item.id ? styles.active : ''}`}
-                onClick={() => setCurrentSection(item.id)}
-                title={item.label}
-                aria-label={item.label}
-              >
-                <item.icon size={24} strokeWidth={1.5} />
-                <AnimatePresence>
-                  {isExpanded && (
-                    <motion.span
-                      className={styles.navLabel}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -10 }}
-                    >
-                      {item.label}
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-                {currentSection === item.id && (
-                  <motion.div layoutId="activeIndicator" className={styles.activeIndicator} />
-                )}
-              </button>
-            ))}
+          {/* Top-level */}
+          <div className={styles.navGroup}>
+            <button
+              className={`${styles.navItem} ${
+                currentSection === 'home' ? styles.navItemActive : ''
+              }`}
+              onClick={() => {
+                setCurrentSection('home');
+                closeSidebar();
+              }}
+            >
+              <Home size={15} strokeWidth={1.75} />
+              <span>Home</span>
+            </button>
+            <button
+              className={`${styles.navItem} ${
+                currentSection === 'community' ? styles.navItemActive : ''
+              }`}
+              onClick={() => {
+                setCurrentSection('community');
+                closeSidebar();
+              }}
+            >
+              <Users size={15} strokeWidth={1.75} />
+              <span>Community</span>
+            </button>
           </div>
 
-          {currentSection === 'solid-colors' && (
-            <div className={styles.categoriesWrapper}>
-              <AnimatePresence>
-                {isExpanded && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className={styles.categoriesHeader}
-                  >
-                    FILTER
-                  </motion.div>
-                )}
-              </AnimatePresence>
+          {/* Browse */}
+          <div className={styles.navGroup}>
+            <div className={styles.groupLabel}>Browse</div>
+            {browseItems.map(renderItem)}
+          </div>
 
-              <div className={styles.categoriesList}>
-                <button
-                  className={`${styles.catItem} ${selectedCategory === 'all' ? styles.activeCat : ''}`}
-                  onClick={() => setSelectedCategory('all')}
-                  title="All Colors"
-                >
-                  <div
-                    className={styles.catDot}
-                    style={{ background: 'linear-gradient(135deg, #fff, #999)' }}
-                  />
-                  <AnimatePresence>
-                    {isExpanded && (
-                      <motion.span
-                        className={styles.catLabel}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                      >
-                        All Colors
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                </button>
+          {/* Discover */}
+          <div className={styles.navGroup}>
+            <div className={styles.groupLabel}>Discover</div>
+            {discoverItems.map(renderItem)}
+          </div>
 
-                {(Object.keys(categoryLabels) as ColorCategory[]).map((cat) => (
-                  <button
-                    key={cat}
-                    className={`${styles.catItem} ${selectedCategory === cat ? styles.activeCat : ''}`}
-                    onClick={() => setSelectedCategory(cat)}
-                    title={categoryLabels[cat]}
-                  >
-                    <div className={styles.catDot} style={{ background: categoryColors[cat] }} />
-                    <AnimatePresence>
-                      {isExpanded && (
-                        <motion.span
-                          className={styles.catLabel}
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                        >
-                          {categoryLabels[cat]}
-                        </motion.span>
-                      )}
-                    </AnimatePresence>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+          {/* Studio */}
+          <div className={styles.navGroup}>
+            <div className={styles.groupLabel}>Studio</div>
+            {studioItems.map(renderItem)}
+            <button
+              className={styles.navItem}
+              onClick={() => {
+                openPicker();
+                closeSidebar();
+              }}
+              aria-label="Custom color picker"
+            >
+              <Pipette size={15} strokeWidth={1.75} />
+              <span>Custom color</span>
+              <div
+                className={styles.swatch}
+                style={{ background: customColor }}
+              />
+            </button>
+          </div>
+
+          {/* Library */}
+          <div className={styles.navGroup}>
+            <div className={styles.groupLabel}>Library</div>
+            <button
+              className={`${styles.navItem} ${
+                currentSection === 'library' ? styles.navItemActive : ''
+              }`}
+              onClick={() => {
+                setCurrentSection('library');
+                closeSidebar();
+              }}
+            >
+              <Bookmark size={15} strokeWidth={1.75} />
+              <span>Bookmarks</span>
+              {bookmarks.length > 0 && (
+                <span className={styles.count}>{bookmarks.length}</span>
+              )}
+            </button>
+            <button className={styles.navItem} onClick={openSettings}>
+              <Settings size={15} strokeWidth={1.75} />
+              <span>Settings</span>
+            </button>
+          </div>
         </nav>
 
-        <div className={styles.footer}>
-          <button
-            className={styles.navItem}
-            onClick={openPicker}
-            title="Custom Color"
-            aria-label="Custom Color"
-          >
-            <div className={styles.pickerPreview} style={{ background: customColor }} />
-            <AnimatePresence>
-              {isExpanded && (
-                <motion.span
-                  className={styles.navLabel}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -10 }}
-                >
-                  Custom
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </button>
-
-          <button
-            className={styles.navItem}
-            onClick={openSettings}
-            title="Settings"
-            aria-label="Settings"
-          >
-            <Settings size={24} strokeWidth={1.5} />
-            <AnimatePresence>
-              {isExpanded && (
-                <motion.span
-                  className={styles.navLabel}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -10 }}
-                >
-                  Settings
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </button>
+        {/* Footer */}
+        <div className={styles.sideFooter}>
+          <span className={styles.sideFooterText}>Stax · v1.0</span>
         </div>
-      </motion.aside>
+      </aside>
     </>
   );
 };
