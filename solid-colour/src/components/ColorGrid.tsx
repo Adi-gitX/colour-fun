@@ -1,131 +1,159 @@
 import { useMemo, useRef } from 'react';
-import { motion, useInView, useScroll, useTransform } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
+import { Bookmark, ChevronRight, Pipette } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
-import { colors, getColorsByCategory, searchColors } from '../data/colors';
-import type { Color } from '../data/colors';
-import { getContrastColor } from '../utils/colorUtils';
+import {
+  colors,
+  getColorsByCategory,
+  searchColors,
+  categoryLabels,
+  categoryColors,
+} from '../data/colors';
+import type { Color, ColorCategory } from '../data/colors';
 import styles from './ColorGrid.module.css';
 
 const ColorCard = ({ color, index }: { color: Color; index: number }) => {
   const { openDownloadModal, favorites, toggleFavorite } = useAppStore();
-  const textColor = getContrastColor(color.hex);
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: '-50px' });
+  const isInView = useInView(ref, { once: true, margin: '-40px' });
   const isFav = favorites.includes(color.hex);
 
   return (
     <motion.div
       ref={ref}
       className={styles.card}
-      style={{ backgroundColor: color.hex }}
-      initial={{ opacity: 0, y: 40, scale: 0.9 }}
-      animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
+      initial={{ opacity: 0, y: 12 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{
-        duration: 0.4,
-        delay: (index % 20) * 0.02,
-        ease: [0.25, 0.46, 0.45, 0.94],
+        duration: 0.32,
+        delay: (index % 18) * 0.012,
+        ease: [0.2, 0.8, 0.2, 1],
       }}
-      whileHover={{
-        scale: 1.03,
-        y: -5,
-        transition: { duration: 0.2 },
-      }}
-      whileTap={{ scale: 0.98 }}
       onClick={() => openDownloadModal(color)}
     >
-      <div className={styles.cardGlow} style={{ background: color.hex }} />
-
-      <motion.button
-        className={styles.favBtn}
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: isFav ? 1 : 0, scale: isFav ? 1 : 0 }}
-        whileHover={{ opacity: 1, scale: 1.1 }}
-        onClick={(e) => {
-          e.stopPropagation();
-          toggleFavorite(color.hex);
-        }}
-      >
-        <svg viewBox="0 0 24 24" fill={isFav ? 'white' : 'none'} stroke="white" strokeWidth="2">
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-        </svg>
-      </motion.button>
-
-      <div className={styles.cardContent}>
-        <span className={styles.colorName} style={{ color: textColor }}>
-          {color.name}
-        </span>
-        <span className={styles.colorHex} style={{ color: textColor }}>
-          {color.hex}
-        </span>
+      <div
+        className={styles.swatch}
+        style={{ backgroundColor: color.hex }}
+        aria-label={color.name}
+      />
+      <div className={styles.cardFooter}>
+        <div
+          className={styles.colorDot}
+          style={{ backgroundColor: color.hex }}
+        />
+        <div className={styles.cardMeta}>
+          <span className={styles.colorName}>{color.name}</span>
+          <span className={styles.colorHex}>{color.hex}</span>
+        </div>
+        <button
+          className={`${styles.favBtn} ${isFav ? styles.favBtnActive : ''}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleFavorite(color.hex);
+          }}
+          aria-label={isFav ? 'Remove favorite' : 'Add favorite'}
+        >
+          <Bookmark
+            size={13}
+            strokeWidth={1.75}
+            fill={isFav ? 'currentColor' : 'none'}
+          />
+        </button>
       </div>
     </motion.div>
   );
 };
 
 export const ColorGrid = () => {
-  const { searchQuery, selectedCategory } = useAppStore();
+  const { searchQuery, colorCategory, setColorCategory, openPicker } =
+    useAppStore();
   const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start end', 'end start'],
-  });
-
-  const opacity = useTransform(scrollYProgress, [0, 0.2], [0.5, 1]);
 
   const filteredColors = useMemo(() => {
     let result: Color[] = colors;
-
-    if (selectedCategory !== 'all') {
-      result = getColorsByCategory(selectedCategory);
+    if (colorCategory !== 'all') {
+      result = getColorsByCategory(colorCategory);
     }
-
     if (searchQuery.trim()) {
       const searched = searchColors(searchQuery);
       result = result.filter((c) => searched.some((s) => s.id === c.id));
     }
-
     return result;
-  }, [searchQuery, selectedCategory]);
+  }, [searchQuery, colorCategory]);
 
-  if (filteredColors.length === 0) {
-    return (
-      <motion.div
-        className={styles.empty}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <motion.div
-          className={styles.emptyIcon}
-          animate={{ rotate: [0, 10, -10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          🎨
-        </motion.div>
-        <h3>No colors found</h3>
-        <p>Try adjusting your search or use the custom color picker</p>
-      </motion.div>
-    );
-  }
+  const allCategories = Object.keys(categoryLabels) as ColorCategory[];
 
   return (
-    <motion.div ref={containerRef} className={styles.gridWrapper} style={{ opacity }}>
-      <div className={styles.gridHeader}>
-        <motion.h2
-          className={styles.gridTitle}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
+    <div ref={containerRef} className={styles.gridWrapper}>
+      <div className={styles.headRow}>
+        <div className={styles.headText}>
+          <div className={styles.eyebrow}>Studio</div>
+          <div className={styles.headTitleRow}>
+            <h2 className={styles.gridTitle}>Solid Colors</h2>
+            <span className={styles.gridCount}>{filteredColors.length}</span>
+          </div>
+          <p className={styles.headDescription}>
+            238 curated colors plus a custom picker — export at up to 8K in PNG,
+            JPEG or WebP.
+          </p>
+        </div>
+        <button
+          className={styles.pickerBtn}
+          type="button"
+          onClick={openPicker}
         >
-          {selectedCategory === 'all'
-            ? 'All Colors'
-            : selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}
-        </motion.h2>
-        <span className={styles.gridCount}>{filteredColors.length} colors</span>
+          <Pipette size={13} strokeWidth={1.75} />
+          Custom color
+          <ChevronRight size={13} strokeWidth={1.75} />
+        </button>
       </div>
-      <div className={styles.grid}>
-        {filteredColors.map((color, index) => (
-          <ColorCard key={color.id} color={color} index={index} />
+
+      <div className={styles.filterBar}>
+        <button
+          className={`${styles.chip} ${
+            colorCategory === 'all' ? styles.chipActive : ''
+          }`}
+          onClick={() => setColorCategory('all')}
+        >
+          <span
+            className={styles.chipDot}
+            style={{
+              background:
+                'conic-gradient(from 0deg, #ef4444, #f59e0b, #10b981, #3b82f6, #8b5cf6, #ec4899, #ef4444)',
+            }}
+          />
+          All
+        </button>
+        {allCategories.map((cat) => (
+          <button
+            key={cat}
+            className={`${styles.chip} ${
+              colorCategory === cat ? styles.chipActive : ''
+            }`}
+            onClick={() => setColorCategory(cat)}
+          >
+            <span
+              className={styles.chipDot}
+              style={{ background: categoryColors[cat] }}
+            />
+            {categoryLabels[cat]}
+          </button>
         ))}
       </div>
-    </motion.div>
+
+      {filteredColors.length === 0 ? (
+        <div className={styles.empty}>
+          <div className={styles.emptyIcon}>○</div>
+          <h3>No colors match</h3>
+          <p>Try a different category or use the custom color picker.</p>
+        </div>
+      ) : (
+        <div className={styles.grid}>
+          {filteredColors.map((color, index) => (
+            <ColorCard key={color.id} color={color} index={index} />
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
