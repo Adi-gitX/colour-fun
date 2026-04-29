@@ -1,62 +1,105 @@
+import { useEffect } from 'react';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
-import { Hero } from './components/Hero';
-import { ColorGrid } from './components/ColorGrid';
-import { DownloadModal } from './components/DownloadModal';
-import { ColorPicker } from './components/ColorPicker';
-import { GradientGenerator } from './components/GradientGenerator';
 import { SettingsModal } from './components/SettingsModal';
-import { ImageGallery } from './components/ImageGallery';
 import { ReloadPrompt } from './components/ReloadPrompt';
+import { ColorGrid } from './components/ColorGrid';
+import { ColorPicker } from './components/ColorPicker';
+import { DownloadModal } from './components/DownloadModal';
+import { GradientGenerator } from './components/GradientGenerator';
+import { ImageGallery } from './components/ImageGallery';
+import { HomeView } from './components/views/HomeView';
+import { BrowseView } from './components/views/BrowseView';
+import { DiscoverView } from './components/views/DiscoverView';
+import { LibraryView } from './components/views/LibraryView';
 import { ComingSoon } from './components/placeholders/ComingSoon';
 import { useAppStore } from './store/appStore';
-import { useEffect } from 'react';
 import './App.css';
 
 function App() {
   const { currentSection, theme } = useAppStore();
 
-  // Sync theme with document
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
   const renderContent = () => {
     switch (currentSection) {
-      case 'solid-colors':
+      case 'home':
+        return <HomeView />;
+      case 'components':
         return (
-          <>
-            <Hero />
-            <div id="grid-start" style={{ paddingTop: 20 }}>
-              <ColorGrid />
-            </div>
-          </>
+          <BrowseView
+            scope="all"
+            eyebrow="Browse"
+            title="Components"
+            description="Copy-paste-ready React components, filtered by category."
+          />
         );
+      case 'community':
+        return (
+          <BrowseView
+            scope="community"
+            eyebrow="Community"
+            title="Community submissions"
+            description="Components submitted by the Stax community. Sign in to submit your own."
+          />
+        );
+      case 'libraries':
+        return <DiscoverView variant="libraries" />;
+      case 'design-systems':
+        return <DiscoverView variant="design-systems" />;
+      case 'inspiration':
+        return <DiscoverView variant="inspiration" />;
+      case 'tools':
+        return <DiscoverView variant="tools" />;
+      case 'library':
+        return <LibraryView />;
+      case 'solid-colors':
+        return <ColorGrid />;
       case 'gradients':
         return <GradientGenerator />;
-      case 'images':
+      case 'backgrounds':
         return <ImageGallery />;
-      case 'ui-themes':
+      case 'blocks':
         return (
           <ComingSoon
-            title="UI Themes"
-            icon="💻"
-            description="Complete website UI themes and color palettes."
+            title="Blocks"
+            icon="◫"
+            description="Pre-built page sections — heros, pricing, footers — coming soon."
+          />
+        );
+      case 'templates':
+        return (
+          <ComingSoon
+            title="Templates"
+            icon="◰"
+            description="Full app templates with auth, billing and onboarding wired up."
+          />
+        );
+      case 'hooks':
+        return (
+          <ComingSoon
+            title="Hooks"
+            icon="∿"
+            description="Battle-tested React hooks for state, data and DOM patterns."
+          />
+        );
+      case 'following':
+        return (
+          <ComingSoon
+            title="Following"
+            icon="◎"
+            description="Track designers and engineers whose work you love."
           />
         );
       default:
-        return null;
+        return <HomeView />;
     }
   };
 
   return (
     <div className="app">
-      {/* Header removed as requested for sidebar-centric navigation, or make it minimal if needed.
-          User said "no ai looking full app... sidebar design...".
-          The reference shows NO top header, just sidebar.
-          But I need search... I'll put search in the main content top right or keep header but make it transparent/minimal.
-          I'll keep Header but modify layout.
-      */}
       <Sidebar />
       <main className="main-content">
         <Header />
@@ -64,10 +107,10 @@ function App() {
         <footer className="footer">
           <div className="footer-content">
             <div className="footer-brand">
-              <span>colour-fun</span>
-              <span className="version">v1.2.0</span>
+              <span>Stax</span>
+              <span className="version">v1.0</span>
             </div>
-            <p>Premium Color Assets for Creators</p>
+            <p>The library of UI libraries.</p>
           </div>
         </footer>
       </main>
