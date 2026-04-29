@@ -1,79 +1,74 @@
+/* ===========================================================
+   ReloadPrompt — flat pill, hairline border
+   =========================================================== */
+
 .prompt {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
-  padding: 16px;
-  background: rgba(20, 20, 20, 0.85);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  bottom: 20px;
+  right: 20px;
+  padding: 12px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
   z-index: 1000;
   display: flex;
   align-items: center;
-  gap: 12px;
-  max-width: 400px;
-}
-[data-theme='light'] .prompt {
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  gap: 10px;
+  max-width: 380px;
 }
 
 .message {
-  font-size: 14px;
-  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 13px;
   font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: -0.005em;
 }
 
 .reloadBtn {
-  padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 100px;
-  color: white;
-  font-size: 13px;
-  font-weight: 600;
+  height: 28px;
+  padding: 0 12px;
+  background: var(--accent-primary);
+  border: 1px solid var(--accent-primary);
+  border-radius: var(--radius-sm);
+  color: var(--accent-on-primary);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: opacity 0.12s ease;
 }
+
 .reloadBtn:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: translateY(-1px);
-}
-[data-theme='light'] .reloadBtn {
-  background: rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  color: var(--text-primary);
+  opacity: 0.88;
 }
 
 .closeBtn {
-  padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: var(--text-primary);
-  border-radius: 100px;
-  font-size: 13px;
+  height: 28px;
+  padding: 0 10px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-light);
+  color: var(--text-tertiary);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: all 0.12s ease;
 }
+
 .closeBtn:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-[data-theme='light'] .closeBtn {
-  background: transparent;
-  border-color: rgba(0, 0, 0, 0.1);
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  border-color: var(--border-medium);
 }
 
 @media (max-width: 480px) {
   .prompt {
-    bottom: 20px;
-    left: 20px;
-    right: 20px;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
     flex-wrap: wrap;
     justify-content: center;
   }
