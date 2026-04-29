@@ -1,114 +1,66 @@
-import { useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { Menu, Sun, Moon } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
+import type { Section } from '../store/appStore';
 import styles from './Header.module.css';
 
+const sectionLabels: Record<Section, { parent?: string; label: string }> = {
+  home: { label: 'Home' },
+  components: { parent: 'Browse', label: 'Components' },
+  blocks: { parent: 'Browse', label: 'Blocks' },
+  templates: { parent: 'Browse', label: 'Templates' },
+  hooks: { parent: 'Browse', label: 'Hooks' },
+  community: { label: 'Community' },
+  libraries: { parent: 'Discover', label: 'Component Libraries' },
+  'design-systems': { parent: 'Discover', label: 'Design Systems' },
+  inspiration: { parent: 'Discover', label: 'UI Inspiration' },
+  tools: { parent: 'Discover', label: 'Tools' },
+  library: { label: 'Bookmarks' },
+  following: { label: 'Following' },
+  'solid-colors': { parent: 'Studio', label: 'Solid Colors' },
+  gradients: { parent: 'Studio', label: 'Gradients' },
+  backgrounds: { parent: 'Studio', label: 'Backgrounds' },
+};
+
 export const Header = () => {
-  const { searchQuery, setSearchQuery, theme, toggleTheme, toggleSidebar } = useAppStore();
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  // Keyboard shortcut (Cmd/Ctrl + K)
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        inputRef.current?.focus();
-      }
-      if (e.key === 'Escape') {
-        inputRef.current?.blur();
-        setSearchQuery('');
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [setSearchQuery]);
+  const { theme, toggleTheme, toggleSidebar, currentSection } = useAppStore();
+  const crumb = sectionLabels[currentSection];
 
   return (
-    <motion.header
-      className={styles.header}
-      initial={{ y: -100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
-    >
+    <header className={styles.header}>
       <div className={styles.left}>
-        <button className={styles.menuBtn} onClick={toggleSidebar} aria-label="Toggle menu">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M3 12h18M3 6h18M3 18h18" />
-          </svg>
+        <button
+          className={styles.menuBtn}
+          onClick={toggleSidebar}
+          aria-label="Toggle menu"
+        >
+          <Menu size={18} strokeWidth={2} />
         </button>
-        <div className={styles.logo}>
-          <motion.span
-            className={styles.logoIcon}
-            animate={{ rotate: [0, 360] }}
-            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-          >
-            ◆
-          </motion.span>
-          <span className={styles.logoText}>colour-fun</span>
-        </div>
       </div>
 
       <div className={styles.center}>
-        <motion.div
-          className={styles.searchContainer}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          <svg
-            className={styles.searchIcon}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <circle cx="11" cy="11" r="8" />
-            <path d="m21 21-4.35-4.35" />
-          </svg>
-          <input
-            ref={inputRef}
-            type="text"
-            className={styles.searchInput}
-            placeholder="Search colors by name or hex..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          {searchQuery && (
-            <button
-              className={styles.clearBtn}
-              onClick={() => setSearchQuery('')}
-              aria-label="Clear search"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M18 6L6 18M6 6l12 12" />
-              </svg>
-            </button>
-          )}
-          <kbd className={styles.shortcut}>⌘K</kbd>
-        </motion.div>
+        {crumb.parent && (
+          <>
+            <span className={styles.crumb}>{crumb.parent}</span>
+            <span className={styles.crumbSep}>/</span>
+          </>
+        )}
+        <span className={styles.crumbCurrent}>{crumb.label}</span>
       </div>
 
       <div className={styles.right}>
-        <span className={styles.colorCount}>238 Colors</span>
-        <motion.button
-          className={styles.themeBtn}
+        <button
+          className={styles.iconBtn}
           onClick={toggleTheme}
-          whileHover={{ scale: 1.1, rotate: 15 }}
-          whileTap={{ scale: 0.9 }}
           aria-label="Toggle theme"
+          title={theme === 'dark' ? 'Switch to light' : 'Switch to dark'}
         >
           {theme === 'dark' ? (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="5" />
-              <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-            </svg>
+            <Sun size={14} strokeWidth={1.75} />
           ) : (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
-            </svg>
+            <Moon size={14} strokeWidth={1.75} />
           )}
-        </motion.button>
+        </button>
       </div>
-    </motion.header>
+    </header>
   );
 };
