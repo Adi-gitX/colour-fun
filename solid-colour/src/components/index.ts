@@ -1,6 +1,12 @@
 export { Header } from './Header';
 export { Sidebar } from './Sidebar';
-export { Hero } from './Hero';
+export { ComponentCard } from './ComponentCard';
+export { DiscoverCard } from './DiscoverCard';
+export { SettingsModal } from './SettingsModal';
+export { ReloadPrompt } from './ReloadPrompt';
+export { ToastContainer } from './ToastContainer';
 export { ColorGrid } from './ColorGrid';
-export { DownloadModal } from './DownloadModal';
 export { ColorPicker } from './ColorPicker';
+export { DownloadModal } from './DownloadModal';
+export { GradientGenerator } from './GradientGenerator';
+export { ImageGallery } from './ImageGallery';
