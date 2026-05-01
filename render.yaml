@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: colour-fun-client
+    runtime: docker
+    rootDir: solid-colour
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: oregon
+    branch: main
+    healthCheckPath: /
+    autoDeploy: true
