@@ -1,0 +1,4 @@
+# gitleaks ignore list — fingerprint:rule:line, one per line
+# Add entries here ONLY for confirmed false positives.
+# Example:
+# README.md:generic-api-key:42
