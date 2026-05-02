@@ -7,20 +7,28 @@ on:
     branches: ["**"]
   workflow_dispatch:
 
-jobs:
-  frontend:
-    name: Frontend (vitest + lint + format + e2e)
-    runs-on: ubuntu-latest
+# Cancel previous runs on the same ref — saves CI minutes and gives
+# devs the result of their latest push, not their first one.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
+# Least-privilege baseline. Individual jobs can ask for more if needed.
+permissions:
+  contents: read
+
+jobs:
+  lint-format:
+    name: Lint + format check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
     defaults:
       run:
         working-directory: solid-colour
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "20.x"
           cache: "npm"
@@ -29,33 +37,110 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint
+      - name: ESLint
         run: npm run lint
 
-      - name: Format check
+      - name: Prettier
         run: npm run format:check
 
-      - name: Run vitest with coverage + JUnit
+  unit:
+    name: Unit tests + coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: solid-colour
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "npm"
+          cache-dependency-path: solid-colour/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Vitest with coverage + JUnit
         run: npm run test:ci
 
-      - name: Upload frontend JUnit report
+      - name: Upload JUnit report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: frontend-junit
+          name: junit-report
           path: solid-colour/test-results/junit.xml
           retention-days: 7
 
-      - name: Upload frontend coverage
+      - name: Upload coverage
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: frontend-coverage
+          name: coverage
           path: solid-colour/coverage/
           retention-days: 7
 
-      - name: Build client
+  build:
+    name: Build (Vite)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: solid-colour
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "npm"
+          cache-dependency-path: solid-colour/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
         run: npm run build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: solid-colour/dist/
+          retention-days: 7
+
+  e2e:
+    name: E2E (Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [lint-format, unit, build]
+    defaults:
+      run:
+        working-directory: solid-colour
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "npm"
+          cache-dependency-path: solid-colour/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: solid-colour/dist
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('solid-colour/package-lock.json') }}
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
@@ -70,3 +155,31 @@ jobs:
           name: playwright-report
           path: solid-colour/playwright-report/
           retention-days: 7
+
+  hadolint:
+    name: Dockerfile lint (hadolint)
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: solid-colour/Dockerfile
+          ignore: DL3018
+
+  # Single status check used for branch-protection rules. Any required job
+  # failing flips this to failure even if the workflow as a whole reports
+  # success in some odd-skip edge cases.
+  ci-success:
+    name: CI success
+    if: always()
+    needs: [lint-format, unit, build, e2e, hadolint]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify all jobs succeeded
+        run: |
+          if [[ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
+            echo "::error::At least one required job failed or was cancelled."
+            exit 1
+          fi
+          echo "All required jobs passed."
