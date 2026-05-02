@@ -1,9 +1,9 @@
 # colour-fun
 
-![CI](https://github.com/Adi-gitX/colour-fun/actions/workflows/github-actions.yml/badge.svg)
-![Integration](https://github.com/Adi-gitX/colour-fun/actions/workflows/integration.yml/badge.svg)
-![Frontend Tests](https://github.com/Adi-gitX/colour-fun/actions/workflows/frontend-tests.yml/badge.svg)
-![Deploy](https://github.com/Adi-gitX/colour-fun/actions/workflows/gh-pages.yml/badge.svg)
+[![Tests](https://github.com/Adi-gitX/colour-fun/actions/workflows/tests.yml/badge.svg)](https://github.com/Adi-gitX/colour-fun/actions/workflows/tests.yml)
+[![Secret scan](https://github.com/Adi-gitX/colour-fun/actions/workflows/secret-scan.yml/badge.svg)](https://github.com/Adi-gitX/colour-fun/actions/workflows/secret-scan.yml)
+[![CodeQL](https://github.com/Adi-gitX/colour-fun/actions/workflows/codeql.yml/badge.svg)](https://github.com/Adi-gitX/colour-fun/actions/workflows/codeql.yml)
+[![Deploy](https://github.com/Adi-gitX/colour-fun/actions/workflows/gh-pages.yml/badge.svg)](https://github.com/Adi-gitX/colour-fun/actions/workflows/gh-pages.yml)
 
 Hard finding the right solid background color? **colour&fun** lets you grab clean, pixel-perfect backgrounds in any color, any size — instantly.
 
@@ -86,21 +86,21 @@ User → Header (search/theme) → ColorGrid (filter/display) → DownloadModal 
 
 ## Tech Stack
 
-| Category | Technology |
-|----------|------------|
-| Framework | React 19 |
-| Language | TypeScript 5.9 |
-| Build | Vite 7 |
-| State | Zustand |
-| Styling | CSS Modules |
-| Animations | Framer Motion |
-| PWA | Vite PWA Plugin |
+| Category               | Technology                     |
+| ---------------------- | ------------------------------ |
+| Framework              | React 19                       |
+| Language               | TypeScript 5.9                 |
+| Build                  | Vite 7                         |
+| State                  | Zustand                        |
+| Styling                | CSS Modules                    |
+| Animations             | Framer Motion                  |
+| PWA                    | Vite PWA Plugin                |
 | Unit/Integration Tests | Vitest + React Testing Library |
-| E2E Tests | Playwright |
-| Linting | ESLint 9 (flat config) |
-| Formatting | Prettier |
-| CI/CD | GitHub Actions |
-| Hosting | Vercel + GitHub Pages |
+| E2E Tests              | Playwright                     |
+| Linting                | ESLint 9 (flat config)         |
+| Formatting             | Prettier                       |
+| CI/CD                  | GitHub Actions                 |
+| Hosting                | Vercel + GitHub Pages          |
 
 ---
 
@@ -209,11 +209,11 @@ See [TESTING.md](solid-colour/TESTING.md) for detailed test documentation with p
 
 All DevOps scripts are designed to produce the same result regardless of how many times they're run:
 
-| Script | Purpose | Idempotent Pattern |
-|--------|---------|--------------------|
-| `run.sh` | Project setup | `mkdir -p`, file existence checks, conditional npm install |
-| `run2.sh` | Development environment | `mkdir -p ./logs`, `.env` existence check |
-| `run5.sh` | AWS EC2 launch | Unique security group naming with timestamp |
+| Script    | Purpose                 | Idempotent Pattern                                         |
+| --------- | ----------------------- | ---------------------------------------------------------- |
+| `run.sh`  | Project setup           | `mkdir -p`, file existence checks, conditional npm install |
+| `run2.sh` | Development environment | `mkdir -p ./logs`, `.env` existence check                  |
+| `run5.sh` | AWS EC2 launch          | Unique security group naming with timestamp                |
 
 ```bash
 bash devops/scripts/run.sh dev    # First run: installs everything
