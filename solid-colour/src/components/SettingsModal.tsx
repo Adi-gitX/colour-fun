@@ -128,9 +128,9 @@ export const SettingsModal = () => {
               {activeTab === 'about' && (
                 <div className="settings-section">
                   <div className="about-header">
-                    <div className="app-logo">S</div>
-                    <h3>Stax</h3>
-                    <p>v1.0 · The library of UI libraries</p>
+                    <div className="app-logo">A</div>
+                    <h3>Atlas</h3>
+                    <p>v1.0 · Every design resource in one place</p>
                   </div>
 
                   <div className="feature-list">
@@ -145,7 +145,7 @@ export const SettingsModal = () => {
                       <Github size={15} strokeWidth={1.75} />
                       <div>
                         <strong>Open source</strong>
-                        <p>Stax is open source. Contribute on GitHub.</p>
+                        <p>Atlas is open source. Contribute on GitHub.</p>
                       </div>
                     </div>
                   </div>
