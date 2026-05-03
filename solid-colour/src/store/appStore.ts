@@ -98,6 +98,16 @@ interface AppState {
   openSettings: () => void;
   closeSettings: () => void;
 
+  /* ===== Command palette ===== */
+  isPaletteOpen: boolean;
+  paletteQuery: string;
+  openPalette: () => void;
+  closePalette: () => void;
+  setPaletteQuery: (q: string) => void;
+  recentSearches: string[];
+  addRecentSearch: (q: string) => void;
+  clearRecentSearches: () => void;
+
   /* ===== Preferences ===== */
   reducedMotion: boolean;
   setReducedMotion: (enabled: boolean) => void;
@@ -193,6 +203,21 @@ export const useAppStore = create<AppState>()(
       openSettings: () => set({ isSettingsOpen: true }),
       closeSettings: () => set({ isSettingsOpen: false }),
 
+      isPaletteOpen: false,
+      paletteQuery: '',
+      openPalette: () => set({ isPaletteOpen: true }),
+      closePalette: () => set({ isPaletteOpen: false, paletteQuery: '' }),
+      setPaletteQuery: (q) => set({ paletteQuery: q }),
+      recentSearches: [],
+      addRecentSearch: (q) => {
+        const trimmed = q.trim();
+        if (!trimmed) return;
+        const cur = get().recentSearches;
+        const next = [trimmed, ...cur.filter((s) => s !== trimmed)].slice(0, 8);
+        set({ recentSearches: next });
+      },
+      clearRecentSearches: () => set({ recentSearches: [] }),
+
       reducedMotion: false,
       setReducedMotion: (enabled) => set({ reducedMotion: enabled }),
       highQualityDownloads: true,
@@ -213,6 +238,7 @@ export const useAppStore = create<AppState>()(
         bookmarks: state.bookmarks,
         favorites: state.favorites,
         recentColors: state.recentColors,
+        recentSearches: state.recentSearches,
         currentSection: state.currentSection,
         selectedFormat: state.selectedFormat,
         selectedRatio: state.selectedRatio,
