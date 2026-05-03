@@ -9,6 +9,20 @@ export interface Library {
   highlight?: string;
   initials: string;
   accent: string;
+  /** npm package name — used for install snippets on detail pages. */
+  npmPackage?: string;
+  /** GitHub `owner/repo` — used for stars/last-commit live data later. */
+  github?: string;
+  /** First-class TypeScript support (types shipped, not @types/x). */
+  typescript?: boolean;
+  /** Curated, opinionated pros — kept short. */
+  pros?: string[];
+  /** Curated, opinionated cons — kept short. */
+  cons?: string[];
+  /** Other library ids worth comparing against. */
+  alternatives?: string[];
+  /** Long-form pitch shown on the detail page hero. */
+  tagline?: string;
 }
 
 export const libraries: Library[] = [
@@ -24,6 +38,21 @@ export const libraries: Library[] = [
     highlight: 'Copy-paste',
     initials: 'sh',
     accent: '#09090B',
+    npmPackage: 'shadcn',
+    github: 'shadcn-ui/ui',
+    typescript: true,
+    tagline:
+      'Not a component library. A collection of re-usable components you copy into your codebase and own.',
+    pros: [
+      'You own the code — patch, restyle, fork without forking',
+      'Zero runtime cost — no library bundle to ship',
+      'Best-in-class a11y by piggybacking on Radix primitives',
+    ],
+    cons: [
+      'No automatic upgrade path — components are copies',
+      'Tailwind dependency is non-negotiable',
+    ],
+    alternatives: ['radix-ui', 'headlessui'],
   },
   {
     id: 'radix-ui',
@@ -36,6 +65,21 @@ export const libraries: Library[] = [
     pricing: 'Free',
     initials: 'Rx',
     accent: '#5E6AD2',
+    npmPackage: '@radix-ui/react-dialog',
+    github: 'radix-ui/primitives',
+    typescript: true,
+    tagline:
+      'Low-level primitives — Dialog, Dropdown, Popover, Slider — that handle keyboard, focus and a11y so you can ship the design.',
+    pros: [
+      'Best-in-class accessibility — keyboard, ARIA, focus management out of the box',
+      'Composable primitives — bring your own styling, no opinions',
+      'Tiny bundle per primitive (tree-shakeable)',
+    ],
+    cons: [
+      'You write all the styles',
+      'No high-level patterns (Form, DataTable) — primitives only',
+    ],
+    alternatives: ['headlessui', 'shadcn-ui'],
   },
   {
     id: 'headlessui',
@@ -48,6 +92,18 @@ export const libraries: Library[] = [
     pricing: 'Free',
     initials: 'Hl',
     accent: '#06B6D4',
+    npmPackage: '@headlessui/react',
+    github: 'tailwindlabs/headlessui',
+    typescript: true,
+    tagline:
+      'Unstyled UI primitives from the Tailwind Labs team — Menu, Dialog, Listbox, Combobox, Tabs.',
+    pros: [
+      'Maintained by Tailwind Labs — pairs perfectly with Tailwind',
+      'Solid a11y — focus management, ARIA, keyboard',
+      'Vue support out of the box (rare among React-first libraries)',
+    ],
+    cons: ['Smaller primitive set than Radix', 'Slower release cadence'],
+    alternatives: ['radix-ui', 'shadcn-ui'],
   },
   {
     id: 'mantine',
@@ -60,6 +116,21 @@ export const libraries: Library[] = [
     pricing: 'Free',
     initials: 'Mt',
     accent: '#339AF0',
+    npmPackage: '@mantine/core',
+    github: 'mantinedev/mantine',
+    typescript: true,
+    tagline:
+      '120+ polished components and 70+ hooks. Batteries-included for product teams who want to ship without designing every primitive.',
+    pros: [
+      'Massive surface area — DataTable, Calendar, RichText, Notifications, all in one',
+      'Excellent dark-mode story',
+      '70+ hooks ship alongside the components',
+    ],
+    cons: [
+      'Larger bundle than primitive-only libraries',
+      'Opinionated styling can be hard to override',
+    ],
+    alternatives: ['mui', 'antd', 'chakra-ui'],
   },
   {
     id: 'chakra-ui',
@@ -71,6 +142,18 @@ export const libraries: Library[] = [
     pricing: 'Free',
     initials: 'Ch',
     accent: '#319795',
+    npmPackage: '@chakra-ui/react',
+    github: 'chakra-ui/chakra-ui',
+    typescript: true,
+    tagline:
+      'Style-props-first React UI library. Build interfaces with primitives like <Box> and <Stack>.',
+    pros: [
+      'Style props are wonderfully ergonomic for layout',
+      'Strong focus on a11y',
+      'Active community + plugin ecosystem',
+    ],
+    cons: ['CSS-in-JS runtime cost', 'V3 rewrite changed the API significantly'],
+    alternatives: ['mantine', 'mui'],
   },
   {
     id: 'mui',
@@ -82,6 +165,22 @@ export const libraries: Library[] = [
     pricing: 'Free + Pro',
     initials: 'MU',
     accent: '#007FFF',
+    npmPackage: '@mui/material',
+    github: 'mui/material-ui',
+    typescript: true,
+    tagline:
+      'The most-downloaded React component library. Material Design 3 implementation with paid X (DataGrid, Charts) tier.',
+    pros: [
+      'Enormous component surface and ecosystem',
+      'MUI X DataGrid is genuinely excellent',
+      'Mature theming and i18n',
+    ],
+    cons: [
+      'Material Design aesthetic is opinionated — hard to escape',
+      'Large bundle if you import default everything',
+      'Pro tier required for advanced data components',
+    ],
+    alternatives: ['mantine', 'antd', 'chakra-ui'],
   },
   {
     id: 'antd',
