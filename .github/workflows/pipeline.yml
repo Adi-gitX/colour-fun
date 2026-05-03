@@ -1,0 +1,202 @@
+name: Pipeline
+
+# Chained workflow: test → terraform apply → upload to S3 → CloudFront invalidate.
+#
+# Gated behind the `AWS_DEPLOY_ENABLED` repo variable. By default the workflow
+# short-circuits in the first step so unconfigured forks stay green. Flip the
+# variable to "true" once the AWS secrets and Terraform state bucket are set
+# up (see infra/README.md).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# We never want two pipelines racing each other against the same Terraform state.
+concurrency:
+  group: pipeline-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  # ─────────────────────────────────────────────────────────────
+  # 1 · Test — fast smoke. Full suite still runs in tests.yml.
+  # ─────────────────────────────────────────────────────────────
+  test:
+    name: 1 · Test
+    if: ${{ vars.AWS_DEPLOY_ENABLED == 'true' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: solid-colour
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "npm"
+          cache-dependency-path: solid-colour/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Format check
+        run: npm run format:check
+
+      - name: Vitest with coverage + JUnit
+        run: npm run test:ci
+
+  # ─────────────────────────────────────────────────────────────
+  # 2 · Terraform Apply — provision/converge S3 + CloudFront.
+  # ─────────────────────────────────────────────────────────────
+  terraform:
+    name: 2 · Terraform Apply
+    if: ${{ vars.AWS_DEPLOY_ENABLED == 'true' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: test
+    defaults:
+      run:
+        working-directory: infra
+
+    outputs:
+      site_bucket: ${{ steps.tf_outputs.outputs.site_bucket }}
+      distribution_id: ${{ steps.tf_outputs.outputs.distribution_id }}
+      site_url: ${{ steps.tf_outputs.outputs.site_url }}
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.x
+
+      - name: terraform init
+        run: terraform init -input=false
+
+      - name: terraform fmt -check
+        run: terraform fmt -check -recursive
+
+      - name: terraform validate
+        run: terraform validate
+
+      - name: terraform plan
+        run: terraform plan -input=false -out=tfplan
+
+      - name: terraform apply
+        run: terraform apply -input=false -auto-approve tfplan
+
+      - id: tf_outputs
+        name: Capture outputs for downstream jobs
+        run: |
+          {
+            echo "site_bucket=$(terraform output -raw site_bucket)"
+            echo "distribution_id=$(terraform output -raw cloudfront_distribution_id)"
+            echo "site_url=$(terraform output -raw site_url)"
+          } >> "$GITHUB_OUTPUT"
+
+  # ─────────────────────────────────────────────────────────────
+  # 3 · Build & Deploy — Vite build → S3 sync → CloudFront invalidate.
+  # ─────────────────────────────────────────────────────────────
+  deploy:
+    name: 3 · Build & Deploy
+    if: ${{ vars.AWS_DEPLOY_ENABLED == 'true' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: terraform
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+      BUCKET: ${{ needs.terraform.outputs.site_bucket }}
+      DISTRIBUTION_ID: ${{ needs.terraform.outputs.distribution_id }}
+      SITE_URL: ${{ needs.terraform.outputs.site_url }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "npm"
+          cache-dependency-path: solid-colour/package-lock.json
+
+      - name: Install
+        working-directory: solid-colour
+        run: npm ci
+
+      - name: Build
+        working-directory: solid-colour
+        run: npm run build
+
+      # Fingerprinted Vite output → long, immutable cache.
+      - name: Upload assets (long cache)
+        working-directory: solid-colour
+        run: |
+          aws s3 sync dist/ "s3://${BUCKET}/" --delete \
+            --cache-control "public, max-age=31536000, immutable" \
+            --exclude "index.html" \
+            --exclude "manifest.webmanifest" \
+            --exclude "sw.js" \
+            --exclude "robots.txt" \
+            --exclude "sitemap.xml"
+
+      # HTML / manifest / robots — short cache so updates roll out fast.
+      - name: Upload index.html (short cache)
+        working-directory: solid-colour
+        run: |
+          aws s3 cp dist/index.html "s3://${BUCKET}/index.html" \
+            --cache-control "public, max-age=0, must-revalidate" \
+            --content-type "text/html; charset=utf-8"
+
+      - name: Upload manifest if present
+        working-directory: solid-colour
+        run: |
+          if [ -f dist/manifest.webmanifest ]; then
+            aws s3 cp dist/manifest.webmanifest "s3://${BUCKET}/manifest.webmanifest" \
+              --cache-control "public, max-age=0, must-revalidate" \
+              --content-type "application/manifest+json"
+          fi
+
+      # Service workers must never be cached aggressively.
+      - name: Upload service worker if present
+        working-directory: solid-colour
+        run: |
+          if [ -f dist/sw.js ]; then
+            aws s3 cp dist/sw.js "s3://${BUCKET}/sw.js" \
+              --cache-control "no-cache, no-store, must-revalidate" \
+              --content-type "application/javascript; charset=utf-8"
+          fi
+
+      - name: CloudFront invalidation
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "$DISTRIBUTION_ID" \
+            --paths "/*"
+
+      - name: Summary
+        run: |
+          {
+            echo "## Deploy"
+            echo ""
+            echo "- bucket: \`$BUCKET\`"
+            echo "- distribution: \`$DISTRIBUTION_ID\`"
+            echo "- site: $SITE_URL"
+          } >> "$GITHUB_STEP_SUMMARY"
