@@ -25,8 +25,8 @@ export const HomeView = () => {
             The fastest way to find a component, a system, or a spark.
           </h1>
           <p className={styles.heroLede}>
-            Stax curates the best component libraries, design systems and UI inspiration in one
-            place. Bookmark what you like and ship faster.
+            Atlas curates the best component libraries, design systems, UI inspiration, palettes and
+            tools in one place. Bookmark what you like and ship faster.
           </p>
           <div className={styles.heroActions}>
             <button className={styles.btnPrimary} onClick={() => setCurrentSection('components')}>
