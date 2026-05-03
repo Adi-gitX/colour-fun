@@ -12,10 +12,10 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-        name: 'Stax — The library of UI libraries',
-        short_name: 'Stax',
+        name: 'Atlas — Every design resource in one place',
+        short_name: 'Atlas',
         description:
-          'Discover the best component libraries, design systems and UI inspiration in one place.',
+          'Component libraries, design systems, UI inspiration, palettes, gradients and tools — curated, searchable, fast.',
         theme_color: '#0a0a0a',
         background_color: '#0a0a0a',
         display: 'standalone',

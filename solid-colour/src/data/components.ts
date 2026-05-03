@@ -1,6 +1,6 @@
 /* ===========================================================
    Featured + community components — placeholder cards.
-   Real Stax would seed from a backend; for now the entries are
+   Real Atlas would seed from a backend; for now the entries are
    plausible authored components shown on Home / Browse / Community.
    =========================================================== */
 
