@@ -4,7 +4,7 @@ import type { ComponentCategory } from '../data/components';
 import type { Color, ColorCategory } from '../data/colors';
 
 export type Section =
-  // New Stax sections
+  // Atlas top-level sections
   | 'home'
   | 'components'
   | 'blocks'
@@ -12,6 +12,7 @@ export type Section =
   | 'hooks'
   | 'community'
   | 'libraries'
+  | 'library-detail'
   | 'design-systems'
   | 'inspiration'
   | 'tools'
@@ -20,7 +21,12 @@ export type Section =
   // Studio (restored color/gradient/image features)
   | 'solid-colors'
   | 'gradients'
-  | 'backgrounds';
+  | 'backgrounds'
+  // Toolbox — embedded interactive utilities
+  | 'tool-contrast'
+  | 'tool-palette'
+  | 'tool-typescale'
+  | 'tool-shadow';
 
 export interface Toast {
   id: string;
@@ -107,6 +113,16 @@ interface AppState {
   recentSearches: string[];
   addRecentSearch: (q: string) => void;
   clearRecentSearches: () => void;
+
+  /* ===== Library detail page ===== */
+  selectedLibraryId: string | null;
+  openLibraryDetail: (id: string) => void;
+  closeLibraryDetail: () => void;
+
+  /* ===== Keyboard shortcuts overlay ===== */
+  isShortcutsOpen: boolean;
+  openShortcuts: () => void;
+  closeShortcuts: () => void;
 
   /* ===== Preferences ===== */
   reducedMotion: boolean;
@@ -218,6 +234,14 @@ export const useAppStore = create<AppState>()(
       },
       clearRecentSearches: () => set({ recentSearches: [] }),
 
+      selectedLibraryId: null,
+      openLibraryDetail: (id) => set({ selectedLibraryId: id, currentSection: 'library-detail' }),
+      closeLibraryDetail: () => set({ selectedLibraryId: null, currentSection: 'libraries' }),
+
+      isShortcutsOpen: false,
+      openShortcuts: () => set({ isShortcutsOpen: true }),
+      closeShortcuts: () => set({ isShortcutsOpen: false }),
+
       reducedMotion: false,
       setReducedMotion: (enabled) => set({ reducedMotion: enabled }),
       highQualityDownloads: true,
@@ -232,7 +256,7 @@ export const useAppStore = create<AppState>()(
       removeToast: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
     }),
     {
-      name: 'stax-storage',
+      name: 'atlas-storage',
       partialize: (state) => ({
         theme: state.theme,
         bookmarks: state.bookmarks,
@@ -250,7 +274,12 @@ export const useAppStore = create<AppState>()(
 );
 
 if (typeof window !== 'undefined') {
-  const stored = localStorage.getItem('stax-storage');
+  // One-shot migration: read legacy stax-storage if atlas-storage doesn't exist
+  const legacy = localStorage.getItem('stax-storage');
+  if (legacy && !localStorage.getItem('atlas-storage')) {
+    localStorage.setItem('atlas-storage', legacy);
+  }
+  const stored = localStorage.getItem('atlas-storage');
   let initialTheme: 'light' | 'dark' = 'dark';
   if (stored) {
     try {
