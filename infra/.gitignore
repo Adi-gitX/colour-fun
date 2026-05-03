@@ -1,0 +1,25 @@
+# Terraform working files — never commit these.
+.terraform/
+.terraform.tfstate.lock.info
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+
+# Terraform plan artefacts.
+tfplan
+tfplan.*
+*.tfplan
+
+# CLI logs and crash reports.
+crash.log
+crash.*.log
+
+# Local override files — typically secrets or personal experiments.
+override.tf
+override.tf.json
+*.override.tf
+*.override.tf.json
+
+# Local exec / interpolation.
+.terraformrc
+terraform.rc
