@@ -18,11 +18,30 @@ export interface DiscoverEntry {
   highlight?: string;
 }
 
-export const DiscoverCard = ({ entry, index = 0 }: { entry: DiscoverEntry; index?: number }) => {
+interface DiscoverCardProps {
+  entry: DiscoverEntry;
+  index?: number;
+  /**
+   * Optional: when set, the card body opens an in-app detail page instead
+   * of the external URL. The "Visit" affordance still opens the URL.
+   */
+  onOpenDetail?: (id: string) => void;
+}
+
+export const DiscoverCard = ({ entry, index = 0, onOpenDetail }: DiscoverCardProps) => {
   const { bookmarks, toggleBookmark } = useAppStore();
   const isBookmarked = bookmarks.includes(entry.id);
   const ref = useRef<HTMLAnchorElement>(null);
   const inView = useInView(ref, { once: true, margin: '-40px' });
+
+  const handleClick = onOpenDetail
+    ? (e: React.MouseEvent<HTMLAnchorElement>) => {
+        // Cmd/Ctrl+click should still open in a new tab.
+        if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+        e.preventDefault();
+        onOpenDetail(entry.id);
+      }
+    : undefined;
 
   return (
     <motion.a
@@ -30,6 +49,7 @@ export const DiscoverCard = ({ entry, index = 0 }: { entry: DiscoverEntry; index
       href={entry.url}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={handleClick}
       className={styles.card}
       initial={{ opacity: 0, y: 8 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}

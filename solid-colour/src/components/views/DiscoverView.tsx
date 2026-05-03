@@ -41,7 +41,7 @@ const meta: Record<Variant, { eyebrow: string; title: string; description: strin
 };
 
 export const DiscoverView = ({ variant }: Props) => {
-  const { searchQuery } = useAppStore();
+  const { searchQuery, openLibraryDetail } = useAppStore();
 
   const entries: DiscoverEntry[] = useMemo(() => {
     let list: DiscoverEntry[];
@@ -125,7 +125,12 @@ export const DiscoverView = ({ variant }: Props) => {
       ) : (
         <div className={styles.grid}>
           {entries.map((e, i) => (
-            <DiscoverCard key={e.id} entry={e} index={i} />
+            <DiscoverCard
+              key={e.id}
+              entry={e}
+              index={i}
+              onOpenDetail={variant === 'libraries' ? openLibraryDetail : undefined}
+            />
           ))}
         </div>
       )}
