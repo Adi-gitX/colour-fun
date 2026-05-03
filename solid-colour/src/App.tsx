@@ -12,8 +12,14 @@ import { HomeView } from './components/views/HomeView';
 import { BrowseView } from './components/views/BrowseView';
 import { DiscoverView } from './components/views/DiscoverView';
 import { LibraryView } from './components/views/LibraryView';
+import { LibraryDetailView } from './components/views/LibraryDetailView';
 import { ComingSoon } from './components/placeholders/ComingSoon';
 import { CommandPalette } from './components/CommandPalette';
+import { ShortcutsOverlay } from './components/ShortcutsOverlay';
+import { ContrastChecker } from './components/tools/ContrastChecker';
+import { PaletteGenerator } from './components/tools/PaletteGenerator';
+import { TypeScale } from './components/tools/TypeScale';
+import { ShadowGenerator } from './components/tools/ShadowGenerator';
 import { useAppStore } from './store/appStore';
 import './App.css';
 
@@ -48,12 +54,22 @@ function App() {
         );
       case 'libraries':
         return <DiscoverView variant="libraries" />;
+      case 'library-detail':
+        return <LibraryDetailView />;
       case 'design-systems':
         return <DiscoverView variant="design-systems" />;
       case 'inspiration':
         return <DiscoverView variant="inspiration" />;
       case 'tools':
         return <DiscoverView variant="tools" />;
+      case 'tool-contrast':
+        return <ContrastChecker />;
+      case 'tool-palette':
+        return <PaletteGenerator />;
+      case 'tool-typescale':
+        return <TypeScale />;
+      case 'tool-shadow':
+        return <ShadowGenerator />;
       case 'library':
         return <LibraryView />;
       case 'solid-colors':
@@ -119,6 +135,7 @@ function App() {
       <ColorPicker />
       <SettingsModal />
       <CommandPalette />
+      <ShortcutsOverlay />
       <ReloadPrompt />
     </div>
   );

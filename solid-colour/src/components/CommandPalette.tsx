@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { Command } from 'cmdk';
-import { Search, X, Sun, Moon, Home, Sparkles, Compass, Box } from 'lucide-react';
+import { Search, X, Sun, Moon, Home, Sparkles, Compass, Box, Wrench, Keyboard } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import type { Section } from '../store/appStore';
 import { useUniversalSearch, type SearchItem } from '../hooks/useUniversalSearch';
@@ -16,7 +16,11 @@ const NAV_SHORTCUTS: Array<{
   { section: 'libraries', label: 'Discover Component Libraries', icon: Compass },
   { section: 'design-systems', label: 'Discover Design Systems', icon: Sparkles },
   { section: 'inspiration', label: 'UI Inspiration', icon: Sparkles },
-  { section: 'tools', label: 'Tools', icon: Sparkles },
+  { section: 'tools', label: 'Tools (directory)', icon: Sparkles },
+  { section: 'tool-contrast', label: 'Toolbox · Contrast Checker', icon: Wrench },
+  { section: 'tool-palette', label: 'Toolbox · Palette Generator', icon: Wrench },
+  { section: 'tool-typescale', label: 'Toolbox · Type Scale', icon: Wrench },
+  { section: 'tool-shadow', label: 'Toolbox · Shadow Generator', icon: Wrench },
   { section: 'solid-colors', label: 'Studio · Solid Colors', icon: Sparkles },
   { section: 'gradients', label: 'Studio · Gradients', icon: Sparkles },
   { section: 'library', label: 'My Library (bookmarks)', icon: Box },
@@ -31,6 +35,7 @@ export const CommandPalette = () => {
   const setSection = useAppStore((s) => s.setCurrentSection);
   const toggleTheme = useAppStore((s) => s.toggleTheme);
   const theme = useAppStore((s) => s.theme);
+  const openShortcuts = useAppStore((s) => s.openShortcuts);
   const recent = useAppStore((s) => s.recentSearches);
   const addRecent = useAppStore((s) => s.addRecentSearch);
   const clearRecent = useAppStore((s) => s.clearRecentSearches);
@@ -168,6 +173,23 @@ export const CommandPalette = () => {
               </span>
             </Command.Item>
 
+            <Command.Item
+              className={styles.item}
+              value="show keyboard shortcuts"
+              onSelect={() => {
+                closePalette();
+                openShortcuts();
+              }}
+            >
+              <span className={styles.avatar} aria-hidden>
+                <Keyboard size={14} strokeWidth={2} />
+              </span>
+              <span className={styles.itemBody}>
+                <span className={styles.itemTitle}>Show keyboard shortcuts</span>
+                <span className={styles.itemSubtitle}>Press ? any time</span>
+              </span>
+            </Command.Item>
+
             {NAV_SHORTCUTS.map((nav) => {
               const Icon = nav.icon;
               return (
@@ -204,6 +226,7 @@ export const CommandPalette = () => {
                     <span
                       className={styles.avatar}
                       data-color={item.kind === 'color'}
+                      data-accent={Boolean(item.accent && item.kind !== 'color')}
                       style={
                         item.kind === 'color'
                           ? { background: item.hex, color: 'transparent' }
