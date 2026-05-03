@@ -18,10 +18,15 @@ const sectionLabels: Record<Section, { parent?: string; label: string }> = {
   inspiration: { parent: 'Discover', label: 'UI Inspiration' },
   tools: { parent: 'Discover', label: 'Tools' },
   library: { label: 'Bookmarks' },
+  'library-detail': { parent: 'Discover', label: 'Library' },
   following: { label: 'Following' },
   'solid-colors': { parent: 'Studio', label: 'Solid Colors' },
   gradients: { parent: 'Studio', label: 'Gradients' },
   backgrounds: { parent: 'Studio', label: 'Backgrounds' },
+  'tool-contrast': { parent: 'Toolbox', label: 'Contrast Checker' },
+  'tool-palette': { parent: 'Toolbox', label: 'Palette Generator' },
+  'tool-typescale': { parent: 'Toolbox', label: 'Type Scale' },
+  'tool-shadow': { parent: 'Toolbox', label: 'Shadow Generator' },
 };
 
 export const Header = () => {
