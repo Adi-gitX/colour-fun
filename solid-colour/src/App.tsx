@@ -13,6 +13,7 @@ import { BrowseView } from './components/views/BrowseView';
 import { DiscoverView } from './components/views/DiscoverView';
 import { LibraryView } from './components/views/LibraryView';
 import { ComingSoon } from './components/placeholders/ComingSoon';
+import { CommandPalette } from './components/CommandPalette';
 import { useAppStore } from './store/appStore';
 import './App.css';
 
@@ -42,7 +43,7 @@ function App() {
             scope="community"
             eyebrow="Community"
             title="Community submissions"
-            description="Components submitted by the Stax community. Sign in to submit your own."
+            description="Components submitted by the Atlas community. Sign in to submit your own."
           />
         );
       case 'libraries':
@@ -107,16 +108,17 @@ function App() {
         <footer className="footer">
           <div className="footer-content">
             <div className="footer-brand">
-              <span>Stax</span>
+              <span>Atlas</span>
               <span className="version">v1.0</span>
             </div>
-            <p>The library of UI libraries.</p>
+            <p>Every design resource a developer or designer ever needs, in one place.</p>
           </div>
         </footer>
       </main>
       <DownloadModal />
       <ColorPicker />
       <SettingsModal />
+      <CommandPalette />
       <ReloadPrompt />
     </div>
   );
