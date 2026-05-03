@@ -1,7 +1,10 @@
-import { Menu, Sun, Moon } from 'lucide-react';
+import { Menu, Sun, Moon, Search } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import type { Section } from '../store/appStore';
 import styles from './Header.module.css';
+
+const isMac =
+  typeof navigator !== 'undefined' && /mac/i.test(navigator.platform || navigator.userAgent);
 
 const sectionLabels: Record<Section, { parent?: string; label: string }> = {
   home: { label: 'Home' },
@@ -22,7 +25,7 @@ const sectionLabels: Record<Section, { parent?: string; label: string }> = {
 };
 
 export const Header = () => {
-  const { theme, toggleTheme, toggleSidebar, currentSection } = useAppStore();
+  const { theme, toggleTheme, toggleSidebar, currentSection, openPalette } = useAppStore();
   const crumb = sectionLabels[currentSection];
 
   return (
@@ -44,6 +47,16 @@ export const Header = () => {
       </div>
 
       <div className={styles.right}>
+        <button
+          className={styles.searchBtn}
+          onClick={openPalette}
+          aria-label="Open command palette"
+          title="Search everything"
+        >
+          <Search size={13} strokeWidth={1.75} />
+          <span className={styles.searchBtnLabel}>Search…</span>
+          <span className={styles.searchBtnKbd}>{isMac ? '⌘' : 'Ctrl'} K</span>
+        </button>
         <button
           className={styles.iconBtn}
           onClick={toggleTheme}
