@@ -11,6 +11,9 @@ The web has scattered design resources across thousands of disconnected sites �
 
 **Live:** [atlas.vercel.app](https://colour-fun.vercel.app) · [GitHub Pages mirror](https://adi-gitx.github.io/colour-fun/)
 
+> 📘 **For the post-midsem walkthrough** (what changed phase-by-phase, with examples + cost notes), see [POST-MIDSEM-NOTES.md](POST-MIDSEM-NOTES.md).
+> 📋 **For rubric grading** (which file proves which line), see [SUBMISSION.md](SUBMISSION.md).
+
 ---
 
 ## Why Atlas
@@ -117,7 +120,10 @@ solidbackgrounds/
 │
 ├── docker-compose.yml             # locked-down runtime (read_only, cap_drop ALL)
 ├── render.yaml                    # PaaS deploy
+├── infra/                         # Terraform for S3 + CloudFront + tfstate lock
 ├── COURSE_TIMELINE.md             # FSDE 2025 lecture-by-lecture map
+├── POST-MIDSEM-NOTES.md           # Walkthrough of post-midsem changes by phase
+├── SUBMISSION.md                  # Rubric checklist with file paths
 └── README.md
 ```
 

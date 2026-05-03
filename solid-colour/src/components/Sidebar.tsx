@@ -15,6 +15,9 @@ import {
   Palette,
   Image as ImageIcon,
   Pipette,
+  Contrast,
+  Type,
+  Square,
 } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import { useAppStore } from '../store/appStore';
@@ -53,6 +56,13 @@ const studioItems: NavItem[] = [
   { id: 'solid-colors', label: 'Solid Colors', icon: Palette, count: colors.length },
   { id: 'gradients', label: 'Gradients', icon: Sparkles },
   { id: 'backgrounds', label: 'Backgrounds', icon: ImageIcon, count: imageUrls.length },
+];
+
+const toolboxItems: NavItem[] = [
+  { id: 'tool-contrast', label: 'Contrast Checker', icon: Contrast },
+  { id: 'tool-palette', label: 'Palette Generator', icon: Palette },
+  { id: 'tool-typescale', label: 'Type Scale', icon: Type },
+  { id: 'tool-shadow', label: 'Shadow Generator', icon: Square },
 ];
 
 export const Sidebar = () => {
@@ -197,6 +207,12 @@ export const Sidebar = () => {
               <span>Custom color</span>
               <div className={styles.swatch} style={{ background: customColor }} />
             </button>
+          </div>
+
+          {/* Toolbox — embedded utilities */}
+          <div className={styles.navGroup}>
+            <div className={styles.groupLabel}>Toolbox</div>
+            {toolboxItems.map(renderItem)}
           </div>
 
           {/* Library */}
