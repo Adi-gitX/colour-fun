@@ -122,8 +122,8 @@ export const Sidebar = () => {
       <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.open : ''}`}>
         {/* Brand */}
         <div className={styles.brand}>
-          <div className={styles.brandMark}>S</div>
-          <span className={styles.brandText}>Stax</span>
+          <div className={styles.brandMark}>A</div>
+          <span className={styles.brandText}>Atlas</span>
         </div>
 
         {/* Search */}
@@ -224,7 +224,7 @@ export const Sidebar = () => {
 
         {/* Footer */}
         <div className={styles.sideFooter}>
-          <span className={styles.sideFooterText}>Stax · v1.0</span>
+          <span className={styles.sideFooterText}>Atlas · v1.0</span>
         </div>
       </aside>
     </>
