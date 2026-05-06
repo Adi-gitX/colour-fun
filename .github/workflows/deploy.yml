@@ -1,0 +1,211 @@
+name: Deploy (ECR + ECS)
+
+# =============================================================================
+# Container deploy pipeline — AWS Academy compatible.
+#
+# Shape:
+#   push to main ─► test ─► terraform apply (ECR only) ─► docker build/push
+#                                              │
+#                                              └─► terraform apply (ECS) ─► force-new-deployment
+#
+# Independent from `pipeline.yml` (which deploys the static site to
+# S3+CloudFront from `infra/`). Both can coexist — they own disjoint Terraform
+# state and target disjoint AWS resources.
+#
+# Gating + inputs (Settings → Secrets and variables → Actions):
+#
+#   Variables (Variables tab):
+#     LAB_DEPLOY_ENABLED      = "true"           # turns the workflow on
+#     LAB_SUBNET_ID           = "subnet-..."     # default-VPC subnet id
+#     LAB_SECURITY_GROUP_ID   = "sg-..."         # SG with TCP:8080 inbound
+#
+#   Secrets (Secrets tab) — Academy issues these as a triplet that rotate
+#   every ~4h, refresh from the Academy console when they expire:
+#     AWS_ACCESS_KEY_ID
+#     AWS_SECRET_ACCESS_KEY
+#     AWS_SESSION_TOKEN
+#
+# Why these and not OIDC / `role-to-assume`? Academy doesn't let students
+# create IAM identity providers or roles. We piggy-back on the pre-existing
+# `LabRole` for ECS tasks (see terraform/main.tf) and use Academy's short-
+# lived session creds for the GitHub Actions workflow auth.
+# =============================================================================
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "solid-colour/**"
+      - "terraform/**"
+      - "Dockerfile"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch:
+
+# Two pipelines must never race each other against the same Terraform state
+# or push the same image tag concurrently.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  AWS_REGION: us-east-1
+  PROJECT_NAME: atlas
+  TF_VAR_aws_region: us-east-1
+  TF_VAR_project_name: atlas
+  # Academy-specific networking — passed through as Terraform vars so the
+  # ECS service can attach to a real subnet + SG in the default VPC.
+  TF_VAR_subnet_id: ${{ vars.LAB_SUBNET_ID }}
+  TF_VAR_security_group_id: ${{ vars.LAB_SECURITY_GROUP_ID }}
+
+jobs:
+  # ─────────────────────────────────────────────────────────────
+  # 1 · Test — fast smoke. Full suite still runs in tests.yml.
+  # ─────────────────────────────────────────────────────────────
+  test:
+    name: 1 · Test
+    if: ${{ vars.LAB_DEPLOY_ENABLED == 'true' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: solid-colour
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "npm"
+          cache-dependency-path: solid-colour/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Vitest (with coverage + JUnit when CI=true)
+        run: npm run test:ci
+
+  # ─────────────────────────────────────────────────────────────
+  # 2 · Terraform — provision ECR first, build/push image, then
+  #     apply the rest of the infra (ECS cluster + service).
+  # ─────────────────────────────────────────────────────────────
+  deploy:
+    name: 2 · Deploy
+    if: ${{ vars.LAB_DEPLOY_ENABLED == 'true' || github.event_name == 'workflow_dispatch' }}
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.x
+
+      # --- Stage A: create the ECR repo only ---
+      # On the first ever run the ECR repo doesn't exist yet, so we can't
+      # docker push. Apply just the ECR resource first (the ECS service
+      # depends on a real image existing).
+      - name: terraform init
+        working-directory: terraform
+        run: terraform init -input=false
+
+      - name: terraform fmt -check
+        working-directory: terraform
+        run: terraform fmt -check -recursive
+
+      - name: terraform validate
+        working-directory: terraform
+        run: terraform validate
+
+      - name: terraform apply (ECR only)
+        working-directory: terraform
+        run: |
+          terraform apply -input=false -auto-approve \
+            -target=aws_ecr_repository.app \
+            -target=aws_ecr_lifecycle_policy.app
+
+      - name: Capture ECR url + names
+        id: tf
+        working-directory: terraform
+        run: |
+          {
+            echo "ecr_url=$(terraform output -raw ecr_repository_url)"
+            echo "ecr_name=$(terraform output -raw ecr_repository_name)"
+          } >> "$GITHUB_OUTPUT"
+
+      # --- Stage B: build, tag, push ---
+      - name: Login to Amazon ECR
+        run: |
+          aws ecr get-login-password --region "$AWS_REGION" \
+            | docker login --username AWS --password-stdin \
+                "$(echo '${{ steps.tf.outputs.ecr_url }}' | cut -d/ -f1)"
+
+      - name: Build image
+        run: |
+          docker build \
+            --tag "${{ steps.tf.outputs.ecr_url }}:${{ github.sha }}" \
+            --tag "${{ steps.tf.outputs.ecr_url }}:latest" \
+            --file Dockerfile \
+            .
+
+      - name: Push image (sha + latest)
+        run: |
+          docker push "${{ steps.tf.outputs.ecr_url }}:${{ github.sha }}"
+          docker push "${{ steps.tf.outputs.ecr_url }}:latest"
+
+      # --- Stage C: now the rest of the infra can come up safely ---
+      - name: terraform apply (full)
+        working-directory: terraform
+        env:
+          TF_VAR_image_tag: ${{ github.sha }}
+        run: terraform apply -input=false -auto-approve
+
+      - name: Capture cluster + service for forced redeploy
+        id: ecs
+        working-directory: terraform
+        run: |
+          {
+            echo "cluster=$(terraform output -raw ecs_cluster_name)"
+            echo "service=$(terraform output -raw ecs_service_name)"
+          } >> "$GITHUB_OUTPUT"
+
+      # --- Stage D: poke ECS to roll the running tasks onto the new image ---
+      # The task definition's `lifecycle.ignore_changes = [task_definition]`
+      # means terraform won't bump the service's revision on its own — the
+      # forced deployment is what actually rolls the container.
+      - name: Force ECS service redeploy
+        run: |
+          aws ecs update-service \
+            --cluster "${{ steps.ecs.outputs.cluster }}" \
+            --service "${{ steps.ecs.outputs.service }}" \
+            --force-new-deployment \
+            --region "$AWS_REGION" >/dev/null
+
+      - name: Summary
+        run: |
+          {
+            echo "## Deploy"
+            echo ""
+            echo "- **ECR**: \`${{ steps.tf.outputs.ecr_url }}\`"
+            echo "- **Image tag**: \`${{ github.sha }}\`"
+            echo "- **Cluster**: \`${{ steps.ecs.outputs.cluster }}\`"
+            echo "- **Service**: \`${{ steps.ecs.outputs.service }}\`"
+            echo ""
+            echo "Track the rollout: aws ecs describe-services \\"
+            echo "  --cluster ${{ steps.ecs.outputs.cluster }} \\"
+            echo "  --services ${{ steps.ecs.outputs.service }}"
+          } >> "$GITHUB_STEP_SUMMARY"

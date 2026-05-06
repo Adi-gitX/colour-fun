@@ -283,3 +283,42 @@ The next phases (post-Phase-4) that would meaningfully add value:
   Web Vitals are real, not vibes.
 
 Tracked in the repo's open issues.
+
+---
+
+## Potential Questions
+
+Based on the architecture and workflow described above, here are some questions that could be asked (e.g., in a viva or review):
+
+- **What does `terraform init` do in this pipeline?**
+  _It initializes the Terraform working directory, downloads the required provider plugins (like the AWS provider), and configures the backend (S3 + DynamoDB) to store and lock the state._
+- **Why use S3 + CloudFront instead of ECS, Fargate, or an ALB?**
+  _Atlas is a static Single Page Application (SPA) with no server-side compute. S3 + CDN is the cheapest, most secure, and most performant architecture for serving static assets. Adding compute components would only increase costs and attack surface without adding any capability._
+- **Why is a DynamoDB table needed for Terraform?**
+  _The DynamoDB table provides a state lock. It guarantees that if two pipelines (or developers) attempt to run `terraform apply` concurrently, one will be locked out, preventing state file corruption._
+- **How does the repository ensure secrets don't leak?**
+  _A `secret-scan.yml` workflow runs `gitleaks` across the full git history on every push and PR to catch committed secrets before they become a problem._
+- **Why use the `nginx-unprivileged` base image for the Docker container?**
+  _It runs the web server as a non-root user (`nginx`), which adheres to the principle of least privilege. By binding to port 8080 instead of 80, it eliminates the need for `CAP_NET_BIND_SERVICE`._
+- **What is Origin Access Control (OAC) and why use it?**
+  _OAC ensures the S3 bucket is strictly private and can only be accessed through the CloudFront distribution. This prevents users from bypassing the CDN (and its associated caching, WAF, or security headers) by hitting the S3 bucket directly._
+- **How is caching and invalidation handled during a new deployment?**
+  _The deployment syncs hashed Vite assets with long-term, immutable caching, but specifically sets `index.html`, `manifest.webmanifest`, and `sw.js` to `no-cache` / `must-revalidate`. Finally, it executes a CloudFront invalidation for `/_` so edge nodes fetch the new routing entrypoint.\*
+- **What happens if tests fail in the CI/CD pipeline?**
+  _The pipeline jobs are strictly chained using the `needs:` keyword. A failure in the `test` job completely halts the workflow, meaning the `terraform` and `deploy` stages will never run. This guarantees broken code never reaches the infrastructure._
+- **What do Husky and lint-staged do?**
+  _They catch messy code before it is even committed. Husky intercepts your commit, and lint-staged runs formatting tools (like Prettier) only on the files you changed._
+- **What is the purpose of CodeQL?**
+  _It is an automated security scanner by GitHub. It reads the code to find known vulnerabilities and bad practices on every push._
+- **Why use a multi-stage Docker build?**
+  _To keep the final image tiny and secure. Stage 1 uses Node.js to build the app. Stage 2 takes only the finished files and puts them in a lightweight Nginx server. Node.js is completely left behind, reducing the attack surface._
+- **Why make the Docker container's filesystem read-only (`read_only: true`)?**
+  _For strict security. Even if an attacker breaches the container, they cannot download scripts, modify app files, or install malware because they cannot write to the disk._
+- **What do `terraform plan` and `terraform apply` do?**
+  _`plan` is a dry-run: it shows you exactly what AWS resources will be created or deleted without actually doing it. `apply` executes that plan and provisions the real infrastructure._
+- **Why does ESLint use `--max-warnings 0`?**
+  _To enforce high code quality. It treats warnings as errors in the CI pipeline, forcing developers to fix sloppy code instead of ignoring the warnings._
+- **What is a "SPA fallback" (used in Nginx and CloudFront)?**
+  _Since Atlas is a Single Page Application, routing happens in the browser. The fallback ensures that if a user visits a direct link like `/dashboard`, the server returns `index.html` instead of a 404 error, letting the React/Solid router take over._
+- **Why replace AWS secret keys with OIDC (OpenID Connect) in the future?**
+  _To improve security by removing permanent passwords. OIDC allows GitHub Actions to request temporary, short-lived access tokens from AWS, meaning there are no permanent secret keys that could be leaked._
