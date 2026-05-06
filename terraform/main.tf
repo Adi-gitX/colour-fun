@@ -34,6 +34,27 @@ terraform {
       version = "~> 5.60"
     }
   }
+
+  # Remote state in S3 with DynamoDB locking — same bucket as the infra/
+  # stack, different key. Required so every CI run reads the current
+  # resource state instead of trying to re-create things on every apply.
+  # Bootstrap commands (one-time):
+  #
+  #   ACCT=$(aws sts get-caller-identity --query Account --output text)
+  #   aws s3api create-bucket --bucket atlas-tfstate-$ACCT --region us-east-1
+  #   aws s3api put-bucket-versioning --bucket atlas-tfstate-$ACCT \
+  #     --versioning-configuration Status=Enabled
+  #   aws dynamodb create-table --table-name atlas-tfstate-locks \
+  #     --attribute-definitions AttributeName=LockID,AttributeType=S \
+  #     --key-schema AttributeName=LockID,KeyType=HASH \
+  #     --billing-mode PAY_PER_REQUEST --region us-east-1
+  backend "s3" {
+    bucket         = "atlas-tfstate-747207933464"
+    key            = "atlas-containers/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "atlas-tfstate-locks"
+    encrypt        = true
+  }
 }
 
 provider "aws" {

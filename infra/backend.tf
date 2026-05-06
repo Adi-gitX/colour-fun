@@ -15,7 +15,7 @@
 # Then fill the bucket name below and run `terraform init`.
 terraform {
   backend "s3" {
-    bucket         = "atlas-tfstate-REPLACE_ME"
+    bucket         = "atlas-tfstate-747207933464"
     key            = "atlas/terraform.tfstate"
     region         = "us-east-1"
     dynamodb_table = "atlas-tfstate-locks"
