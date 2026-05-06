@@ -9,7 +9,16 @@
 
 The web has scattered design resources across thousands of disconnected sites — Awwwards for inspiration, shadcn for components, Coolors for palettes, Unsplash for backgrounds, Lucide for icons, Mobbin for mobile UI, Dribbble for trends. Atlas pulls every category that matters into a single curated, searchable, opinionated library. One tab. Everything.
 
-**Live:** [atlas.vercel.app](https://colour-fun.vercel.app) · [GitHub Pages mirror](https://adi-gitx.github.io/colour-fun/)
+### Live deploys
+
+| Channel                  | URL                                                       | Behind                                             |
+| ------------------------ | --------------------------------------------------------- | -------------------------------------------------- |
+| **AWS — ECS Fargate**    | http://54.167.106.8:8080                                  | Multi-stage Docker → ECR → ECS Fargate (Terraform) |
+| **AWS — S3 static site** | http://atlas-prod-site.s3-website-us-east-1.amazonaws.com | Vite build → S3 Website Hosting (Terraform)        |
+| Vercel                   | https://colour-fun.vercel.app                             | Vite build → Vercel CDN                            |
+| GitHub Pages             | https://adi-gitx.github.io/colour-fun/                    | Vite build → Pages                                 |
+
+> The two AWS channels are both provisioned via Terraform under `infra/` (S3) and `terraform/` (ECR + ECS) and ship on every push to `main` via `.github/workflows/pipeline.yml` and `deploy.yml`. State is in `s3://atlas-tfstate-<account>/` with DynamoDB locking via `atlas-tfstate-locks`.
 
 > 📘 **For the post-midsem walkthrough** (what changed phase-by-phase, with examples + cost notes), see [POST-MIDSEM-NOTES.md](POST-MIDSEM-NOTES.md).
 > 📋 **For rubric grading** (which file proves which line), see [SUBMISSION.md](SUBMISSION.md).

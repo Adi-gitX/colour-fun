@@ -457,8 +457,10 @@ Atlas
 | Lint              | ESLint 9 (flat config), `--max-warnings 0`            | Fail CI on any warning                                                                       |
 | Format            | Prettier with husky + lint-staged                     | Auto-format on commit                                                                        |
 | Container         | Multi-stage Docker → `nginx-unprivileged:1.27-alpine` | Non-root, port 8080, hardened                                                                |
-| Hosting           | Vercel + GitHub Pages mirror                          | Vercel primary, Pages as fallback                                                            |
-| CDN (production)  | AWS CloudFront in front of S3 (Terraform)             | Global, cheap, ~$1/month at hobby scale                                                      |
+| Hosting (Vercel)  | Vercel auto-deploy on push                            | Primary public URL                                                                           |
+| Hosting (GitHub)  | GitHub Pages mirror                                   | Free fallback                                                                                |
+| Hosting (AWS A)   | ECS Fargate (Terraform)                               | Container deploy from a multi-stage Docker image; `terraform/` stack                         |
+| Hosting (AWS B)   | S3 Static Website Hosting (Terraform)                 | Static-site deploy; `infra/` stack — no CloudFront on Academy variant                        |
 | Security scanning | gitleaks + CodeQL + dependabot                        | Pre-commit, push, weekly cron                                                                |
 | CI                | GitHub Actions                                        | Concurrency, timeouts, hadolint, ci-success aggregator                                       |
 
@@ -576,13 +578,23 @@ Single localStorage key: `stax-storage` (kept stable for backward-compat across 
 
 ### Production infrastructure
 
-The Terraform-provisioned production deploy uses:
+Two Terraform-provisioned AWS deploy paths, both ship on every push:
 
-- Private S3 bucket — versioned, AES256, public access fully blocked.
-- CloudFront with Origin Access Control (modern OAI replacement).
-- Real security headers in CDN response: HSTS (2y, includeSubDomains, preload), X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy denying camera/mic/geo, baseline CSP.
+**Container path (`terraform/`):**
+
+- Private ECR repository, lifecycle keeps last 10 images.
+- ECS Fargate cluster, public-IP task ENI, no ALB.
+- CloudWatch log group `/ecs/atlas`.
+- Reuses Academy's pre-provisioned `LabRole` (no IAM creation).
 - Container runtime: `nginx-unprivileged:1.27-alpine`, port 8080, no `CAP_NET_BIND`.
-- docker-compose: `read_only` filesystem, tmpfs, `cap_drop: ALL`, `no-new-privileges`.
+- docker-compose (local): `read_only` filesystem, tmpfs, `cap_drop: ALL`, `no-new-privileges`.
+
+**Static-site path (`infra/`):**
+
+- S3 bucket — versioned, AES256, Static Website Hosting on, public-read policy.
+- CloudFront intentionally omitted on the Academy account (the API is revoked); restoring it on a non-Academy account is a one-commit revert. Where supported, the production target is private S3 + CloudFront-OAC + Response Headers Policy with HSTS / Frame-Options / nosniff / Referrer-Policy / Permissions-Policy / baseline CSP.
+
+Shared backend: `s3://atlas-tfstate-<account>/` for state, `atlas-tfstate-locks` DynamoDB for locking. Both stacks own disjoint state keys (`atlas/`, `atlas-containers/`).
 
 ### Repo guardrails
 
@@ -605,30 +617,45 @@ The Terraform-provisioned production deploy uses:
 | `codeql.yml`      | push to main + PR + weekly cron | SAST                                                                               |
 | `gh-pages.yml`    | push to main                    | deploy to GitHub Pages                                                             |
 
+### Feature-flagged AWS deploys (push-driven)
+
+| Workflow       | Trigger                                             | What it does                                                                                         |
+| -------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `pipeline.yml` | push to main when `vars.AWS_DEPLOY_ENABLED=='true'` | static-site path: terraform apply against `infra/`, vite build, S3 sync                              |
+| `deploy.yml`   | push to main when `vars.LAB_DEPLOY_ENABLED=='true'` | container path: terraform apply against `terraform/`, docker build/push to ECR, ECS rolling redeploy |
+
+Both stay skipped (green) on forks that haven't set the feature flags.
+
 ### Manual / opt-in workflows
 
-| Workflow               | Trigger                                             | Why manual                                                       |
-| ---------------------- | --------------------------------------------------- | ---------------------------------------------------------------- |
-| `pipeline.yml`         | push to main when `vars.AWS_DEPLOY_ENABLED=='true'` | full chained Terraform apply + S3 sync + CloudFront invalidation |
-| `deploy-to-ec2.yml`    | workflow_dispatch                                   | needs EC2 secrets we don't auto-configure                        |
-| `deploy-to-docker.yml` | push to `docker` branch                             | manual Docker Hub publish                                        |
-| `integration.yml`      | workflow_dispatch                                   | needs Slack webhook                                              |
+| Workflow               | Trigger                 | Why manual                                |
+| ---------------------- | ----------------------- | ----------------------------------------- |
+| `deploy-to-ec2.yml`    | workflow_dispatch       | needs EC2 secrets we don't auto-configure |
+| `deploy-to-docker.yml` | push to `docker` branch | manual Docker Hub publish                 |
+| `integration.yml`      | workflow_dispatch       | needs Slack webhook                       |
 
-### Production deploy chain (when AWS is wired up)
+### Production deploy chains
 
 ```
 Push to main
-  └─→ tests.yml (auto)
-  └─→ pipeline.yml (gated)
+  ├─→ tests.yml (auto)
+  ├─→ pipeline.yml (vars.AWS_DEPLOY_ENABLED == 'true')
+  │     ├─→ 1 · Test (lint + format + vitest)
+  │     ├─→ 2 · Terraform Apply against infra/  (S3 site bucket)
+  │     └─→ 3 · Build & Deploy
+  │              ├─→ vite build
+  │              └─→ aws s3 sync (long cache for assets, short for HTML)
+  │
+  └─→ deploy.yml (vars.LAB_DEPLOY_ENABLED == 'true')
         ├─→ 1 · Test (lint + format + vitest)
-        ├─→ 2 · Terraform Apply (S3 + CloudFront with OAC)
-        └─→ 3 · Build & Deploy
-                  ├─→ vite build
-                  ├─→ aws s3 sync (long cache for assets, short for HTML)
-                  └─→ aws cloudfront create-invalidation /*
+        └─→ 2 · Deploy
+                 ├─→ terraform apply ECR-only (creates registry)
+                 ├─→ docker build + push (sha + latest tags)
+                 ├─→ terraform apply full (cluster + service + task def)
+                 └─→ aws ecs update-service --force-new-deployment
 ```
 
-**Bootstrap commands** for the Terraform state bucket are documented in [`infra/README.md`](infra/README.md).
+**Bootstrap commands** for the shared Terraform state bucket are documented in [`infra/README.md`](infra/README.md). Container-stack-specific bootstrap (subnet + SG ids) is in [`terraform/README.md`](terraform/README.md).
 
 ---
 
@@ -727,7 +754,8 @@ solidbackgrounds/                 # repo root (legacy name; product is "Atlas")
 │   ├── ISSUE_TEMPLATE/
 │   ├── PULL_REQUEST_TEMPLATE.md
 │   └── workflows/                # 13 workflows; 4 auto-run, rest manual
-├── infra/                        # Terraform: S3 + CloudFront for production deploy
+├── infra/                        # Terraform: S3 Static Website Hosting (Academy variant — CloudFront one-revert away)
+├── terraform/                    # Terraform: ECR + ECS Fargate (Academy-compatible, uses LabRole)
 ├── solid-colour/                 # Atlas frontend (folder name kept for git history)
 │   ├── src/
 │   │   ├── components/           # 22 components
@@ -832,13 +860,15 @@ export type Section =
 - **Discover** — the navigation group containing curated catalogs (Component Libraries, Design Systems, UI Inspiration, Tools directory).
 - **DiscoverCard** — the card primitive that renders an entry in any Discover catalog.
 - **JTBD** — Jobs-to-be-done framework; what users hire the product to accomplish.
-- **OAC** — Origin Access Control. AWS CloudFront's modern replacement for OAI; locks an S3 bucket so only the specific CloudFront distribution can read it.
-- **SPA fallback** — CloudFront response policy that returns `200 /index.html` for any 403/404 from S3, enabling client-side routing on deep links.
+- **OAC** — Origin Access Control. AWS CloudFront's modern replacement for OAI; locks an S3 bucket so only the specific CloudFront distribution can read it. (Not provisioned on the current Academy account — see Phase 2b/3 in POST-MIDSEM-NOTES.md.)
+- **SPA fallback** — for the static-site path, S3 Website Hosting's `error_document = index.html` serves the SPA on any 403/404 so client-side routing works on deep links. The CloudFront variant achieves the same with custom error responses.
+- **LabRole** — the pre-provisioned IAM role every AWS Academy account ships with. Used as the ECS task execution role + task role since Academy revokes `iam:Create*`.
 
 ---
 
 ## 22. Document History
 
-| Version | Date       | Changes                                                  |
-| ------- | ---------- | -------------------------------------------------------- |
-| 1.0     | 2026-05-03 | Initial PRD covering shipped v1.0 + v1.1 / v2.0 roadmap. |
+| Version | Date       | Changes                                                                                                                                                                                                                              |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1.0     | 2026-05-03 | Initial PRD covering shipped v1.0 + v1.1 / v2.0 roadmap.                                                                                                                                                                             |
+| 1.1     | 2026-05-06 | Updated infra section: now two AWS deploy paths (ECS Fargate via `terraform/` + S3 Website Hosting via `infra/`). CloudFront removed on Academy variant — see Phase 2b/3 in POST-MIDSEM-NOTES.md. Live URLs added to Section 8 / 12. |

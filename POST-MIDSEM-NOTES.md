@@ -2,10 +2,21 @@
 
 This is the deeper, phase-by-phase note for what changed in Atlas after the
 midsem review. Pre-midsem the app was a Vite SPA deployed manually to Vercel
-and GitHub Pages. Post-midsem the deploy path is a chained CI/CD pipeline that
-provisions its own AWS infrastructure with Terraform and ships every push to
-`main` to a private S3 bucket fronted by CloudFront — fully gated behind a
-single repo variable so unconfigured forks stay green.
+and GitHub Pages. Post-midsem **two AWS deploy paths** ship on every push
+to `main`, both provisioned by Terraform and gated behind repo-variable
+feature flags so unconfigured forks stay green:
+
+1. **Container path** — Vite + nginx in a multi-stage Docker image, pushed
+   to ECR, run on ECS Fargate. Lives at http://54.167.106.8:8080.
+2. **Static-site path** — Vite build synced to an S3 Static Website bucket.
+   Lives at http://atlas-prod-site.s3-website-us-east-1.amazonaws.com.
+
+The original plan was S3 + CloudFront for the static path, but AWS Academy
+revokes the CloudFront write APIs (`CreateOriginAccessControl`,
+`CreateResponseHeadersPolicy`, `CreateDistribution`). The Academy-pragmatic
+adaptation is S3 Website Hosting on its own — HTTP only, no edge cache, but
+real public AWS hosting that ships on every push. CloudFront is one
+`git checkout` away when the account isn't Academy-locked.
 
 For the rubric mapping (what proves each requirement), see
 [SUBMISSION.md](SUBMISSION.md).
@@ -17,32 +28,44 @@ For the rubric mapping (what proves each requirement), see
 ```mermaid
 flowchart LR
     push["push to main"]
-    test["1 · Test\nlint + format + vitest + coverage"]
-    tf["2 · Terraform Apply\nfmt → init → validate → plan → apply"]
-    deploy["3 · Build & Deploy\nvite build → S3 sync → CloudFront invalidate"]
 
-    push --> test
-    test --> tf
-    tf --> deploy
-
-    subgraph aws["AWS · us-east-1"]
-        s3["S3 bucket\n(private, versioned, AES256, PAB on)"]
-        cf["CloudFront distribution\n(OAC + security headers + SPA fallback)"]
-        ddb["DynamoDB\ntfstate lock table"]
-        tfstate["S3 bucket\nremote tfstate"]
+    subgraph CI["GitHub Actions"]
+        tests["Tests workflow\nlint + format + vitest + e2e + hadolint"]
+        pipe["Pipeline workflow\n(static-site path, gated by AWS_DEPLOY_ENABLED)"]
+        dep["Deploy (ECR + ECS) workflow\n(container path, gated by LAB_DEPLOY_ENABLED)"]
     end
 
-    deploy --> s3
-    s3 -- "OAC, sigv4" --> cf
-    tf -- "lock + state" --> ddb
-    tf -- "lock + state" --> tfstate
-    user["🧑 user"] -- "https" --> cf
+    push --> tests
+    push --> pipe
+    push --> dep
+
+    subgraph AWS["AWS — us-east-1"]
+        ecr["ECR\n(atlas-app)"]
+        ecs["ECS Fargate\n(atlas-cluster / atlas-service)"]
+        log["CloudWatch Logs\n/ecs/atlas"]
+        s3site["S3 site bucket\n(atlas-prod-site, public website)"]
+        ddb["DynamoDB\ntfstate locks"]
+        tfstate["S3 tfstate\n(atlas-tfstate-<acct>)"]
+    end
+
+    pipe -- "terraform apply + s3 sync" --> s3site
+    dep -- "terraform apply" --> ecr
+    dep -- "docker build/push" --> ecr
+    ecr -- "image" --> ecs
+    ecs -- "stdout/stderr" --> log
+    pipe -. "lock + state" .-> ddb
+    pipe -. "state" .-> tfstate
+    dep -. "lock + state" .-> ddb
+    dep -. "state" .-> tfstate
+
+    user1["🧑 user"] -- "http :8080" --> ecs
+    user2["🧑 user"] -- "http :80" --> s3site
 ```
 
-Atlas is a static SPA, so the AWS footprint is intentionally tiny —
-**S3 + CloudFront** instead of the ECS-Fargate-plus-RDS pattern a full-stack
-app needs. That's the whole point: pick the cheapest sufficient architecture
-and harden it.
+Atlas is a static SPA, so neither AWS path needs RDS, ALB, or a private VPC.
+The container path runs in the default-VPC public subnet with the task ENI
+attached directly to the internet; the static path is just a public S3
+bucket with website hosting.
 
 ---
 
@@ -147,97 +170,149 @@ image runs in production.
 
 ---
 
-## Phase 2b / 3 · Terraform infrastructure
+## Phase 2b / 3 · Terraform infrastructure (two stacks)
 
 **Goal:** the production environment is described entirely in code, with
-remote state and a state lock, in the cheapest configuration that hosts a
-hardened SPA.
+remote state and a state lock, in the cheapest configuration that meets the
+"deploy in AWS via Terraform" requirement.
 
-What landed in [`infra/`](infra/):
+Two independent Terraform stacks land:
 
-- [`backend.tf`](infra/backend.tf) — S3 remote state + DynamoDB state lock
+### Stack A — `infra/` — static-site path (S3 Website Hosting)
+
+- [`backend.tf`](infra/backend.tf) — S3 remote state at
+  `s3://atlas-tfstate-<acct>/atlas/terraform.tfstate` + DynamoDB lock
   (`atlas-tfstate-locks`). Bootstrap commands are documented inline.
-- [`providers.tf`](infra/providers.tf) — pinned `~> 5.60` AWS provider,
-  default tags applied to every resource (`Project`, `Environment`,
-  `ManagedBy`, `Repository`), and a `us-east-1` aliased provider for
-  CloudFront cert/WAF integration.
-- [`s3.tf`](infra/s3.tf) — the static-site bucket: versioning on, AES-256
-  SSE on, **all four public access blocks set to true**, BucketOwnerEnforced
-  ownership, and an OAC-only IAM policy.
-- [`cloudfront.tf`](infra/cloudfront.tf) — CDN in front of the bucket via an
-  Origin Access Control (modern replacement for OAI). HSTS, frame options,
-  referrer policy, and content-type options are applied via a CloudFront
-  Response Headers Policy. SPA fallback: 403/404 from S3 → `/index.html`.
-- [`variables.tf`](infra/variables.tf) — optional custom domain + ACM cert
-  ARN; everything works without them.
-- [`outputs.tf`](infra/outputs.tf) — `site_bucket`, `cloudfront_distribution_id`,
-  `cloudfront_domain`, `site_url`. The pipeline reads these to know where to
-  upload the build and which distribution to invalidate.
-- [`infra/README.md`](infra/README.md) — bootstrap commands and the one-time
-  setup checklist.
+- [`providers.tf`](infra/providers.tf) — pinned `~> 5.60` AWS provider with
+  default tags (`Project`, `Environment`, `ManagedBy`, `Stack`).
+- [`s3.tf`](infra/s3.tf) — the site bucket: versioning + AES-256 SSE on,
+  Public Access Block deliberately permissive (required for Website
+  Hosting), BucketOwnerPreferred ownership, public-read bucket policy, and
+  Static Website Hosting enabled with `index.html` as the root + as the
+  error doc (so SPA deep links work — every 403/404 falls back to the SPA).
+- [`cloudfront.tf`](infra/cloudfront.tf) — **intentionally empty.** AWS
+  Academy revokes the CloudFront write APIs
+  (`CreateOriginAccessControl`, `CreateResponseHeadersPolicy`,
+  `CreateDistribution`). For a non-Academy account, restore from git
+  history before commit `e042023` and flip the bucket back to
+  private+OAC.
+- [`outputs.tf`](infra/outputs.tf) — `site_bucket`, `site_url`,
+  `site_website_endpoint`. The pipeline reads these to know where to
+  upload the build.
 
-Why **not** ECS / RDS / ALB: Atlas is a static SPA. There is nothing to run
-server-side. Adding compute would add cost without adding capability.
+### Stack B — `terraform/` — container path (ECR + ECS Fargate)
+
+- [`main.tf`](terraform/main.tf) — Academy-compatible:
+  - Reuses Academy's pre-provisioned `LabRole` for both
+    `execution_role_arn` and `task_role_arn` on the task definition. No
+    IAM creation (Academy revokes `iam:Create*`).
+  - `aws_ecr_repository.app` (`atlas-app`) + lifecycle policy keeping the
+    last 10 images.
+  - `aws_cloudwatch_log_group.app` at `/ecs/atlas` with 14-day retention.
+  - `aws_ecs_cluster.main` (Fargate-only, no capacity provider config —
+    Academy can't write that).
+  - `aws_ecs_task_definition.app` with `awslogs` driver shipping
+    stdout/stderr to CloudWatch.
+  - `aws_ecs_service.app` with `force_new_deployment = true`, an
+    auto-assigned public IP, and `subnet_id` + `security_group_id` taken
+    as inputs (so users supply default-VPC values via repo variables
+    instead of trying to create a VPC/SG that Academy blocks).
+  - Dynamic LabRole ARN via `data.aws_caller_identity.current` so the
+    stack works across Academy account rotations without code changes.
+- [`variables.tf`](terraform/variables.tf) — `subnet_id`,
+  `security_group_id`, `aws_region`, `project_name`, `environment`
+  (default `lab`), `container_port` (8080 — nginx-unprivileged),
+  task CPU/memory, desired count, image tag.
+- [`outputs.tf`](terraform/outputs.tf) — `ecr_repository_url`,
+  `ecs_cluster_name`, `ecs_service_name`, `task_definition_family`,
+  `log_group`, `lab_role_arn`.
+- [`terraform/README.md`](terraform/README.md) — Academy bootstrap
+  walkthrough + the exact `aws ec2 describe-…` commands to find the
+  default subnet and SG ids.
+
+This stack matches the shape of the `G5shivam/my-project` reference repo
+the course points at, with three improvements: remote state, CloudWatch
+logging, and a CI/CD pipeline that runs the whole thing end-to-end.
 
 Commits that introduced this:
 
 - `c8bf3e1` setup base terraform configuration for aws
 - `a83984f` add infrastructure deployment documentation
 - `bc0d3ac` ignore terraform state and working files
+- `aa9b273` make the container stack AWS Academy compatible — use LabRole, drop IAM creation
+- `cef0900` add S3 + DynamoDB tfstate backend to both stacks
+- `e042023` drop CloudFront from infra/ — Academy revokes the CloudFront APIs, switch to S3 static-website hosting
 
 **Cost (steady-state, post free tier):**
 
-| Resource                    | Notes                                              | Monthly        |
-| --------------------------- | -------------------------------------------------- | -------------- |
-| S3 storage (site)           | ~5 MB build × 1 version (versioning lifecycle TBD) | ≈ $0.001       |
-| S3 storage (tfstate)        | < 1 MB                                             | ≈ $0.0         |
-| DynamoDB lock table         | PAY_PER_REQUEST, near-zero ops                     | ≈ $0.0         |
-| CloudFront                  | First 1 TB/mo + 10M requests/mo are **free**       | $0 (free tier) |
-| CloudFront (post free tier) | $0.085/GB out + $0.0075 per 10K HTTPS reqs         | < $1 typical   |
+| Resource                | Notes                          | Monthly                    |
+| ----------------------- | ------------------------------ | -------------------------- |
+| S3 storage (site)       | ~5 MB build × 1 version        | ≈ $0.001                   |
+| S3 storage (tfstate)    | < 1 MB                         | ≈ $0.0                     |
+| DynamoDB lock table     | PAY_PER_REQUEST, near-zero ops | ≈ $0.0                     |
+| ECR storage             | 1 image, ~20 MB                | ≈ $0 (free 500 MB / 12 mo) |
+| ECS Fargate (always-on) | 0.25 vCPU + 0.5 GB             | ≈ $9 if left running 24/7  |
+| CloudWatch Logs         | < 1 GB/mo                      | $0 (free tier)             |
 
-The first 12 months are essentially free. Steady-state under normal portfolio
-traffic stays under $1/month.
+Run `terraform destroy` from each stack at the end of an Academy session.
+The Fargate task is the only line item that meaningfully bills.
 
 ---
 
-## Phase 4 · Chained CI/CD pipeline
+## Phase 4 · Chained CI/CD pipelines (two of them)
 
-**Goal:** one `git push origin main` → tested, infra applied, site live.
+**Goal:** one `git push origin main` → both AWS deploys converge.
 
-What landed in [`.github/workflows/pipeline.yml`](.github/workflows/pipeline.yml):
+Two workflows chain through Terraform on every push, each gated behind its
+own repo variable so unconfigured forks stay green.
 
-The pipeline is gated behind `vars.AWS_DEPLOY_ENABLED == 'true'` (a repo-level
-GitHub Actions variable). Unconfigured forks short-circuit at job 1 so they
-stay green. Setting that variable to `"true"` after wiring AWS secrets turns
-the pipeline on.
+### `pipeline.yml` — the static-site path
 
-Three jobs, chained with `needs:` so a failure in any job halts the rest:
+Gated by `vars.AWS_DEPLOY_ENABLED == 'true'`. Three jobs:
 
-1. **`test`** — install, lint (`--max-warnings 0`), format check, vitest with
-   coverage + junit. Fast smoke; the full e2e + hadolint suite still runs in
-   `tests.yml` on every PR.
-2. **`terraform`** — `setup-terraform@v3`, then `init → fmt -check → validate →
-plan → apply`. Outputs (`site_bucket`, `distribution_id`, `site_url`) are
-   captured into `$GITHUB_OUTPUT` for the next job.
+1. **`test`** — install, lint (`--max-warnings 0`), format check, vitest
+   with coverage + junit.
+2. **`terraform`** — `init → fmt -check → validate → plan → apply` against
+   `infra/`. Outputs `site_bucket` and `site_url` for the next job.
 3. **`deploy`** — `npm ci && npm run build`, then a structured S3 sync:
    - hashed Vite assets get `Cache-Control: public, max-age=31536000, immutable`
    - `index.html` and `manifest.webmanifest` get `max-age=0, must-revalidate`
-   - `sw.js` gets `no-cache, no-store, must-revalidate` (service workers must
-     never be cached)
-   - then `aws cloudfront create-invalidation --paths "/*"`
+   - `sw.js` gets `no-cache, no-store, must-revalidate`
+   - (CloudFront invalidation step removed — no CDN on this Academy variant)
 
-Concurrency is locked with `cancel-in-progress: false` — we never want two
-pipelines racing each other against the same Terraform state.
+### `deploy.yml` — the container path
 
-Permissions follow least-privilege: `contents: read` for the workflow, plus
-`id-token: write` so we can later switch from long-lived AWS keys to OIDC
-without a workflow change.
+Gated by `vars.LAB_DEPLOY_ENABLED == 'true'`. Also pulls
+`vars.LAB_SUBNET_ID` and `vars.LAB_SECURITY_GROUP_ID` for the
+Academy-supplied networking inputs. Two jobs:
+
+1. **`test`** — same fast smoke.
+2. **`deploy`** — runs in four stages:
+   - `terraform apply -target=aws_ecr_repository.app` to create the ECR
+     repo first (the rest of the stack depends on the image existing).
+   - `docker build` from the repo-root Dockerfile, then push tagged with
+     both `${github.sha}` and `latest`.
+   - Full `terraform apply` with `TF_VAR_image_tag=${github.sha}` so the
+     task def picks up the freshly pushed image.
+   - `aws ecs update-service --force-new-deployment` rolls the running
+     task onto the new image (defense-in-depth — the Terraform-driven
+     task-def replacement also triggers a rollout).
+
+Both workflows lock concurrency with `cancel-in-progress: false` — two
+pipelines must never race against the same Terraform state.
+
+Permissions follow least-privilege: `contents: read`, plus `id-token: write`
+so a future migration to OIDC role-assumption is a workflow-only change
+(blocked on this Academy account because IAM is locked, but the wiring is
+already in place).
 
 Commits that introduced this:
 
 - `6b2bacb` add ci cd pipeline for terraform and vite build
+- `aa9b273` make the container stack AWS Academy compatible — use LabRole, drop IAM creation
+- `cef0900` add S3 + DynamoDB tfstate backend to both stacks
 
-**Cost:** $0. Each pipeline run is ~3-5 minutes of Actions time on a
+**Cost:** $0. Each pipeline run is ~1-2 minutes of Actions time on a
 public-repo runner.
 
 ---
@@ -246,39 +321,49 @@ public-repo runner.
 
 Real numbers, end-to-end, what Atlas actually costs to run on AWS:
 
-| Bucket                      | Component                             | Estimate / month |
-| --------------------------- | ------------------------------------- | ---------------- |
-| **Storage**                 | S3 site bucket (~5 MB)                | $0.0001          |
-|                             | S3 tfstate bucket (< 1 MB)            | $0.0             |
-|                             | DynamoDB lock table (idle)            | $0.0             |
-| **Edge**                    | CloudFront, < 100 GB out / mo         | $0 (free tier)   |
-|                             | CloudFront, post-free-tier (≤ 100 GB) | ≤ $8.50          |
-| **Build / CI**              | GitHub Actions (public repo)          | $0               |
-| **Total — first 12 months** |                                       | **$0–$1**        |
-| **Total — post-free-tier**  | At ≤ 100 GB/mo egress                 | **≤ $9**         |
+| Bucket                     | Component                                  | Estimate / month       |
+| -------------------------- | ------------------------------------------ | ---------------------- |
+| **Storage**                | S3 site bucket (~5 MB)                     | $0.0001                |
+|                            | S3 tfstate bucket (< 1 MB)                 | $0.0                   |
+|                            | DynamoDB lock table (idle)                 | $0.0                   |
+|                            | ECR (1 image × 20 MB)                      | $0 (free tier 500 MB)  |
+| **Compute**                | ECS Fargate, 0.25 vCPU + 0.5 GB always-on  | ≈ $9 if left running   |
+| **Egress**                 | S3 + Fargate ENI, < 100 GB/mo              | ≈ $0 portfolio traffic |
+| **Build / CI**             | GitHub Actions (public repo)               | $0                     |
+| **Total when ECS running** | (Academy lab session, hours per day)       | **fractions of $1**    |
+| **Total when destroyed**   | After `terraform destroy` between sessions | **$0**                 |
 
-For a portfolio-traffic SPA, real cost stays at "rounding error" levels.
-The expensive line items would be:
+Skipped intentionally for Academy:
 
-- A vanity custom domain — Route 53 hosted zone is $0.50/mo, plus the
-  registrar's renewal (typically $10-15/yr).
-- An ACM cert: free.
-- WAF: skipped intentionally; a portfolio SPA doesn't need it. Adding the
-  managed core-rules group would be ~$5/mo + $1 per million requests.
+- **CloudFront** — Academy revokes the write APIs. Cost would be free-tier
+  for portfolio traffic anyway.
+- **ACM + Route 53** — no custom domain.
+- **WAF** — overkill for a portfolio SPA.
+- **ALB** — service is reachable on the task ENI's auto-assigned public
+  IP; no load balancer needed for `desired_count = 1`.
 
 ---
 
-## What I'd do next
+## What I'd do next (off-Academy)
 
-The next phases (post-Phase-4) that would meaningfully add value:
+These are the gaps the Academy environment forces. None of them block the
+post-midsem rubric — they all unlock once the AWS account isn't lab-restricted.
 
-- **OIDC role for GitHub → AWS** — replace the long-lived `AWS_*` secrets in
-  the pipeline with `aws-actions/configure-aws-credentials@v4` + a trust
-  policy on a dedicated IAM role. Less to rotate, less to leak.
+- **Restore CloudFront** in front of the S3 bucket — recover the original
+  `infra/cloudfront.tf` from git history, flip the bucket back to private
+  (`PublicAccessBlock` all-true + `BucketOwnerEnforced`), and add back the
+  OAC + Response Headers Policy. Gives HTTPS, edge caching, and a HSTS
+  story the S3 website endpoint can't.
+- **OIDC role for GitHub → AWS** — replace the long-lived `AWS_*` secrets
+  with `aws-actions/configure-aws-credentials@v4` + a trust policy on a
+  dedicated IAM role. Less to rotate, less to leak. Blocked here because
+  Academy disallows IAM identity-provider creation.
+- **Custom IAM role for the ECS task** — Academy's `LabRole` is generous
+  but not least-privilege. Real production needs a scoped role.
 - **Preview deploys per PR** — provision a per-PR S3 prefix + CloudFront
   alternate origin so reviewers can click a real preview URL on every PR.
-- **Lighthouse-CI in the pipeline** — fail the deploy job if the production
-  build regresses on Lighthouse perf/a11y.
+- **Lighthouse-CI in the pipeline** — fail the deploy job if the
+  production build regresses on Lighthouse perf/a11y.
 - **Sentry / browser RUM** — wire `@sentry/react` so production errors and
   Web Vitals are real, not vibes.
 
