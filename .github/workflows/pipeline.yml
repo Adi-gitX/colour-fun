@@ -1,11 +1,13 @@
 name: Pipeline
 
-# Chained workflow: test → terraform apply → upload to S3 → CloudFront invalidate.
+# Chained workflow: test → terraform apply (S3 static-site bucket) → upload dist/ → done.
+#
+# Academy-compatible: no CloudFront (Academy revokes the CloudFront APIs).
+# The site is served via S3 Static Website Hosting at:
+#   http://atlas-prod-site.s3-website-us-east-1.amazonaws.com
 #
 # Gated behind the `AWS_DEPLOY_ENABLED` repo variable. By default the workflow
-# short-circuits in the first step so unconfigured forks stay green. Flip the
-# variable to "true" once the AWS secrets and Terraform state bucket are set
-# up (see infra/README.md).
+# short-circuits in the first step so unconfigured forks stay green.
 on:
   push:
     branches: [main]
@@ -72,7 +74,6 @@ jobs:
 
     outputs:
       site_bucket: ${{ steps.tf_outputs.outputs.site_bucket }}
-      distribution_id: ${{ steps.tf_outputs.outputs.distribution_id }}
       site_url: ${{ steps.tf_outputs.outputs.site_url }}
 
     env:
@@ -107,7 +108,6 @@ jobs:
         run: |
           {
             echo "site_bucket=$(terraform output -raw site_bucket)"
-            echo "distribution_id=$(terraform output -raw cloudfront_distribution_id)"
             echo "site_url=$(terraform output -raw site_url)"
           } >> "$GITHUB_OUTPUT"
 
@@ -126,7 +126,6 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
       BUCKET: ${{ needs.terraform.outputs.site_bucket }}
-      DISTRIBUTION_ID: ${{ needs.terraform.outputs.distribution_id }}
       SITE_URL: ${{ needs.terraform.outputs.site_url }}
 
     steps:
@@ -185,18 +184,11 @@ jobs:
               --content-type "application/javascript; charset=utf-8"
           fi
 
-      - name: CloudFront invalidation
-        run: |
-          aws cloudfront create-invalidation \
-            --distribution-id "$DISTRIBUTION_ID" \
-            --paths "/*"
-
       - name: Summary
         run: |
           {
             echo "## Deploy"
             echo ""
             echo "- bucket: \`$BUCKET\`"
-            echo "- distribution: \`$DISTRIBUTION_ID\`"
-            echo "- site: $SITE_URL"
+            echo "- site:   $SITE_URL"
           } >> "$GITHUB_STEP_SUMMARY"
