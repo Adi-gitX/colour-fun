@@ -1,8 +1,9 @@
-import { Bookmark } from 'lucide-react';
+import { Bookmark, Star } from 'lucide-react';
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { useAppStore } from '../store/appStore';
 import type { ComponentEntry } from '../data/components';
+import { PreviewImage } from './PreviewImage';
 import styles from './ComponentCard.module.css';
 
 interface Props {
@@ -33,7 +34,13 @@ export const ComponentCard = ({ entry, index = 0 }: Props) => {
         ease: [0.2, 0.8, 0.2, 1],
       }}
     >
-      <div className={styles.thumb} style={{ background: entry.thumb }} />
+      <PreviewImage
+        github={entry.github}
+        url={entry.url}
+        name={entry.name}
+        fallbackGradient={entry.thumb}
+        className={styles.thumb}
+      />
       <div className={styles.footer}>
         <div className={styles.avatar} style={{ background: entry.authorColor }}>
           {entry.authorInitials}
@@ -48,8 +55,15 @@ export const ComponentCard = ({ entry, index = 0 }: Props) => {
           aria-label={isBookmarked ? 'Remove bookmark' : 'Bookmark'}
         >
           <Bookmark size={12} strokeWidth={1.75} fill={isBookmarked ? 'currentColor' : 'none'} />
-          <span className={styles.bookmarkCount}>{formatCount(entry.bookmarks)}</span>
         </button>
+        <span
+          className={styles.stars}
+          title={`${entry.stars.toLocaleString()} GitHub stars`}
+          aria-label={`${entry.stars} GitHub stars`}
+        >
+          <Star size={11} strokeWidth={1.75} />
+          {formatCount(entry.stars)}
+        </span>
       </div>
     </motion.div>
   );

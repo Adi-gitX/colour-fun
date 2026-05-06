@@ -27,7 +27,10 @@ import { libraries } from '../data/libraries';
 import { designSystems } from '../data/designSystems';
 import { inspirationSites } from '../data/inspiration';
 import { tools } from '../data/tools';
+import { fonts } from '../data/fonts';
+import { hooks } from '../data/hooks';
 import { colors } from '../data/colors';
+import { gradients } from '../data/gradients';
 import { imageUrls } from '../data/images';
 import styles from './Sidebar.module.css';
 
@@ -40,21 +43,22 @@ interface NavItem {
 
 const browseItems: NavItem[] = [
   { id: 'components', label: 'Components', icon: Boxes, count: components.length },
+  { id: 'hooks', label: 'Hooks', icon: Cable, count: hooks.length },
   { id: 'blocks', label: 'Blocks', icon: LayoutGrid, count: 'soon' },
   { id: 'templates', label: 'Templates', icon: FileCode2, count: 'soon' },
-  { id: 'hooks', label: 'Hooks', icon: Cable, count: 'soon' },
 ];
 
 const discoverItems: NavItem[] = [
   { id: 'libraries', label: 'Component Libraries', icon: Library, count: libraries.length },
   { id: 'design-systems', label: 'Design Systems', icon: LayoutGrid, count: designSystems.length },
   { id: 'inspiration', label: 'UI Inspiration', icon: Sparkles, count: inspirationSites.length },
+  { id: 'fonts', label: 'Fonts', icon: Type, count: fonts.length },
   { id: 'tools', label: 'Tools', icon: Wrench, count: tools.length },
 ];
 
 const studioItems: NavItem[] = [
   { id: 'solid-colors', label: 'Solid Colors', icon: Palette, count: colors.length },
-  { id: 'gradients', label: 'Gradients', icon: Sparkles },
+  { id: 'gradients', label: 'Gradients', icon: Sparkles, count: gradients.length },
   { id: 'backgrounds', label: 'Backgrounds', icon: ImageIcon, count: imageUrls.length },
 ];
 

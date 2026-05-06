@@ -1,7 +1,8 @@
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { ComponentCard } from '../ComponentCard';
+import { TrendingCard } from '../TrendingCard';
 import { SectionHeader } from './SectionHeader';
-import { featured, community } from '../../data/components';
+import { featured, trending } from '../../data/components';
 import { libraries } from '../../data/libraries';
 import { DiscoverCard } from '../DiscoverCard';
 import { useAppStore } from '../../store/appStore';
@@ -10,7 +11,7 @@ import styles from './HomeView.module.css';
 export const HomeView = () => {
   const { setCurrentSection } = useAppStore();
   const popularLibs = libraries.slice(0, 6);
-  const trendingCommunity = community.slice(0, 8);
+  const trendingTop = trending(8);
 
   return (
     <div className={styles.page}>
@@ -93,22 +94,22 @@ export const HomeView = () => {
         </div>
       </section>
 
-      {/* Trending community */}
+      {/* Trending — top 8 by GitHub stars */}
       <section className={styles.section}>
         <SectionHeader
-          eyebrow="Community"
-          title="Trending from the community"
-          description="Submissions from designers and engineers building in public."
+          eyebrow="Trending"
+          title="Top 8 by GitHub stars"
+          description="The most-starred OSS components, kits and primitives indexed in Atlas right now."
           trailing={
-            <button className={styles.viewAll} onClick={() => setCurrentSection('community')}>
+            <button className={styles.viewAll} onClick={() => setCurrentSection('components')}>
               View all
               <ArrowRight size={12} strokeWidth={2} />
             </button>
           }
         />
-        <div className={styles.cardGrid}>
-          {trendingCommunity.map((c, i) => (
-            <ComponentCard key={c.id} entry={c} index={i} />
+        <div className={styles.trendingGrid}>
+          {trendingTop.map((c, i) => (
+            <TrendingCard key={c.id} entry={c} index={i} />
           ))}
         </div>
       </section>

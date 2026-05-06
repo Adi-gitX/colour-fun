@@ -15,6 +15,7 @@ export type Section =
   | 'library-detail'
   | 'design-systems'
   | 'inspiration'
+  | 'fonts'
   | 'tools'
   | 'library'
   | 'following'

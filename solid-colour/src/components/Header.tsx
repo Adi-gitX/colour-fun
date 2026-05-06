@@ -16,6 +16,7 @@ const sectionLabels: Record<Section, { parent?: string; label: string }> = {
   libraries: { parent: 'Discover', label: 'Component Libraries' },
   'design-systems': { parent: 'Discover', label: 'Design Systems' },
   inspiration: { parent: 'Discover', label: 'UI Inspiration' },
+  fonts: { parent: 'Discover', label: 'Fonts' },
   tools: { parent: 'Discover', label: 'Tools' },
   library: { label: 'Bookmarks' },
   'library-detail': { parent: 'Discover', label: 'Library' },
