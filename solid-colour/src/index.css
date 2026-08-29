@@ -1,3 +1,78 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+/* The app switches theme with data-theme on <html>; make Tailwind's dark: variant follow it. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* Tailwind theme, mapped onto the CSS-variable tokens below so shadcn primitives and the
+   CSS-module parts share one palette: black ground, hairline borders, white accent. */
+@theme inline {
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
+  --color-card: var(--bg-card);
+  --color-card-foreground: var(--text-primary);
+  --color-popover: var(--bg-elevated);
+  --color-popover-foreground: var(--text-primary);
+  --color-primary: var(--accent-primary);
+  --color-primary-foreground: var(--accent-on-primary);
+  --color-secondary: var(--bg-tertiary);
+  --color-secondary-foreground: var(--text-primary);
+  --color-muted: var(--bg-tertiary);
+  --color-muted-foreground: var(--text-secondary);
+  --color-accent: var(--bg-active);
+  --color-accent-foreground: var(--text-primary);
+  --color-destructive: var(--color-danger);
+  --color-destructive-foreground: var(--accent-on-primary);
+  --color-border: var(--border-light);
+  --color-input: var(--border-medium);
+  --color-ring: var(--border-hover);
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --font-sans: 'CommitMono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --font-mono: 'CommitMono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --font-display: 'MartianMono', 'CommitMono', ui-monospace, monospace;
+}
+
+/* Fonts, self-hosted, both from freefaces.gallery. Martian Mono (Evil Martians, SIL OFL 1.1) carries
+   headings; Commit Mono (Eigil Nikolajsen, MIT) carries everything else. */
+@font-face {
+  font-family: 'MartianMono';
+  src: url('/fonts/MartianMono.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'MartianMono';
+  src: url('/fonts/MartianMono-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'CommitMono';
+  src: url('/fonts/CommitMono-400-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'CommitMono';
+  src: url('/fonts/CommitMono-400-Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'CommitMono';
+  src: url('/fonts/CommitMono-700-Regular.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ===========================================================
    Atlas — design tokens (dark-first, hairline-bordered, neutral
    palette modeled on 21st.dev)
@@ -6,31 +81,31 @@
 :root,
 [data-theme='dark'] {
   /* Surfaces — near-black, sidebar shares page bg */
-  --bg-primary: #0a0a0a;
-  --bg-secondary: #0a0a0a;
-  --bg-tertiary: #161616;
-  --bg-card: #0d0d0d;
-  --bg-card-hover: #141414;
-  --bg-elevated: #141414;
+  --bg-primary: #000000;
+  --bg-secondary: #000000;
+  --bg-tertiary: #111111;
+  --bg-card: #0a0a0a;
+  --bg-card-hover: #111111;
+  --bg-elevated: #121212;
   --bg-active: rgba(255, 255, 255, 0.05);
-  --bg-input: #141414;
+  --bg-input: #0a0a0a;
 
   /* Text */
   --text-primary: #fafafa;
   --text-secondary: #a1a1aa;
-  --text-tertiary: #737373;
+  --text-tertiary: #71717a;
   --text-placeholder: rgba(115, 115, 115, 0.6);
 
-  /* Accent / status */
+  /* Accent — white on black. Status is carried by text tone and border weight, not hue. */
   --accent-primary: #fafafa;
   --accent-on-primary: #0a0a0a;
-  --accent-blue: #60a5fa;
-  --accent-blue-bg: rgba(59, 130, 246, 0.12);
-  --accent-blue-border: rgba(59, 130, 246, 0.3);
-  --accent-green: #34d399;
-  --accent-green-bg: rgba(16, 185, 129, 0.12);
-  --accent-green-border: rgba(16, 185, 129, 0.3);
-  --color-danger: #f43f5e;
+  --accent-blue: var(--text-primary);
+  --accent-blue-bg: rgba(255, 255, 255, 0.06);
+  --accent-blue-border: rgba(255, 255, 255, 0.16);
+  --accent-green: var(--text-primary);
+  --accent-green-bg: rgba(255, 255, 255, 0.06);
+  --accent-green-border: rgba(255, 255, 255, 0.16);
+  --color-danger: #fafafa;
 
   /* Borders — barely visible */
   --border-subtle: rgba(255, 255, 255, 0.04);
@@ -56,14 +131,16 @@
   --radius-pill: 9999px;
 
   /* Typography */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-display: 'Geist', 'Inter', -apple-system, sans-serif;
-  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-sans: 'CommitMono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --font-display: 'MartianMono', 'CommitMono', ui-monospace, monospace;
+  --font-pixel: 'MartianMono', 'CommitMono', ui-monospace, monospace;
+  --font-mono: 'CommitMono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --tracking-headline: -0.01em;
+  --tracking-eyebrow: 0.08em;
 
   /* Layout */
-  --sidebar-width: 264px;
-  --sidebar-width-collapsed: 64px;
   --header-height: 56px;
+  --content-max: 1280px;
 
   /* Scrollbar */
   --scrollbar-track: transparent;
@@ -72,15 +149,15 @@
 }
 
 [data-theme='light'] {
-  /* Surfaces */
-  --bg-primary: #ffffff;
+  /* Surfaces — off-white ground, white cards */
+  --bg-primary: #fafafa;
   --bg-secondary: #fafafa;
-  --bg-tertiary: #ebebeb;
+  --bg-tertiary: #efefef;
   --bg-card: #ffffff;
-  --bg-card-hover: #fafafa;
+  --bg-card-hover: #f4f4f5;
   --bg-elevated: #ffffff;
-  --bg-active: rgba(9, 9, 11, 0.05);
-  --bg-input: #f4f4f4;
+  --bg-active: rgba(0, 0, 0, 0.05);
+  --bg-input: #ffffff;
 
   /* Text */
   --text-primary: #09090b;
@@ -88,22 +165,22 @@
   --text-tertiary: #737373;
   --text-placeholder: rgba(113, 113, 122, 0.5);
 
-  /* Accent / status */
+  /* Accent */
   --accent-primary: #09090b;
   --accent-on-primary: #ffffff;
-  --accent-blue: #2563eb;
-  --accent-blue-bg: rgba(59, 130, 246, 0.1);
-  --accent-blue-border: rgba(59, 130, 246, 0.2);
-  --accent-green: #059669;
-  --accent-green-bg: rgba(16, 185, 129, 0.1);
-  --accent-green-border: rgba(16, 185, 129, 0.2);
-  --color-danger: #e11d48;
+  --accent-blue: var(--text-primary);
+  --accent-blue-bg: rgba(9, 9, 11, 0.05);
+  --accent-blue-border: rgba(9, 9, 11, 0.16);
+  --accent-green: var(--text-primary);
+  --accent-green-bg: rgba(9, 9, 11, 0.05);
+  --accent-green-border: rgba(9, 9, 11, 0.16);
+  --color-danger: #09090b;
 
-  /* Borders */
-  --border-subtle: rgba(228, 228, 231, 0.6);
-  --border-light: #e4e4e7;
-  --border-medium: #d4d4d8;
-  --border-hover: #a1a1aa;
+  /* Borders — hairline */
+  --border-subtle: rgba(0, 0, 0, 0.05);
+  --border-light: rgba(0, 0, 0, 0.08);
+  --border-medium: rgba(0, 0, 0, 0.14);
+  --border-hover: rgba(0, 0, 0, 0.32);
 
   /* Shadows */
   --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
@@ -117,113 +194,145 @@
   --scrollbar-thumb-hover: #a1a1aa;
 }
 
-/* ===== Reset ===== */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+/* App-wide base styles live in Tailwind's base layer so the primitives' utility classes
+   (bg-primary, border, rounded-md...) win over these element resets. */
+@layer base {
+  /* ===== Reset ===== */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 
-html {
-  font-size: 16px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+  html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  font-family: var(--font-sans);
-  font-size: 14px;
-  line-height: 1.5;
-  letter-spacing: -0.005em;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
-}
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.55;
+    letter-spacing: 0;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
 
-/* ===== Headings — tight tracking, semibold ===== */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: var(--font-sans);
-  letter-spacing: -0.02em;
-  font-weight: 600;
-  color: var(--text-primary);
-}
+  /* ===== Headings =====
+     Martian Mono at regular weight, sized generously: hero 44-56px, page titles 28-32px.
+     Nothing on the page is set heavier than 500; hierarchy comes from size and tone.
+     Commit Mono 700 is reserved for tiny labels (chips, eyebrows). */
+  h1,
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: var(--tracking-headline);
+    line-height: 1.1;
+    color: var(--text-primary);
+    text-wrap: balance;
+  }
 
-/* ===== Buttons / inputs reset ===== */
-button {
-  font-family: inherit;
-  cursor: pointer;
-  border: none;
-  background: none;
-  outline: none;
-  color: inherit;
-}
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.35;
+    color: var(--text-primary);
+  }
 
-input,
-select,
-textarea {
-  font-family: inherit;
-  outline: none;
-}
+  /* Uppercase label with wide tracking — section eyebrows, group labels, status pills. */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+  }
 
-input[type='number']::-webkit-inner-spin-button,
-input[type='number']::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
+  /* ===== Buttons / inputs reset ===== */
+  button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+    outline: none;
+    color: inherit;
+  }
 
-input[type='number'] {
-  -moz-appearance: textfield;
-  appearance: textfield;
-}
+  input,
+  select,
+  textarea {
+    font-family: inherit;
+    outline: none;
+  }
 
-/* ===== Links ===== */
-a {
-  color: var(--text-primary);
-  text-decoration: none;
-  transition: color 0.15s ease;
-}
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 
-a:hover {
-  color: var(--text-secondary);
-}
+  input[type='number'] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
 
-/* ===== Selection / focus ===== */
-::selection {
-  background: var(--text-primary);
-  color: var(--bg-primary);
-}
+  /* ===== Links ===== */
+  a {
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
 
-:focus-visible {
-  outline: 2px solid var(--accent-primary);
-  outline-offset: 2px;
-}
+  a:hover {
+    color: var(--text-secondary);
+  }
 
-/* ===== Scrollbars ===== */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
+  /* ===== Selection / focus ===== */
+  ::selection {
+    background: var(--text-primary);
+    color: var(--bg-primary);
+  }
 
-::-webkit-scrollbar-track {
-  background: var(--scrollbar-track);
-}
+  :focus-visible {
+    outline: 1px solid var(--border-hover);
+    outline-offset: 2px;
+  }
 
-::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb);
-  border-radius: 5px;
-}
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: none;
+  }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--scrollbar-thumb-hover);
+  /* ===== Scrollbars ===== */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+  }
 }
 
 /* ===== Utilities ===== */
@@ -239,12 +348,12 @@ a:hover {
   border: 0;
 }
 
-/* kbd badge — Geist Mono "K" pill */
+/* kbd badge — small mono pill */
 kbd,
 .kbd {
   font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 500;
+  font-size: 10.5px;
+  font-weight: 400;
   letter-spacing: 0.025em;
   text-transform: uppercase;
   color: var(--text-secondary);
