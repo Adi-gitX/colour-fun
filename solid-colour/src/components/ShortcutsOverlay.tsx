@@ -17,7 +17,7 @@ const SHORTCUT_GROUPS: Group[] = [
   {
     heading: 'General',
     shortcuts: [
-      { keys: ['⌘', 'K'], label: 'Open command palette' },
+      { keys: ['⌘', 'K'], label: 'Open the command palette' },
       { keys: ['?'], label: 'Show this cheat sheet' },
       { keys: ['T'], label: 'Toggle theme' },
       { keys: ['Esc'], label: 'Close any open overlay' },
@@ -26,13 +26,11 @@ const SHORTCUT_GROUPS: Group[] = [
   {
     heading: 'Navigate',
     shortcuts: [
-      { keys: ['G', 'H'], label: 'Home' },
-      { keys: ['G', 'C'], label: 'Components' },
-      { keys: ['G', 'L'], label: 'Component libraries' },
-      { keys: ['G', 'D'], label: 'Design systems' },
-      { keys: ['G', 'I'], label: 'UI inspiration' },
-      { keys: ['G', 'T'], label: 'Tools' },
-      { keys: ['G', 'B'], label: 'My bookmarks' },
+      { keys: ['G', 'H'], label: 'Ask' },
+      { keys: ['G', 'L'], label: 'Libraries' },
+      { keys: ['G', 'W'], label: 'Wallpapers · Solid' },
+      { keys: ['G', 'G'], label: 'Wallpapers · Gradients' },
+      { keys: ['G', 'B'], label: 'Wallpapers · Images' },
     ],
   },
   {
@@ -47,12 +45,10 @@ const SHORTCUT_GROUPS: Group[] = [
 
 const NAV_KEYS: Record<string, Section> = {
   h: 'home',
-  c: 'components',
   l: 'libraries',
-  d: 'design-systems',
-  i: 'inspiration',
-  t: 'tools',
-  b: 'library',
+  w: 'solid-colors',
+  g: 'gradients',
+  b: 'backgrounds',
 };
 
 /**
