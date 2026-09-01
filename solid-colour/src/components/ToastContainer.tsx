@@ -20,16 +20,20 @@ export const ToastContainer = () => {
           >
             <div className={styles.icon}>
               {toast.type === 'error' ? (
-                <AlertCircle size={18} />
+                <AlertCircle size={15} strokeWidth={1.75} />
               ) : toast.type === 'info' ? (
-                <Info size={18} />
+                <Info size={15} strokeWidth={1.75} />
               ) : (
-                <CheckCircle size={18} />
+                <CheckCircle size={15} strokeWidth={1.75} />
               )}
             </div>
             <p className={styles.message}>{toast.message}</p>
-            <button className={styles.closeBtn} onClick={() => removeToast(toast.id)}>
-              <X size={14} />
+            <button
+              className={styles.closeBtn}
+              onClick={() => removeToast(toast.id)}
+              aria-label="Dismiss"
+            >
+              <X size={13} />
             </button>
           </motion.div>
         ))}
