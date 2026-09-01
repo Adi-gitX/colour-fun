@@ -7,7 +7,7 @@
   position: fixed;
   inset: 0;
   z-index: 1000;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   display: flex;
@@ -26,7 +26,7 @@
   max-width: 640px;
   background: var(--bg-card);
   border: 1px solid var(--border-light);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-modal);
   overflow: hidden;
   display: flex;
@@ -55,7 +55,7 @@
   border: 0;
   outline: none;
   color: var(--text-primary);
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   font-size: 14px;
   letter-spacing: -0.005em;
 }
@@ -100,7 +100,7 @@
   padding: 40px 16px;
   text-align: center;
   color: var(--text-secondary);
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   font-size: 13px;
 }
 
@@ -109,13 +109,8 @@
 }
 
 .groupHeading {
+  composes: eyebrow from global;
   padding: 8px 16px 6px;
-  font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-tertiary);
 }
 
 .item {
@@ -126,7 +121,7 @@
   margin: 0 6px;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   font-size: 13px;
   color: var(--text-secondary);
   transition:
@@ -189,7 +184,7 @@
 
 .itemTitle {
   color: var(--text-primary);
-  font-weight: 500;
+  font-weight: 400;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -219,7 +214,7 @@
   align-items: center;
   padding: 8px 16px;
   border-top: 1px solid var(--border-light);
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   font-size: 11px;
   color: var(--text-tertiary);
   background: var(--bg-secondary);
@@ -263,7 +258,7 @@
   background: var(--bg-active);
   border: 1px solid var(--border-light);
   color: var(--text-secondary);
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   font-size: 12px;
   cursor: pointer;
   transition: all 0.12s ease;
@@ -284,13 +279,8 @@
 }
 
 .recentLabel {
-  font-family: var(--font-sans);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-tertiary);
+  composes: eyebrow from global;
   margin-right: 8px;
-  font-weight: 500;
 }
 
 @keyframes fadeIn {

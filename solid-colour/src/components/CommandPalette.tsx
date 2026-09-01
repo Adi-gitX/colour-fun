@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { Command } from 'cmdk';
-import { Search, X, Sun, Moon, Home, Sparkles, Compass, Box, Wrench, Keyboard } from 'lucide-react';
+import { Search, X, Sun, Moon, Home, Sparkles, Compass, Keyboard } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import type { Section } from '../store/appStore';
 import { useUniversalSearch, type SearchItem } from '../hooks/useUniversalSearch';
@@ -11,19 +11,11 @@ const NAV_SHORTCUTS: Array<{
   label: string;
   icon: typeof Home;
 }> = [
-  { section: 'home', label: 'Go to Home', icon: Home },
-  { section: 'components', label: 'Browse Components', icon: Box },
-  { section: 'libraries', label: 'Discover Component Libraries', icon: Compass },
-  { section: 'design-systems', label: 'Discover Design Systems', icon: Sparkles },
-  { section: 'inspiration', label: 'UI Inspiration', icon: Sparkles },
-  { section: 'tools', label: 'Tools (directory)', icon: Sparkles },
-  { section: 'tool-contrast', label: 'Toolbox · Contrast Checker', icon: Wrench },
-  { section: 'tool-palette', label: 'Toolbox · Palette Generator', icon: Wrench },
-  { section: 'tool-typescale', label: 'Toolbox · Type Scale', icon: Wrench },
-  { section: 'tool-shadow', label: 'Toolbox · Shadow Generator', icon: Wrench },
-  { section: 'solid-colors', label: 'Studio · Solid Colors', icon: Sparkles },
-  { section: 'gradients', label: 'Studio · Gradients', icon: Sparkles },
-  { section: 'library', label: 'My Library (bookmarks)', icon: Box },
+  { section: 'home', label: 'Ask for a component', icon: Home },
+  { section: 'libraries', label: 'Libraries', icon: Compass },
+  { section: 'solid-colors', label: 'Wallpapers · Solid', icon: Sparkles },
+  { section: 'gradients', label: 'Wallpapers · Gradients', icon: Sparkles },
+  { section: 'backgrounds', label: 'Wallpapers · Images', icon: Sparkles },
 ];
 
 export const CommandPalette = () => {
@@ -109,7 +101,7 @@ export const CommandPalette = () => {
             ref={inputRef}
             value={query}
             onValueChange={setQuery}
-            placeholder="Search libraries, systems, components, colors, tools…"
+            placeholder="Search components and colours"
             className={styles.input}
           />
           <span className={styles.kbd}>esc</span>
@@ -146,7 +138,7 @@ export const CommandPalette = () => {
           </Command.Empty>
 
           {/* Quick actions — always visible */}
-          <Command.Group className={styles.group} heading="Quick actions">
+          <Command.Group className={styles.group}>
             <div className={styles.groupHeading}>Quick actions</div>
             <Command.Item
               className={styles.item}
