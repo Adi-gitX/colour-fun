@@ -1,170 +1,139 @@
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, Moon, Sun, Trash2, Database, Info, Monitor, Bookmark, Github } from 'lucide-react';
+import { Moon, Sun, Trash2, Github, ArrowUpRight } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
-import './SettingsModal.css';
+import { DotMark } from './brand/DotMark';
+import { APP_VERSION } from '../constants/version';
+import { Button } from './ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
+import { Separator } from './ui/separator';
+import { Tabs, TabsList, TabsTrigger } from './ui/tabs';
+import styles from './SettingsModal.module.css';
 
-export const SettingsModal = () => {
-  const {
-    isSettingsOpen,
-    closeSettings,
-    theme,
-    toggleTheme,
-    reducedMotion,
-    setReducedMotion,
-    bookmarks,
-    clearBookmarks,
-  } = useAppStore();
-
-  const [activeTab, setActiveTab] = React.useState<'appearance' | 'data' | 'about'>('appearance');
-
-  React.useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closeSettings();
-    };
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
-  }, [closeSettings]);
-
-  if (!isSettingsOpen) return null;
-
-  return (
-    <AnimatePresence>
-      <motion.div
-        className="settings-overlay"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={closeSettings}
-      >
-        <motion.div
-          className="settings-modal"
-          initial={{ scale: 0.97, opacity: 0, y: 8 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          exit={{ scale: 0.97, opacity: 0, y: 8 }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="settings-header">
-            <h2>Settings</h2>
-            <button className="close-btn" onClick={closeSettings}>
-              <X size={16} strokeWidth={1.75} />
-            </button>
-          </div>
-
-          <div className="settings-c">
-            <div className="settings-sidebar">
-              <button
-                className={`tab-btn ${activeTab === 'appearance' ? 'active' : ''}`}
-                onClick={() => setActiveTab('appearance')}
-              >
-                <Monitor size={15} strokeWidth={1.75} />
-                Appearance
-              </button>
-              <button
-                className={`tab-btn ${activeTab === 'data' ? 'active' : ''}`}
-                onClick={() => setActiveTab('data')}
-              >
-                <Database size={15} strokeWidth={1.75} />
-                Data
-              </button>
-              <button
-                className={`tab-btn ${activeTab === 'about' ? 'active' : ''}`}
-                onClick={() => setActiveTab('about')}
-              >
-                <Info size={15} strokeWidth={1.75} />
-                About
-              </button>
-            </div>
-
-            <div className="settings-content">
-              {activeTab === 'appearance' && (
-                <div className="settings-section">
-                  <h3>Theme</h3>
-                  <div className="theme-toggle-large" onClick={toggleTheme}>
-                    <div className={`theme-option ${theme === 'light' ? 'active' : ''}`}>
-                      <Sun size={15} strokeWidth={1.75} />
-                      Light
-                    </div>
-                    <div className={`theme-option ${theme === 'dark' ? 'active' : ''}`}>
-                      <Moon size={15} strokeWidth={1.75} />
-                      Dark
-                    </div>
-                  </div>
-
-                  <h3>Accessibility</h3>
-                  <div className="setting-row">
-                    <div className="setting-info">
-                      <strong>Reduced Motion</strong>
-                      <p>Minimize animations across the app</p>
-                    </div>
-                    <Toggle value={reducedMotion} onChange={setReducedMotion} />
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'data' && (
-                <div className="settings-section">
-                  <h3>Storage</h3>
-                  <div className="setting-row">
-                    <div className="setting-info">
-                      <strong>Clear bookmarks</strong>
-                      <p>{bookmarks.length} items saved locally</p>
-                    </div>
-                    <button
-                      className="danger-btn"
-                      onClick={() => {
-                        if (confirm('Clear all bookmarks? This cannot be undone.')) {
-                          clearBookmarks();
-                        }
-                      }}
-                    >
-                      <Trash2 size={13} strokeWidth={1.75} />
-                      Clear
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'about' && (
-                <div className="settings-section">
-                  <div className="about-header">
-                    <div className="app-logo">A</div>
-                    <h3>Atlas</h3>
-                    <p>v1.0 · Every design resource in one place</p>
-                  </div>
-
-                  <div className="feature-list">
-                    <div className="feature-item">
-                      <Bookmark size={15} strokeWidth={1.75} />
-                      <div>
-                        <strong>Bookmarks sync</strong>
-                        <p>Saved locally — backend sync coming soon</p>
-                      </div>
-                    </div>
-                    <div className="feature-item">
-                      <Github size={15} strokeWidth={1.75} />
-                      <div>
-                        <strong>Open source</strong>
-                        <p>Atlas is open source. Contribute on GitHub.</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
-  );
-};
-
-const Toggle = ({ value, onChange }: { value: boolean; onChange: (v: boolean) => void }) => (
-  <button className={`toggle-switch ${value ? 'on' : 'off'}`} onClick={() => onChange(!value)}>
-    <motion.div
-      className="toggle-handle"
-      layout
-      transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-    />
+const Toggle = ({
+  value,
+  onChange,
+  label,
+}: {
+  value: boolean;
+  onChange: (v: boolean) => void;
+  label: string;
+}) => (
+  <button
+    type="button"
+    role="switch"
+    aria-checked={value}
+    aria-label={label}
+    className={`${styles.toggle} ${value ? styles.toggleOn : ''}`}
+    onClick={() => onChange(!value)}
+  >
+    <span className={styles.toggleHandle} />
   </button>
 );
+
+export const SettingsModal = () => {
+  const isSettingsOpen = useAppStore((s) => s.isSettingsOpen);
+  const closeSettings = useAppStore((s) => s.closeSettings);
+  const theme = useAppStore((s) => s.theme);
+  const toggleTheme = useAppStore((s) => s.toggleTheme);
+  const reducedMotion = useAppStore((s) => s.reducedMotion);
+  const setReducedMotion = useAppStore((s) => s.setReducedMotion);
+  const favorites = useAppStore((s) => s.favorites);
+  const clearFavorites = useAppStore((s) => s.clearFavorites);
+  const recentSearches = useAppStore((s) => s.recentSearches);
+  const clearRecentSearches = useAppStore((s) => s.clearRecentSearches);
+  const showToast = useAppStore((s) => s.showToast);
+
+  return (
+    <Dialog open={isSettingsOpen} onOpenChange={(open) => !open && closeSettings()}>
+      <DialogContent className={styles.content}>
+        <DialogHeader className={styles.head}>
+          <DialogTitle className={styles.title}>Settings</DialogTitle>
+          <DialogDescription className={styles.description}>
+            Appearance and what Atlas keeps on this device.
+          </DialogDescription>
+        </DialogHeader>
+
+        <section className={styles.section}>
+          <div className="eyebrow">Appearance</div>
+          <Tabs value={theme} onValueChange={(v) => v !== theme && toggleTheme()}>
+            <TabsList className={styles.themeList} aria-label="Theme">
+              <TabsTrigger value="dark" className={styles.themeTab}>
+                <Moon /> Dark
+              </TabsTrigger>
+              <TabsTrigger value="light" className={styles.themeTab}>
+                <Sun /> Light
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <div className={styles.row}>
+            <div className={styles.rowText}>
+              <span className={styles.rowTitle}>Reduced motion</span>
+              <p>Stops the loaders and card transitions from animating</p>
+            </div>
+            <Toggle value={reducedMotion} onChange={setReducedMotion} label="Reduced motion" />
+          </div>
+        </section>
+
+        <Separator />
+
+        <section className={styles.section}>
+          <div className="eyebrow">Stored on this device</div>
+          <div className={styles.row}>
+            <div className={styles.rowText}>
+              <span className={styles.rowTitle}>Favourite colours</span>
+              <p>{favorites.length} saved</p>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={favorites.length === 0}
+              onClick={() => {
+                clearFavorites();
+                showToast('Favourites cleared', 'info');
+              }}
+            >
+              <Trash2 /> Clear
+            </Button>
+          </div>
+          <div className={styles.row}>
+            <div className={styles.rowText}>
+              <span className={styles.rowTitle}>Recent searches</span>
+              <p>{recentSearches.length} remembered in the command palette</p>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={recentSearches.length === 0}
+              onClick={() => {
+                clearRecentSearches();
+                showToast('Recent searches cleared', 'info');
+              }}
+            >
+              <Trash2 /> Clear
+            </Button>
+          </div>
+        </section>
+
+        <Separator />
+
+        <section className={styles.about}>
+          <DotMark size={28} />
+          <div className={styles.aboutText}>
+            <span className={styles.aboutName}>Atlas</span>
+            <span className={styles.aboutVersion}>v{APP_VERSION}</span>
+            <p>
+              Describe the component, get the install command. Every result installs from its own
+              library and keeps its own licence.
+            </p>
+            <Button asChild variant="link" size="xs" className={styles.aboutLink}>
+              <a href="https://github.com" target="_blank" rel="noreferrer noopener">
+                <Github /> Source <ArrowUpRight />
+              </a>
+            </Button>
+          </div>
+        </section>
+      </DialogContent>
+    </Dialog>
+  );
+};
