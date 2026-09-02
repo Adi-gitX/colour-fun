@@ -1,66 +1,68 @@
 /* ===========================================================
-   Header — minimal: centered breadcrumb only
+   Header — top-bar shell: wordmark · nav · search · theme · settings
    =========================================================== */
 
 .header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.inner {
   height: var(--header-height);
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  padding: 0 16px;
-  background: var(--bg-primary);
-  border-bottom: 1px solid var(--border-light);
-  position: sticky;
-  top: 0;
-  z-index: 50;
+  gap: 16px;
+  padding: 0 28px;
 }
 
-.left {
-  display: flex;
+/* ===== Brand ===== */
+.brand {
+  display: inline-flex;
   align-items: center;
+  gap: 10px;
+  color: var(--text-primary);
   justify-self: start;
 }
-
-.menuBtn {
-  display: none;
-  width: 32px;
-  height: 32px;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-sm);
-  color: var(--text-secondary);
-  transition:
-    background 0.12s,
-    color 0.12s;
-}
-.menuBtn:hover {
-  background: var(--bg-active);
-  color: var(--text-primary);
+.brandText {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
-/* ===== Centered breadcrumb ===== */
-.center {
+/* ===== Nav ===== */
+.nav {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-family: var(--font-sans);
-  font-size: 13px;
-  color: var(--text-tertiary);
+  gap: 2px;
   justify-self: center;
 }
-
-.crumb {
-  font-weight: 400;
+.navLink {
+  height: 30px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  font-family: var(--font-mono);
+  font-size: 13px;
   color: var(--text-tertiary);
+  transition:
+    color 0.12s ease,
+    border-color 0.12s ease,
+    background 0.12s ease;
 }
-.crumbSep {
-  color: var(--text-tertiary);
-  opacity: 0.4;
-}
-.crumbCurrent {
-  font-weight: 500;
+.navLink:hover {
   color: var(--text-primary);
-  letter-spacing: -0.005em;
+}
+.navLinkActive {
+  color: var(--text-primary);
+  font-weight: 400;
+  background: var(--bg-card);
+  border-color: var(--border-light);
 }
 
 /* ===== Right cluster ===== */
@@ -74,86 +76,136 @@
 .iconBtn {
   width: 30px;
   height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
   color: var(--text-tertiary);
-  background: transparent;
-  border: none;
-  transition: all 0.12s ease;
 }
 .iconBtn:hover {
+  border-color: var(--border-light);
+  color: var(--text-primary);
+  background: transparent;
+}
+.iconBtn svg {
+  width: 14px;
+  height: 14px;
+}
+.menuBtn {
+  display: none !important;
+}
+
+.searchBtn {
+  height: 30px;
+  padding: 0 7px 0 9px;
+  gap: 8px;
+  background: var(--bg-card) !important;
+  border-color: var(--border-light);
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 400;
+  box-shadow: none;
+}
+.searchBtn:hover {
+  color: var(--text-primary);
+  border-color: var(--border-hover);
+}
+.searchBtn svg {
+  width: 13px;
+  height: 13px;
+}
+.searchBtnKbd {
+  height: 18px;
+  font-size: 10px;
+  background: transparent;
+  border: 1px solid var(--border-light);
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  font-weight: 400;
+}
+
+.subCount {
+  font-size: 10.5px;
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===== Mobile menu sheet ===== */
+.scrim {
+  position: fixed;
+  inset: 0;
+  top: var(--header-height);
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 40;
+}
+.sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  z-index: 45;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 12px 12px;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-light);
+}
+.sheetLink {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-align: left;
+}
+.sheetLink:hover {
   background: var(--bg-active);
   color: var(--text-primary);
 }
-
-/* Search trigger — Linear/Raycast-style pill that opens the command palette */
-.searchBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  height: 30px;
-  padding: 0 8px 0 9px;
-  border-radius: var(--radius-sm);
-  background: var(--bg-active, rgb(255 255 255 / 0.04));
-  border: 1px solid var(--border-light, rgb(255 255 255 / 0.06));
-  color: var(--text-tertiary);
-  font-family: inherit;
-  font-size: 12.5px;
-  cursor: pointer;
-  transition: all 0.12s ease;
-}
-.searchBtn:hover {
-  background: var(--bg-hover, rgb(255 255 255 / 0.06));
+.sheetLinkActive {
   color: var(--text-primary);
-  border-color: var(--border-strong, rgb(255 255 255 / 0.12));
+  font-weight: 400;
+}
+.sheetSub {
+  padding-left: 24px;
+  font-size: 13px;
+}
+.sheetLabel {
+  padding: 12px 12px 4px;
+}
+.sheetDivider {
+  height: 1px;
+  background: var(--border-light);
+  margin: 8px 0;
 }
 
-.searchBtnLabel {
-  letter-spacing: -0.005em;
+@media (max-width: 900px) {
+  .inner,
+  .subnav {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
 }
 
-.searchBtnKbd {
-  display: inline-flex;
-  align-items: center;
-  height: 18px;
-  padding: 0 5px;
-  border-radius: 4px;
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 10.5px;
-  font-weight: 500;
-  background: rgb(255 255 255 / 0.06);
-  border: 1px solid rgb(255 255 255 / 0.06);
-  color: var(--text-tertiary);
-}
-
-[data-theme='light'] .searchBtnKbd {
-  background: rgb(0 0 0 / 0.04);
-  border-color: rgb(0 0 0 / 0.06);
-}
-
-@media (max-width: 600px) {
+@media (max-width: 720px) {
+  .inner {
+    grid-template-columns: auto 1fr;
+    gap: 8px;
+  }
+  .nav,
+  .desktopOnly,
   .searchBtnLabel,
   .searchBtnKbd {
-    display: none;
+    display: none !important;
+  }
+  .menuBtn {
+    display: inline-flex !important;
   }
   .searchBtn {
     padding: 0;
     width: 30px;
     justify-content: center;
-  }
-}
-
-@media (max-width: 900px) {
-  .menuBtn {
-    display: flex;
-  }
-}
-
-@media (max-width: 600px) {
-  .center {
-    font-size: 12.5px;
-    gap: 6px;
   }
 }

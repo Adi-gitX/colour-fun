@@ -1,81 +1,224 @@
-import { Menu, Sun, Moon, Search } from 'lucide-react';
+import { useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Menu, Moon, Search, Settings, Sun, X } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import type { Section } from '../store/appStore';
+import { colors } from '../data/colors';
+import { gradients } from '../data/gradients';
+import { imageUrls } from '../data/images';
+import { DotMark } from './brand/DotMark';
+import { Button } from './ui/button';
+import { Kbd } from './ui/kbd';
+import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import styles from './Header.module.css';
 
 const isMac =
   typeof navigator !== 'undefined' && /mac/i.test(navigator.platform || navigator.userAgent);
 
-const sectionLabels: Record<Section, { parent?: string; label: string }> = {
-  home: { label: 'Home' },
-  components: { parent: 'Browse', label: 'Components' },
-  blocks: { parent: 'Browse', label: 'Blocks' },
-  templates: { parent: 'Browse', label: 'Templates' },
-  hooks: { parent: 'Browse', label: 'Hooks' },
-  community: { label: 'Community' },
-  libraries: { parent: 'Discover', label: 'Component Libraries' },
-  'design-systems': { parent: 'Discover', label: 'Design Systems' },
-  inspiration: { parent: 'Discover', label: 'UI Inspiration' },
-  fonts: { parent: 'Discover', label: 'Fonts' },
-  tools: { parent: 'Discover', label: 'Tools' },
-  library: { label: 'Bookmarks' },
-  'library-detail': { parent: 'Discover', label: 'Library' },
-  following: { label: 'Following' },
-  'solid-colors': { parent: 'Studio', label: 'Solid Colors' },
-  gradients: { parent: 'Studio', label: 'Gradients' },
-  backgrounds: { parent: 'Studio', label: 'Backgrounds' },
-  'tool-contrast': { parent: 'Toolbox', label: 'Contrast Checker' },
-  'tool-palette': { parent: 'Toolbox', label: 'Palette Generator' },
-  'tool-typescale': { parent: 'Toolbox', label: 'Type Scale' },
-  'tool-shadow': { parent: 'Toolbox', label: 'Shadow Generator' },
-};
+const WALLPAPER_SECTIONS: Section[] = ['solid-colors', 'gradients', 'backgrounds'];
 
+interface NavLink {
+  id: Section;
+  label: string;
+  /** Sections that keep this link highlighted. */
+  matches: Section[];
+}
+
+const NAV: NavLink[] = [
+  { id: 'home', label: 'Ask', matches: ['home'] },
+  { id: 'libraries', label: 'Libraries', matches: ['libraries'] },
+  { id: 'solid-colors', label: 'Wallpapers', matches: WALLPAPER_SECTIONS },
+];
+
+const WALLPAPER_LINKS: Array<{ id: Section; label: string; count: number }> = [
+  { id: 'solid-colors', label: 'Solid', count: colors.length },
+  { id: 'gradients', label: 'Gradients', count: gradients.length },
+  { id: 'backgrounds', label: 'Images', count: imageUrls.length },
+];
+
+function IconAction({
+  label,
+  onClick,
+  children,
+  className,
+  ...rest
+}: React.ComponentProps<'button'> & { label: string }) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          aria-label={label}
+          onClick={onClick}
+          className={`${styles.iconBtn} ${className ?? ''}`}
+          {...rest}
+        >
+          {children}
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent side="bottom" sideOffset={6}>
+        {label}
+      </TooltipContent>
+    </Tooltip>
+  );
+}
+
+/**
+ * Top-bar shell: wordmark, three section links, search, theme, settings. Under 720px the links
+ * fold into a menu sheet driven by the store's `isSidebarOpen` flag.
+ */
 export const Header = () => {
-  const { theme, toggleTheme, toggleSidebar, currentSection, openPalette } = useAppStore();
-  const crumb = sectionLabels[currentSection];
+  const theme = useAppStore((s) => s.theme);
+  const toggleTheme = useAppStore((s) => s.toggleTheme);
+  const currentSection = useAppStore((s) => s.currentSection);
+  const setCurrentSection = useAppStore((s) => s.setCurrentSection);
+  const openPalette = useAppStore((s) => s.openPalette);
+  const openSettings = useAppStore((s) => s.openSettings);
+  const menuOpen = useAppStore((s) => s.isSidebarOpen);
+  const toggleMenu = useAppStore((s) => s.toggleSidebar);
+  const closeMenu = useAppStore((s) => s.closeSidebar);
+
+  const go = (section: Section) => {
+    setCurrentSection(section);
+    closeMenu();
+  };
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeMenu();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [menuOpen, closeMenu]);
+
+  const isActive = (link: NavLink) => link.matches.includes(currentSection);
 
   return (
     <header className={styles.header}>
-      <div className={styles.left}>
-        <button className={styles.menuBtn} onClick={toggleSidebar} aria-label="Toggle menu">
-          <Menu size={18} strokeWidth={2} />
+      <div className={styles.inner}>
+        <button
+          type="button"
+          className={styles.brand}
+          onClick={() => go('home')}
+          aria-label="Atlas home"
+        >
+          <DotMark size={20} />
+          <span className={styles.brandText}>Atlas</span>
         </button>
+
+        <nav className={styles.nav} aria-label="Primary">
+          {NAV.map((link) => (
+            <button
+              key={link.id}
+              type="button"
+              className={`${styles.navLink} ${isActive(link) ? styles.navLinkActive : ''}`}
+              onClick={() => go(link.id)}
+              aria-current={isActive(link) ? 'page' : undefined}
+            >
+              {link.label}
+            </button>
+          ))}
+        </nav>
+
+        <div className={styles.right}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className={styles.searchBtn}
+                onClick={openPalette}
+                aria-label="Open command palette"
+              >
+                <Search />
+                <span className={styles.searchBtnLabel}>Search</span>
+                <Kbd className={styles.searchBtnKbd}>{isMac ? '⌘' : 'Ctrl'} K</Kbd>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" sideOffset={6}>
+              Search everything
+            </TooltipContent>
+          </Tooltip>
+          <IconAction
+            label={theme === 'dark' ? 'Switch to light' : 'Switch to dark'}
+            onClick={toggleTheme}
+          >
+            {theme === 'dark' ? <Sun /> : <Moon />}
+          </IconAction>
+          <IconAction label="Settings" onClick={openSettings} className={styles.desktopOnly}>
+            <Settings />
+          </IconAction>
+          <IconAction
+            label={menuOpen ? 'Close menu' : 'Menu'}
+            onClick={toggleMenu}
+            className={styles.menuBtn}
+            aria-expanded={menuOpen}
+          >
+            {menuOpen ? <X /> : <Menu />}
+          </IconAction>
+        </div>
       </div>
 
-      <div className={styles.center}>
-        {crumb.parent && (
+      <AnimatePresence>
+        {menuOpen && (
           <>
-            <span className={styles.crumb}>{crumb.parent}</span>
-            <span className={styles.crumbSep}>/</span>
+            <motion.div
+              className={styles.scrim}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={closeMenu}
+            />
+            <motion.div
+              className={styles.sheet}
+              role="dialog"
+              aria-label="Menu"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.16 }}
+            >
+              {NAV.filter((l) => l.id !== 'solid-colors').map((link) => (
+                <button
+                  key={link.id}
+                  type="button"
+                  className={`${styles.sheetLink} ${isActive(link) ? styles.sheetLinkActive : ''}`}
+                  onClick={() => go(link.id)}
+                >
+                  {link.label}
+                </button>
+              ))}
+              <div className={`eyebrow ${styles.sheetLabel}`}>Wallpapers</div>
+              {WALLPAPER_LINKS.map((w) => (
+                <button
+                  key={w.id}
+                  type="button"
+                  className={`${styles.sheetLink} ${styles.sheetSub} ${currentSection === w.id ? styles.sheetLinkActive : ''}`}
+                  onClick={() => go(w.id)}
+                >
+                  {w.label}
+                  <span className={styles.subCount}>{w.count}</span>
+                </button>
+              ))}
+              <div className={styles.sheetDivider} />
+              <button
+                type="button"
+                className={styles.sheetLink}
+                onClick={() => {
+                  closeMenu();
+                  openSettings();
+                }}
+              >
+                Settings
+              </button>
+            </motion.div>
           </>
         )}
-        <span className={styles.crumbCurrent}>{crumb.label}</span>
-      </div>
-
-      <div className={styles.right}>
-        <button
-          className={styles.searchBtn}
-          onClick={openPalette}
-          aria-label="Open command palette"
-          title="Search everything"
-        >
-          <Search size={13} strokeWidth={1.75} />
-          <span className={styles.searchBtnLabel}>Search…</span>
-          <span className={styles.searchBtnKbd}>{isMac ? '⌘' : 'Ctrl'} K</span>
-        </button>
-        <button
-          className={styles.iconBtn}
-          onClick={toggleTheme}
-          aria-label="Toggle theme"
-          title={theme === 'dark' ? 'Switch to light' : 'Switch to dark'}
-        >
-          {theme === 'dark' ? (
-            <Sun size={14} strokeWidth={1.75} />
-          ) : (
-            <Moon size={14} strokeWidth={1.75} />
-          )}
-        </button>
-      </div>
+      </AnimatePresence>
     </header>
   );
 };
