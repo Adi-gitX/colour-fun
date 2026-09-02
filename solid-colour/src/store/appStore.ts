@@ -1,33 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { ComponentCategory } from '../data/components';
 import type { Color, ColorCategory } from '../data/colors';
 
-export type Section =
-  // Atlas top-level sections
-  | 'home'
-  | 'components'
-  | 'blocks'
-  | 'templates'
-  | 'hooks'
-  | 'community'
-  | 'libraries'
-  | 'library-detail'
-  | 'design-systems'
-  | 'inspiration'
-  | 'fonts'
-  | 'tools'
-  | 'library'
-  | 'following'
-  // Studio (restored color/gradient/image features)
-  | 'solid-colors'
-  | 'gradients'
-  | 'backgrounds'
-  // Toolbox — embedded interactive utilities
-  | 'tool-contrast'
-  | 'tool-palette'
-  | 'tool-typescale'
-  | 'tool-shadow';
+export type Section = 'home' | 'libraries' | 'solid-colors' | 'gradients' | 'backgrounds';
 
 export interface Toast {
   id: string;
@@ -49,11 +24,14 @@ interface AppState {
   setCurrentSection: (section: Section) => void;
 
   /* ===== Component category filter (Browse / Community) ===== */
-  selectedCategory: ComponentCategory | 'all';
-  setSelectedCategory: (cat: ComponentCategory | 'all') => void;
+  selectedCategory: string | 'all';
+  setSelectedCategory: (cat: string | 'all') => void;
 
   /* ===== Color category filter (Studio / Solid Colors) ===== */
   colorCategory: ColorCategory | 'all';
+  /** Selected component category, or null while browsing every category. */
+  componentCategory: string | null;
+  setComponentCategory: (id: string | null) => void;
   setColorCategory: (cat: ColorCategory | 'all') => void;
 
   /* ===== Bookmarks (component-library + discover items) ===== */
@@ -164,6 +142,8 @@ export const useAppStore = create<AppState>()(
 
       colorCategory: 'all',
       setColorCategory: (cat) => set({ colorCategory: cat }),
+      componentCategory: null,
+      setComponentCategory: (id) => set({ componentCategory: id }),
 
       bookmarks: [],
       toggleBookmark: (id) => {
@@ -236,7 +216,7 @@ export const useAppStore = create<AppState>()(
       clearRecentSearches: () => set({ recentSearches: [] }),
 
       selectedLibraryId: null,
-      openLibraryDetail: (id) => set({ selectedLibraryId: id, currentSection: 'library-detail' }),
+      openLibraryDetail: (id) => set({ selectedLibraryId: id, currentSection: 'libraries' }),
       closeLibraryDetail: () => set({ selectedLibraryId: null, currentSection: 'libraries' }),
 
       isShortcutsOpen: false,
