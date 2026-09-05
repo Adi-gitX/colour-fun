@@ -1,6 +1,6 @@
 import { useMemo, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { Bookmark, ChevronRight, Pipette } from 'lucide-react';
+import { Bookmark } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import {
   colors,
@@ -10,6 +10,7 @@ import {
   categoryColors,
 } from '../data/colors';
 import type { Color, ColorCategory } from '../data/colors';
+import { Badge } from './ui/badge';
 import styles from './ColorGrid.module.css';
 
 const ColorCard = ({ color, index }: { color: Color; index: number }) => {
@@ -58,7 +59,7 @@ const ColorCard = ({ color, index }: { color: Color; index: number }) => {
 };
 
 export const ColorGrid = () => {
-  const { searchQuery, colorCategory, setColorCategory, openPicker } = useAppStore();
+  const { searchQuery, colorCategory, setColorCategory } = useAppStore();
   const containerRef = useRef<HTMLDivElement>(null);
 
   const filteredColors = useMemo(() => {
@@ -77,55 +78,43 @@ export const ColorGrid = () => {
 
   return (
     <div ref={containerRef} className={styles.gridWrapper}>
-      <div className={styles.headRow}>
-        <div className={styles.headText}>
-          <div className={styles.eyebrow}>Studio</div>
-          <div className={styles.headTitleRow}>
-            <h2 className={styles.gridTitle}>Solid Colors</h2>
-            <span className={styles.gridCount}>{filteredColors.length}</span>
-          </div>
-          <p className={styles.headDescription}>
-            238 curated colors plus a custom picker — export at up to 8K in PNG, JPEG or WebP.
-          </p>
-        </div>
-        <button className={styles.pickerBtn} type="button" onClick={openPicker}>
-          <Pipette size={13} strokeWidth={1.75} />
-          Custom color
-          <ChevronRight size={13} strokeWidth={1.75} />
-        </button>
-      </div>
-
       <div className={styles.filterBar}>
-        <button
-          className={`${styles.chip} ${colorCategory === 'all' ? styles.chipActive : ''}`}
-          onClick={() => setColorCategory('all')}
+        <Badge
+          asChild
+          variant={colorCategory === 'all' ? 'default' : 'outline'}
+          className={styles.chip}
         >
-          <span
-            className={styles.chipDot}
-            style={{
-              background:
-                'conic-gradient(from 0deg, #ef4444, #f59e0b, #10b981, #3b82f6, #8b5cf6, #ec4899, #ef4444)',
-            }}
-          />
-          All
-        </button>
-        {allCategories.map((cat) => (
-          <button
-            key={cat}
-            className={`${styles.chip} ${colorCategory === cat ? styles.chipActive : ''}`}
-            onClick={() => setColorCategory(cat)}
-          >
-            <span className={styles.chipDot} style={{ background: categoryColors[cat] }} />
-            {categoryLabels[cat]}
+          <button type="button" onClick={() => setColorCategory('all')}>
+            <span
+              className={styles.chipDot}
+              style={{
+                background:
+                  'conic-gradient(from 0deg, #ef4444, #f59e0b, #10b981, #3b82f6, #8b5cf6, #ec4899, #ef4444)',
+              }}
+            />
+            All
           </button>
+        </Badge>
+        {allCategories.map((cat) => (
+          <Badge
+            key={cat}
+            asChild
+            variant={colorCategory === cat ? 'default' : 'outline'}
+            className={styles.chip}
+          >
+            <button type="button" onClick={() => setColorCategory(cat)}>
+              <span className={styles.chipDot} style={{ background: categoryColors[cat] }} />
+              {categoryLabels[cat]}
+            </button>
+          </Badge>
         ))}
       </div>
 
       {filteredColors.length === 0 ? (
         <div className={styles.empty}>
           <div className={styles.emptyIcon}>○</div>
-          <h3>No colors match</h3>
-          <p>Try a different category or use the custom color picker.</p>
+          <h3>No colours match</h3>
+          <p>Try a different category, clear the filter, or open the custom picker.</p>
         </div>
       ) : (
         <div className={styles.grid}>

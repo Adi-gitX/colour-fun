@@ -3,91 +3,9 @@
    =========================================================== */
 
 .gridWrapper {
-  padding: 28px 32px 48px;
   display: flex;
   flex-direction: column;
   gap: 16px;
-}
-
-/* ===== Section header ===== */
-.headRow {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 0 4px 4px;
-  flex-wrap: wrap;
-}
-
-.headText {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-
-.eyebrow {
-  font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.headTitleRow {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
-.gridTitle {
-  font-family: var(--font-sans);
-  font-size: 18px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: var(--text-primary);
-  margin: 0;
-}
-
-.gridCount {
-  font-family: var(--font-mono);
-  font-size: 11.5px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  letter-spacing: 0.02em;
-}
-
-.headDescription {
-  font-family: var(--font-sans);
-  font-size: 13px;
-  color: var(--text-tertiary);
-  line-height: 1.5;
-  margin: 0;
-  max-width: 600px;
-}
-
-.pickerBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 32px;
-  padding: 0 10px 0 12px;
-  background: var(--bg-primary);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
-  font-family: var(--font-sans);
-  font-size: 12.5px;
-  font-weight: 500;
-  color: var(--text-tertiary);
-  cursor: pointer;
-  transition: all 0.12s ease;
-}
-
-.pickerBtn:hover {
-  background: var(--bg-card-hover);
-  color: var(--text-primary);
-  border-color: var(--border-medium);
 }
 
 /* ===== Chip filter bar ===== */
@@ -95,41 +13,24 @@
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
-  padding: 0 4px 8px;
 }
 
 .chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  cursor: pointer;
   height: 28px;
   padding: 0 12px 0 8px;
-  background: var(--bg-primary);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-pill);
-  font-family: var(--font-sans);
+  gap: 6px;
+  font-family: var(--font-mono);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 400;
+}
+.chip[data-variant='outline'] {
   color: var(--text-tertiary);
-  cursor: pointer;
-  transition: all 0.12s ease;
+  background: var(--bg-card);
 }
-
-.chip:hover {
-  background: var(--bg-card-hover);
+.chip[data-variant='outline']:hover {
   color: var(--text-primary);
-  border-color: var(--border-medium);
-}
-
-.chipActive {
-  background: var(--accent-primary);
-  border-color: var(--accent-primary);
-  color: var(--accent-on-primary);
-}
-
-.chipActive:hover {
-  background: var(--accent-primary);
-  color: var(--accent-on-primary);
+  border-color: var(--border-hover);
 }
 
 .chipDot {
@@ -210,11 +111,10 @@
 }
 
 .colorName {
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   font-size: 12.5px;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--text-primary);
-  letter-spacing: -0.005em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -224,7 +124,7 @@
 .colorHex {
   font-family: var(--font-mono);
   font-size: 10.5px;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--text-secondary);
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -284,8 +184,7 @@
 }
 
 .empty h3 {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 14px;
   color: var(--text-primary);
 }
 
@@ -305,9 +204,6 @@
 }
 
 @media (max-width: 768px) {
-  .gridWrapper {
-    padding: 16px 16px 32px;
-  }
   .grid {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 12px;
