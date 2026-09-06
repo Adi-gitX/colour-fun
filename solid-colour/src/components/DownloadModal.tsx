@@ -108,7 +108,7 @@ export const DownloadModal = () => {
 
             <div className={styles.options}>
               <div className={styles.optionGroup}>
-                <label className={styles.label}>Aspect Ratio</label>
+                <label className={styles.label}>Aspect ratio</label>
                 <div className={styles.ratioGrid}>
                   {ratioButtons.map((ratio) => (
                     <button
@@ -163,7 +163,7 @@ export const DownloadModal = () => {
                     checked={useCustomSize}
                     onChange={(e) => setUseCustomSize(e.target.checked)}
                   />
-                  <span>Custom Size</span>
+                  <span>Custom size</span>
                 </label>
                 {useCustomSize && (
                   <div className={styles.customSizeInputs}>
@@ -222,7 +222,7 @@ export const DownloadModal = () => {
                     <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
                   </svg>
                 )}
-                <span>{isDownloading ? 'Generating...' : 'Download'}</span>
+                <span>{isDownloading ? 'Generating' : 'Download'}</span>
               </button>
             </div>
           </motion.div>

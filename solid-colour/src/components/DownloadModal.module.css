@@ -15,7 +15,7 @@
 .backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(9, 9, 11, 0.45);
+  background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
 }
@@ -26,7 +26,7 @@
   max-width: 480px;
   background: var(--bg-card);
   border: 1px solid var(--border-light);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-modal);
   animation: scaleIn 0.18s ease-out;
@@ -41,8 +41,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid var(--border-light);
+  background: rgba(0, 0, 0, 0.55);
+  color: #fafafa;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 50%;
   cursor: pointer;
   z-index: 10;
@@ -78,16 +79,16 @@
 }
 
 .previewName {
-  font-family: var(--font-sans);
-  font-size: 18px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 20px;
+  letter-spacing: -0.02em;
 }
 
 .previewHex {
   font-family: var(--font-mono);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 400;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   opacity: 0.92;
@@ -107,12 +108,7 @@
 }
 
 .label {
-  font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--text-secondary);
+  composes: eyebrow from global;
 }
 
 .ratioGrid {
@@ -128,9 +124,9 @@
   background: var(--bg-primary);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-sm);
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--text-tertiary);
   cursor: pointer;
   transition: all 0.12s ease;
@@ -163,7 +159,7 @@
   background: var(--bg-primary);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-sm);
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   font-size: 13px;
   color: var(--text-primary);
   cursor: pointer;
@@ -218,7 +214,7 @@
 }
 
 .sizeInput label {
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   font-size: 11px;
   color: var(--text-secondary);
 }
@@ -229,7 +225,7 @@
   background: var(--bg-primary);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-sm);
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   font-size: 13px;
   color: var(--text-primary);
   width: 100%;
@@ -262,9 +258,9 @@
 }
 
 .downloadSize {
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   font-size: 12.5px;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--text-primary);
 }
 
@@ -276,6 +272,7 @@
 }
 
 .downloadBtn {
+  font-weight: 400;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -284,9 +281,9 @@
   background: var(--accent-primary);
   border: 1px solid var(--accent-primary);
   border-radius: var(--radius-sm);
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   font-size: 12.5px;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--accent-on-primary);
   cursor: pointer;
   transition: opacity 0.12s ease;
