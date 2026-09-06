@@ -2,12 +2,17 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { imageUrls } from '../data/images';
+import { DotmSquare1 } from './ui/dotm-square-1';
+import { Skeleton } from './ui/skeleton';
 import styles from './ImageGallery.module.css';
 
 export const ImageGallery = () => {
   const [downloadingUrl, setDownloadingUrl] = useState<string | null>(null);
   const [previewIndex, setPreviewIndex] = useState<number | null>(null);
   const [imageLoading, setImageLoading] = useState(true);
+  const [loaded, setLoaded] = useState<Set<number>>(() => new Set());
+  const markLoaded = (i: number) =>
+    setLoaded((prev) => (prev.has(i) ? prev : new Set(prev).add(i)));
 
   useEffect(() => {
     if (previewIndex !== null) {
@@ -57,19 +62,6 @@ export const ImageGallery = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <motion.h2
-          className={styles.title}
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          Curated Backgrounds
-        </motion.h2>
-        <p className={styles.subtitle}>
-          Premium high-resolution images powered by Lummi. Optimization powered by Imgix.
-        </p>
-      </div>
-
       <div className={styles.grid}>
         {imageUrls.map((url, index) => (
           <motion.div
@@ -80,11 +72,14 @@ export const ImageGallery = () => {
             transition={{ delay: Math.min(index * 0.05, 0.5) }}
           >
             {/* Load 400px max width optimized webp via Imgix query args */}
+            {!loaded.has(index) && <Skeleton className={styles.skeleton} />}
             <img
               src={`${url}?w=400&fm=webp&q=80`}
-              alt={`Curated Background ${index + 1}`}
+              alt={`Curated background ${index + 1}`}
               loading="lazy"
               className={styles.image}
+              onLoad={() => markLoaded(index)}
+              onError={() => markLoaded(index)}
             />
             <div
               className={styles.overlay}
@@ -103,11 +98,11 @@ export const ImageGallery = () => {
                 aria-label={`Download high-res version of background ${index + 1}`}
               >
                 {downloadingUrl === url ? (
-                  <span className={styles.spinner} />
+                  <DotmSquare1 size={14} dotSize={2} ariaLabel="Downloading" />
                 ) : (
                   <>
-                    <Download size={20} strokeWidth={2} />
-                    <span>Download HD</span>
+                    <Download size={14} strokeWidth={1.75} />
+                    <span>Download</span>
                   </>
                 )}
               </button>
@@ -133,8 +128,9 @@ export const ImageGallery = () => {
                 setPreviewIndex(previewIndex > 0 ? previewIndex - 1 : previewIndex);
               }}
               disabled={previewIndex === 0}
+              aria-label="Previous image"
             >
-              <ChevronLeft size={32} />
+              <ChevronLeft size={22} />
             </button>
             <button
               className={styles.navBtnRight}
@@ -145,8 +141,9 @@ export const ImageGallery = () => {
                 );
               }}
               disabled={previewIndex === imageUrls.length - 1}
+              aria-label="Next image"
             >
-              <ChevronRight size={32} />
+              <ChevronRight size={22} />
             </button>
 
             <motion.div
@@ -156,13 +153,17 @@ export const ImageGallery = () => {
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             >
-              <button className={styles.closeBtn} onClick={() => setPreviewIndex(null)}>
-                <X size={24} />
+              <button
+                className={styles.closeBtn}
+                onClick={() => setPreviewIndex(null)}
+                aria-label="Close preview"
+              >
+                <X size={18} />
               </button>
 
               {imageLoading && (
                 <div className={styles.imageLoader}>
-                  <span className={styles.spinnerLg} />
+                  <DotmSquare1 size={40} dotSize={5} ariaLabel="Loading image" />
                 </div>
               )}
 
@@ -182,10 +183,10 @@ export const ImageGallery = () => {
                   disabled={downloadingUrl === imageUrls[previewIndex]}
                 >
                   {downloadingUrl === imageUrls[previewIndex] ? (
-                    <span className={styles.spinner} />
+                    <DotmSquare1 size={14} dotSize={2} ariaLabel="Downloading" />
                   ) : (
                     <>
-                      <Download size={20} /> Download High-Res
+                      <Download size={14} strokeWidth={1.75} /> Download full size
                     </>
                   )}
                 </button>
