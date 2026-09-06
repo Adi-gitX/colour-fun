@@ -77,13 +77,13 @@ export const ColorPicker = () => {
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', duration: 0.4 }}
           >
-            <button className={styles.closeBtn} onClick={closePicker}>
+            <button className={styles.closeBtn} onClick={closePicker} aria-label="Close">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M18 6L6 18M6 6l12 12" />
               </svg>
             </button>
 
-            <h2 className={styles.title}>Pick Your Perfect Color</h2>
+            <h2 className={styles.title}>Custom colour</h2>
 
             <div className={styles.pickerContainer}>
               <div className={styles.colorPickerWrapper}>
@@ -142,7 +142,7 @@ export const ColorPicker = () => {
 
               {recentColors.length > 0 && (
                 <div className={styles.recentColors}>
-                  <label>Recent Colors</label>
+                  <label>Recent</label>
                   <div className={styles.recentGrid}>
                     {recentColors.map((color, i) => (
                       <button
@@ -174,7 +174,7 @@ export const ColorPicker = () => {
                     <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
                   </svg>
                 )}
-                <span>Download This Color</span>
+                <span>Download</span>
               </button>
             </div>
           </motion.div>
