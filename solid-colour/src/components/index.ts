@@ -1,7 +1,4 @@
 export { Header } from './Header';
-export { Sidebar } from './Sidebar';
-export { ComponentCard } from './ComponentCard';
-export { DiscoverCard } from './DiscoverCard';
 export { SettingsModal } from './SettingsModal';
 export { ReloadPrompt } from './ReloadPrompt';
 export { ToastContainer } from './ToastContainer';
