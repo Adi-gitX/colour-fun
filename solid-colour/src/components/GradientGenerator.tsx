@@ -1,45 +1,60 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useMemo, useState } from 'react';
 import { HexColorInput } from 'react-colorful';
+import { Check, Copy, Download, Shuffle } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import { generateAndDownload } from '../utils/imageGenerator';
+import { gradients, gradientBuckets } from '../data/gradients';
+import type { GradientPreset } from '../data/gradients';
+import { DotmSquare2 } from './ui/dotm-square-2';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
 import styles from './GradientGenerator.module.css';
-import { Copy, Download, RefreshCw } from 'lucide-react';
 
 export const GradientGenerator = () => {
-  const {
-    selectedResolution,
-    selectedFormat,
-    useCustomSize,
-    customWidth,
-    customHeight,
-    addRecentColor,
-  } = useAppStore();
+  const selectedResolution = useAppStore((s) => s.selectedResolution);
+  const selectedFormat = useAppStore((s) => s.selectedFormat);
+  const useCustomSize = useAppStore((s) => s.useCustomSize);
+  const customWidth = useAppStore((s) => s.customWidth);
+  const customHeight = useAppStore((s) => s.customHeight);
+  const addRecentColor = useAppStore((s) => s.addRecentColor);
+  const showToast = useAppStore((s) => s.showToast);
 
   const [color1, setColor1] = useState('#FF512F');
   const [color2, setColor2] = useState('#DD2476');
   const [angle, setAngle] = useState(45);
+  const [bucket, setBucket] = useState<GradientPreset['bucket'] | 'all'>('all');
+  const [presetId, setPresetId] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
   const gradientCSS = `linear-gradient(${angle}deg, ${color1}, ${color2})`;
 
+  const presets = useMemo(
+    () => (bucket === 'all' ? gradients : gradients.filter((g) => g.bucket === bucket)),
+    [bucket]
+  );
+
+  const applyPreset = (g: GradientPreset) => {
+    setColor1(g.from.toUpperCase());
+    setColor2(g.to.toUpperCase());
+    setAngle(g.angle);
+    setPresetId(g.id);
+  };
+
   const handleRandomize = () => {
-    const randomColor = () =>
-      '#' +
-      Math.floor(Math.random() * 16777215)
-        .toString(16)
-        .padStart(6, '0');
-    setColor1(randomColor().toUpperCase());
-    setColor2(randomColor().toUpperCase());
+    const g = gradients[Math.floor(Math.random() * gradients.length)];
+    applyPreset(g);
     setAngle(Math.floor(Math.random() * 360));
   };
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(`background: ${gradientCSS};`);
-      // Could add toast here
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1500);
     } catch (err) {
       console.error('Failed to copy', err);
+      showToast('Could not copy to the clipboard', 'error');
     }
   };
 
@@ -48,7 +63,6 @@ export const GradientGenerator = () => {
     try {
       const finalWidth = useCustomSize ? customWidth : selectedResolution.width;
       const finalHeight = useCustomSize ? customHeight : selectedResolution.height;
-
       await generateAndDownload({
         gradient: { color1, color2, angle },
         width: finalWidth,
@@ -57,80 +71,59 @@ export const GradientGenerator = () => {
         quality: 1.0,
         filename: `Gradient_${color1.replace('#', '')}_${color2.replace('#', '')}`,
       });
-
-      // Add colors to recent
       addRecentColor(color1);
       addRecentColor(color2);
     } catch (error) {
       console.error('Download failed:', error);
+      showToast('Export failed', 'error');
     } finally {
       setIsDownloading(false);
     }
   };
 
+  const pick = (setter: (v: string) => void) => (v: string) => {
+    setter(v.toUpperCase());
+    setPresetId(null);
+  };
+
   return (
     <section className={styles.container}>
-      <div className={styles.header}>
-        <motion.h2
-          className={styles.title}
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          Gradient Generator
-        </motion.h2>
-        <motion.p
-          className={styles.subtitle}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.1 }}
-        >
-          Create beautiful, smooth gradients for your next project.
-        </motion.p>
-      </div>
-
       <div className={styles.workspace}>
-        <motion.div
-          className={styles.controls}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <div className={styles.controlGroup}>
-            <label className={styles.label}>Colors</label>
-            <div className={styles.colorInputs}>
-              <div className={styles.colorRow}>
-                <div className={styles.colorPreview} style={{ background: color1 }}>
-                  <input
-                    type="color"
-                    value={color1}
-                    onChange={(e) => setColor1(e.target.value.toUpperCase())}
-                    className={styles.colorInput}
-                  />
-                </div>
-                <div className={styles.hexInput}>
-                  <HexColorInput color={color1} onChange={setColor1} prefixed />
-                </div>
-              </div>
+        <div className={styles.preview}>
+          <div className={styles.previewGradient} style={{ background: gradientCSS }} />
+          <code className={styles.previewCss}>{gradientCSS}</code>
+        </div>
 
-              <div className={styles.colorRow}>
-                <div className={styles.colorPreview} style={{ background: color2 }}>
-                  <input
-                    type="color"
-                    value={color2}
-                    onChange={(e) => setColor2(e.target.value.toUpperCase())}
-                    className={styles.colorInput}
-                  />
+        <div className={styles.controls}>
+          <div className={styles.controlGroup}>
+            <span className="eyebrow">Stops</span>
+            <div className={styles.colorInputs}>
+              {[
+                { value: color1, set: pick(setColor1), label: 'From' },
+                { value: color2, set: pick(setColor2), label: 'To' },
+              ].map((stop) => (
+                <div className={styles.colorRow} key={stop.label}>
+                  <div className={styles.colorPreview} style={{ background: stop.value }}>
+                    <input
+                      type="color"
+                      value={stop.value}
+                      onChange={(e) => stop.set(e.target.value)}
+                      className={styles.colorInput}
+                      aria-label={`${stop.label} colour`}
+                    />
+                  </div>
+                  <div className={styles.hexInput}>
+                    <span className={styles.hexLabel}>{stop.label}</span>
+                    <HexColorInput color={stop.value} onChange={stop.set} prefixed />
+                  </div>
                 </div>
-                <div className={styles.hexInput}>
-                  <HexColorInput color={color2} onChange={setColor2} prefixed />
-                </div>
-              </div>
+              ))}
             </div>
           </div>
 
           <div className={styles.controlGroup}>
             <div className={styles.angleControl}>
-              <label className={styles.label}>Angle</label>
+              <span className="eyebrow">Angle</span>
               <span className={styles.angleValue}>{angle}°</span>
             </div>
             <input
@@ -140,39 +133,92 @@ export const GradientGenerator = () => {
               value={angle}
               onChange={(e) => setAngle(Number(e.target.value))}
               className={styles.angleSlider}
+              aria-label="Gradient angle"
             />
           </div>
 
           <div className={styles.actions}>
-            <button
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
               onClick={handleRandomize}
-              className={`${styles.actionBtn} ${styles.secondaryBtn}`}
+              className={styles.btn}
             >
-              <RefreshCw size={18} /> Randomize
-            </button>
-            <button onClick={handleCopy} className={`${styles.actionBtn} ${styles.secondaryBtn}`}>
-              <Copy size={18} /> Copy CSS
-            </button>
-            <button onClick={handleDownload} className={`${styles.actionBtn} ${styles.primaryBtn}`}>
+              <Shuffle /> Shuffle
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleCopy}
+              className={styles.btn}
+            >
+              {copied ? <Check /> : <Copy />}
+              {copied ? 'Copied' : 'Copy CSS'}
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              onClick={handleDownload}
+              className={`${styles.btn} ${styles.primaryBtn}`}
+              disabled={isDownloading}
+            >
               {isDownloading ? (
-                'Exporting...'
+                <>
+                  <DotmSquare2 size={14} dotSize={2} ariaLabel="Exporting" /> Exporting
+                </>
               ) : (
                 <>
-                  <Download size={18} /> Download Image
+                  <Download /> Download
                 </>
               )}
-            </button>
+            </Button>
           </div>
-        </motion.div>
+        </div>
+      </div>
 
-        <motion.div
-          className={styles.preview}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3 }}
-        >
-          <div className={styles.previewGradient} style={{ background: gradientCSS }} />
-        </motion.div>
+      <div className={styles.presets}>
+        <div className={styles.presetHead}>
+          <span className="eyebrow">Presets</span>
+          <div className={styles.buckets}>
+            <Badge
+              asChild
+              variant={bucket === 'all' ? 'default' : 'outline'}
+              className={styles.bucket}
+            >
+              <button type="button" onClick={() => setBucket('all')}>
+                All
+              </button>
+            </Badge>
+            {gradientBuckets.map((b) => (
+              <Badge
+                key={b}
+                asChild
+                variant={bucket === b ? 'default' : 'outline'}
+                className={styles.bucket}
+              >
+                <button type="button" onClick={() => setBucket(b)}>
+                  {b}
+                </button>
+              </Badge>
+            ))}
+          </div>
+        </div>
+        <div className={styles.presetGrid}>
+          {presets.map((g) => (
+            <button
+              key={g.id}
+              type="button"
+              className={`${styles.preset} ${presetId === g.id ? styles.presetActive : ''}`}
+              onClick={() => applyPreset(g)}
+              title={`${g.name} · ${g.from} → ${g.to}`}
+            >
+              <span className={styles.presetSwatch} style={{ background: g.css }} />
+              <span className={styles.presetName}>{g.name}</span>
+            </button>
+          ))}
+        </div>
       </div>
     </section>
   );
