@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path';
 
@@ -8,7 +9,10 @@ export default defineConfig({
   base: process.env.BASE_URL || '/',
   plugins: [
     react(),
+    tailwindcss(),
     VitePWA({
+      // The component index ships in the main chunk (the command palette needs it synchronously).
+      workbox: { maximumFileSizeToCacheInBytes: 5 * 1024 * 1024 },
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
