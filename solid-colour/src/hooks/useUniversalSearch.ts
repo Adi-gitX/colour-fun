@@ -1,20 +1,11 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Fuse, { type IFuseOptions } from 'fuse.js';
-import { components } from '../data/components';
-import { libraries } from '../data/libraries';
-import { designSystems } from '../data/designSystems';
-import { inspirationSites } from '../data/inspiration';
-import { tools } from '../data/tools';
+import { loadIndex } from '../lib/ask';
+import type { IndexedComponent } from '../lib/ask';
 import { colors as colorDatabase } from '../data/colors';
 import type { Section } from '../store/appStore';
 
-export type SearchKind =
-  | 'component'
-  | 'library'
-  | 'design-system'
-  | 'inspiration'
-  | 'tool'
-  | 'color';
+export type SearchKind = 'component' | 'color';
 
 export interface SearchItem {
   id: string;
@@ -39,74 +30,19 @@ export interface SearchItem {
  * Flatten every data source into a single, searchable, normalized list.
  * This is what the command palette ranks against.
  */
-function buildCorpus(): SearchItem[] {
+function buildCorpus(components: IndexedComponent[]): SearchItem[] {
   const items: SearchItem[] = [];
 
   for (const c of components) {
     items.push({
-      id: `component:${c.id}`,
+      id: `component:${c.slug}`,
       kind: 'component',
-      title: c.name,
-      subtitle: `${c.category} · by ${c.author}`,
-      section: 'components',
-      haystack: `${c.name} ${c.category} ${c.author}`,
-      initials: c.authorInitials,
-    });
-  }
-
-  for (const lib of libraries) {
-    items.push({
-      id: `library:${lib.id}`,
-      kind: 'library',
-      title: lib.name,
-      subtitle: lib.description,
-      section: 'libraries',
-      haystack: `${lib.name} ${lib.description} ${lib.framework.join(' ')} ${lib.styling} ${lib.pricing}`,
-      url: lib.url,
-      initials: lib.initials,
-      accent: lib.accent,
-    });
-  }
-
-  for (const ds of designSystems) {
-    items.push({
-      id: `design-system:${ds.id}`,
-      kind: 'design-system',
-      title: ds.name,
-      subtitle: `${ds.org} · ${ds.description}`,
-      section: 'design-systems',
-      haystack: `${ds.name} ${ds.org} ${ds.description}`,
-      url: ds.url,
-      initials: ds.initials,
-      accent: ds.accent,
-    });
-  }
-
-  for (const site of inspirationSites) {
-    items.push({
-      id: `inspiration:${site.id}`,
-      kind: 'inspiration',
-      title: site.name,
-      subtitle: `${site.category} · ${site.description}`,
-      section: 'inspiration',
-      haystack: `${site.name} ${site.category} ${site.description}`,
-      url: site.url,
-      initials: site.initials,
-      accent: site.accent,
-    });
-  }
-
-  for (const t of tools) {
-    items.push({
-      id: `tool:${t.id}`,
-      kind: 'tool',
-      title: t.name,
-      subtitle: `${t.category} · ${t.description}`,
-      section: 'tools',
-      haystack: `${t.name} ${t.category} ${t.description}`,
-      url: t.url,
-      initials: t.initials,
-      accent: t.accent,
+      title: c.title,
+      subtitle: `${c.category} · ${c.library}`,
+      section: 'home',
+      haystack: `${c.title} ${c.category} ${c.library} ${(c.tags ?? []).join(' ')}`,
+      url: c.sourceUrl,
+      initials: c.library.slice(0, 2).toUpperCase(),
     });
   }
 
@@ -136,21 +72,32 @@ const FUSE_OPTIONS: IFuseOptions<SearchItem> = {
   shouldSort: true,
 };
 
-const KIND_ORDER: SearchKind[] = [
-  'library',
-  'design-system',
-  'component',
-  'inspiration',
-  'tool',
-  'color',
-];
+const KIND_ORDER: SearchKind[] = ['component', 'color'];
+
+const NO_COMPONENTS: IndexedComponent[] = [];
+let loadedComponents: IndexedComponent[] | null = null;
+
+/** The component index arrives over the network once; colours are searchable immediately. */
+function useComponents(): IndexedComponent[] {
+  const [components, setComponents] = useState<IndexedComponent[] | null>(loadedComponents);
+  useEffect(() => {
+    if (loadedComponents) return;
+    let live = true;
+    loadIndex()
+      .then((index) => {
+        loadedComponents = index.components;
+        if (live) setComponents(index.components);
+      })
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, []);
+  return components ?? NO_COMPONENTS;
+}
 
 export const KIND_LABELS: Record<SearchKind, string> = {
-  library: 'Component libraries',
-  'design-system': 'Design systems',
   component: 'Components',
-  inspiration: 'UI inspiration',
-  tool: 'Tools',
   color: 'Colors',
 };
 
@@ -173,7 +120,8 @@ export function useUniversalSearch(
   query: string,
   options?: { limitPerCategory?: number; limit?: number }
 ): { groups: SearchGroup[]; total: number } {
-  const corpus = useMemo(() => buildCorpus(), []);
+  const components = useComponents();
+  const corpus = useMemo(() => buildCorpus(components), [components]);
   const fuse = useMemo(() => new Fuse(corpus, FUSE_OPTIONS), [corpus]);
 
   return useMemo(() => {
