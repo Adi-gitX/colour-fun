@@ -1,0 +1,95 @@
+#!/bin/zsh
+# Launch Claude Code against the CodeCraft API, for this project only.
+#
+# CodeCraft's docs say to point ANTHROPIC_BASE_URL straight at https://codecraftapi.com/v1, but
+# that surface does not exist: POST /v1/messages returns 404 and only the OpenAI-style
+# /v1/chat/completions is implemented. So this script starts bin/codecraft-proxy.mjs, which
+# translates Anthropic <-> OpenAI, and points Claude Code at that proxy on loopback instead.
+#
+# Provider settings are read only at startup, so a running session cannot be switched over;
+# this always launches a fresh claude. Your global shell config is untouched.
+#
+#   bin/claude-cc              # start a session on CodeCraft
+#   bin/claude-cc --check      # verify key, model and proxy, then exit
+
+set -e
+root="${0:A:h:h}"
+cd "$root"
+
+env_file="$root/.env.codecraft"
+if [[ ! -f "$env_file" ]]; then
+  print -u2 "missing $env_file — copy .env.codecraft.example and paste your cc_ key"
+  exit 1
+fi
+set -a; source "$env_file"; set +a
+
+: "${CODECRAFT_BASE_URL:=https://codecraftapi.com/v1}"
+: "${CODECRAFT_MODEL:=claude-opus-4.8}"
+: "${CODECRAFT_PROXY_PORT:=8787}"
+
+if [[ -z "$CODECRAFT_API_KEY" || "$CODECRAFT_API_KEY" == cc_paste_your_key_here ]]; then
+  print -u2 "CODECRAFT_API_KEY is not set in $env_file"
+  exit 1
+fi
+
+# Preflight upstream: a bad key or a wrong model id fails clearly here rather than mid-task.
+models_json="$(curl -s -m 20 -w '\n%{http_code}' "$CODECRAFT_BASE_URL/models" \
+  -H "Authorization: Bearer $CODECRAFT_API_KEY")" || {
+    print -u2 "could not reach $CODECRAFT_BASE_URL/models"; exit 1; }
+http_code="${models_json##*$'\n'}"
+body="${models_json%$'\n'*}"
+
+case "$http_code" in
+  200) ;;
+  401) print -u2 "401 — key missing, malformed, or revoked. Rotate it in Dashboard -> API Keys."; exit 1 ;;
+  403) print -u2 "403 — key lacks the models:read scope, which agents need."; exit 1 ;;
+  *)   print -u2 "HTTP $http_code from $CODECRAFT_BASE_URL/models"; print -u2 "$body" | head -c 300; exit 1 ;;
+esac
+
+if ! print -r -- "$body" | grep -q "\"$CODECRAFT_MODEL\""; then
+  print -u2 "model '$CODECRAFT_MODEL' is not in /v1/models. Available ids:"
+  print -r -- "$body" | grep -o '"id"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*"\([^"]*\)"$/  \1/' | head -20
+  exit 1
+fi
+
+proxy_url="http://127.0.0.1:${CODECRAFT_PROXY_PORT}"
+proxy_pid=""
+
+# Reuse a proxy that is already up; otherwise start one and stop it again on exit so no stray
+# process keeps the port held.
+if curl -s -m 3 "$proxy_url/health" >/dev/null 2>&1; then
+  print "proxy already running on $proxy_url"
+else
+  mkdir -p "$root/.cache"
+  pid_file="$root/.cache/codecraft-proxy.pid"
+  rm -f "$pid_file"
+  # Detach the proxy's output; if it inherited this shell's stdout the pipe would stay open
+  # and callers that capture output (or --check) would appear to hang after we exit.
+  #
+  # The proxy records its own pid: zsh forks a subshell for an env-prefixed command with a
+  # redirect, so $! here is that subshell, and killing it would leave node orphaned.
+  CODECRAFT_PROXY_PIDFILE="$pid_file" PORT="$CODECRAFT_PROXY_PORT" \
+    node "$root/bin/codecraft-proxy.mjs" >> "$root/.cache/codecraft-proxy.log" 2>&1 &
+  trap 'if [[ -f "$pid_file" ]]; then kill "$(<"$pid_file")" 2>/dev/null; rm -f "$pid_file"; fi' EXIT INT TERM
+  for i in {1..40}; do
+    curl -s -m 2 "$proxy_url/health" >/dev/null 2>&1 && break
+    sleep 0.25
+  done
+  if ! curl -s -m 2 "$proxy_url/health" >/dev/null 2>&1; then
+    print -u2 "proxy failed to start on $proxy_url"
+    exit 1
+  fi
+fi
+
+if [[ "$1" == "--check" ]]; then
+  print "ok — key valid, model '$CODECRAFT_MODEL' available, proxy healthy at $proxy_url"
+  exit 0
+fi
+
+export ANTHROPIC_BASE_URL="$proxy_url"
+# The proxy injects the real key upstream; Claude Code only needs this to be non-empty.
+export ANTHROPIC_AUTH_TOKEN="codecraft-via-local-proxy"
+export ANTHROPIC_MODEL="$CODECRAFT_MODEL"
+
+print "Claude Code -> $proxy_url -> $CODECRAFT_BASE_URL (model: $CODECRAFT_MODEL)"
+claude "$@"
