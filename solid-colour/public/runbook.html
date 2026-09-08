@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atlas Runbook</title>
+<meta name="description" content="What is left to do on Atlas: the restart, the two long data jobs, and the two decisions.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+  /* Self-hosted, same faces as the app: Martian Mono (OFL) for display, Commit Mono (MIT) for text. */
+  @font-face {
+    font-family: 'MartianMono';
+    src: url('/fonts/MartianMono.ttf') format('truetype');
+    font-weight: 400; font-display: swap;
+  }
+  @font-face {
+    font-family: 'MartianMono';
+    src: url('/fonts/MartianMono-Medium.ttf') format('truetype');
+    font-weight: 600; font-display: swap;
+  }
+  @font-face {
+    font-family: 'CommitMono';
+    src: url('/fonts/CommitMono-400-Regular.otf') format('opentype');
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'CommitMono';
+    src: url('/fonts/CommitMono-700-Regular.otf') format('opentype');
+    font-weight: 700; font-style: normal; font-display: swap;
+  }
+
+  /* Dark is the ground, as in the app; light is the secondary. */
+  :root {
+    --bg: #000000;
+    --surface: #0b0b0c;
+    --sunk: #000000;
+    --line: rgba(250, 250, 250, 0.11);
+    --line-strong: rgba(250, 250, 250, 0.26);
+    --ink: #f5f5f4;
+    --muted: #8b8b8f;
+    --faint: #64646b;
+    --done: #7d9a72;
+    --wait: #c2a05e;
+    --display: 'MartianMono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --body: 'CommitMono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #f7f7f6;
+      --surface: #ffffff;
+      --sunk: #f0f0ee;
+      --line: rgba(16, 16, 20, 0.12);
+      --line-strong: rgba(16, 16, 20, 0.24);
+      --ink: #16161a;
+      --muted: #63636b;
+      --faint: #8e8e97;
+      --done: #4f6f46;
+      --wait: #8a6a1f;
+      color-scheme: light;
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #f7f7f6;
+    --surface: #ffffff;
+    --sunk: #f0f0ee;
+    --line: rgba(16, 16, 20, 0.12);
+    --line-strong: rgba(16, 16, 20, 0.24);
+    --ink: #16161a;
+    --muted: #63636b;
+    --faint: #8e8e97;
+    --done: #4f6f46;
+    --wait: #8a6a1f;
+    color-scheme: light;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 14px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  img { max-width: 100%; }
+
+  .wrap {
+    max-width: 74ch;
+    margin: 0 auto;
+    padding: clamp(28px, 6vw, 64px) clamp(18px, 5vw, 36px) 96px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .eyebrow {
+    font-size: 10.5px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  .masthead { display: flex; flex-direction: column; gap: 14px; }
+  h1 {
+    font-family: var(--display);
+    font-size: clamp(21px, 3.4vw, 30px);
+    font-weight: 600; letter-spacing: -0.02em; line-height: 1.25;
+    margin: 0; text-wrap: balance;
+  }
+  .standfirst { margin: 0; color: var(--muted); max-width: 62ch; }
+
+  .progress { display: flex; flex-direction: column; gap: 10px; }
+  .meter { display: flex; gap: 5px; flex-wrap: wrap; }
+  .cell {
+    width: 15px; height: 15px;
+    border: 1px solid var(--line-strong);
+    transition: background 0.18s ease, border-color 0.18s ease;
+  }
+  .cell[data-on="1"] { background: var(--done); border-color: var(--done); }
+  .count { margin: 0; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .count b { color: var(--ink); font-weight: 700; }
+
+  /* Four stats: two rows of two when narrow, one row of four when there is room. Fixed column
+     counts rather than auto-fit, so a stat never ends up alone in a row beside dead space. */
+  .state {
+    margin: 0;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .stat { padding: 13px 15px; border-right: 1px solid var(--line); border-top: 1px solid var(--line); }
+  .stat:nth-child(2n) { border-right: 0; }
+  .stat:nth-child(-n + 2) { border-top: 0; }
+  @media (min-width: 620px) {
+    .state { grid-template-columns: repeat(4, 1fr); }
+    .stat { border-top: 0; }
+    .stat:nth-child(2n) { border-right: 1px solid var(--line); }
+    .stat:last-child { border-right: 0; }
+  }
+  .stat dt {
+    margin: 0 0 5px; font-size: 10.5px; font-weight: 700;
+    letter-spacing: 0.13em; text-transform: uppercase; color: var(--faint);
+  }
+  .stat dd {
+    margin: 0; font-family: var(--display); font-size: 15px; font-weight: 600;
+    font-variant-numeric: tabular-nums; letter-spacing: -0.01em;
+  }
+  .stat dd small { font-family: var(--body); font-size: 11.5px; font-weight: 400; color: var(--muted); letter-spacing: 0; }
+
+  section { display: flex; flex-direction: column; gap: 16px; }
+  .sec-head { display: flex; flex-direction: column; gap: 4px; }
+  h2 { margin: 0; font-family: var(--display); font-size: 13.5px; font-weight: 600; letter-spacing: -0.01em; }
+  .sec-note { margin: 0; font-size: 12.5px; color: var(--muted); }
+
+  .steps { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+  .step {
+    display: grid; grid-template-columns: 24px 1fr; gap: 14px;
+    padding: 16px 2px; border-bottom: 1px solid var(--line); align-items: start;
+  }
+  .box {
+    width: 20px; height: 20px; margin-top: 1px; padding: 0;
+    border: 1px solid var(--line-strong); background: transparent;
+    cursor: pointer; display: grid; place-items: center;
+    color: var(--bg); transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .box:hover { border-color: var(--ink); }
+  .box:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .box svg { width: 12px; height: 12px; opacity: 0; transition: opacity 0.15s ease; }
+  .step[data-done="1"] .box { background: var(--done); border-color: var(--done); }
+  .step[data-done="1"] .box svg { opacity: 1; }
+
+  .body { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .title { font-family: var(--display); font-size: 13.5px; font-weight: 600; letter-spacing: -0.01em; }
+  .step[data-done="1"] .title { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--line-strong); }
+  .why { margin: 0; color: var(--muted); font-size: 13px; }
+  .why em { font-style: normal; color: var(--ink); }
+
+  .tag {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.11em; text-transform: uppercase;
+    padding: 2px 6px; border: 1px solid var(--line-strong); color: var(--muted); white-space: nowrap;
+  }
+  .tag[data-kind="wait"] { color: var(--wait); border-color: var(--wait); }
+  .tag[data-kind="first"] { color: var(--ink); background: var(--surface); }
+
+  .cmd { display: flex; align-items: stretch; border: 1px solid var(--line); background: var(--surface); }
+  .cmd pre {
+    margin: 0; padding: 9px 11px; overflow-x: auto; flex: 1; min-width: 0;
+    font-family: var(--body); font-size: 12px; line-height: 1.5;
+  }
+  .cmd button {
+    border: 0; border-left: 1px solid var(--line); background: transparent; color: var(--muted);
+    font-family: var(--body); font-size: 10.5px; font-weight: 700;
+    letter-spacing: 0.09em; text-transform: uppercase;
+    padding: 0 11px; cursor: pointer; white-space: nowrap;
+  }
+  .cmd button:hover { color: var(--ink); }
+  .cmd button:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+
+  .decisions { display: flex; flex-direction: column; gap: 14px; }
+  .decision { border-left: 2px solid var(--line-strong); padding: 2px 0 2px 14px; }
+  .decision h3 { margin: 0 0 5px; font-family: var(--display); font-size: 13px; font-weight: 600; letter-spacing: -0.01em; }
+  .decision p { margin: 0; color: var(--muted); font-size: 13px; }
+
+  footer { color: var(--faint); font-size: 11.5px; border-top: 1px solid var(--line); padding-top: 16px; }
+  footer code { color: var(--muted); }
+  footer a { color: var(--muted); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <span class="eyebrow">Atlas · after this session</span>
+    <h1>What is left to do</h1>
+    <p class="standfirst">
+      The app is built and running. What remains is one restart, two long-running data jobs,
+      and two calls only you can make.
+    </p>
+  </header>
+
+  <div class="progress">
+    <div class="meter" id="meter" role="img" aria-label="Progress through the steps"></div>
+    <p class="count" id="count"></p>
+  </div>
+
+  <dl class="state">
+    <div class="stat"><dt>Indexed</dt><dd>6,918 <small>components</small></dd></div>
+    <div class="stat"><dt>Previews</dt><dd>285 <small>of 6,918</small></dd></div>
+    <div class="stat"><dt>Embeddings</dt><dd>1,000 <small>of 6,918</small></dd></div>
+    <div class="stat"><dt>Dev server</dt><dd>:5173 <small>running</small></dd></div>
+  </dl>
+
+  <section>
+    <div class="sec-head">
+      <h2>Ready now</h2>
+      <p class="sec-note">The restart comes first — ECC's commands do not exist until Claude Code reloads.</p>
+    </div>
+    <div class="steps" id="steps-now"></div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>When the machine is free</h2>
+      <p class="sec-note">Both are long jobs that heat the laptop. Overnight is the right time.</p>
+    </div>
+    <div class="steps" id="steps-later"></div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>Your call</h2>
+      <p class="sec-note">Not tasks. Two questions where I would be guessing at your budget and intent.</p>
+    </div>
+    <div class="decisions" id="decisions"></div>
+  </section>
+
+  <footer id="foot"></footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var STEPS = [
+    {
+      id: 'restart', group: 'now', tag: 'Do this first', kind: 'first',
+      title: 'Restart Claude Code',
+      why: "ECC 2.2.1 is installed and enabled, but skills, agents and its 94 slash commands register at startup. Until you quit and reopen, none of them exist.",
+      cmd: null
+    },
+    {
+      id: 'try-ecc', group: 'now',
+      title: 'Try ECC on this app',
+      why: "Type <em>/</em> and the ECC commands appear. These three fit a Vite and React codebase; most of the other 91 target Go, Rust, Kotlin and Flutter.",
+      cmd: '/react-review\n/react-test\n/plan'
+    },
+    {
+      id: 'codecraft', group: 'now',
+      title: 'Build on CodeCraft',
+      why: "Starts the translation proxy and launches a session billed to your <em>cc_</em> key instead of your Claude account. Provider settings are read only at startup, so it has to be a fresh session.",
+      cmd: './bin/claude-cc'
+    },
+    {
+      id: 'previews', group: 'later',
+      title: 'Finish the preview images',
+      why: "Only 285 of 6,918 cards have a rendered preview; the rest fall back to the dot-matrix placeholder. The script skips what is done and stops itself if free disk drops under 3 GB.",
+      cmd: 'bash ~/atlas-registry/render-missing.sh'
+    },
+    {
+      id: 'embeddings', group: 'later', tag: 'Quota-limited', kind: 'wait',
+      title: 'Finish the catalogue embeddings',
+      why: "At 1,000 of 6,918. Gemini's free tier caps out around a thousand vectors a day, so this needs repeat runs or a paid key. Search works meanwhile through keyword matching.",
+      cmd: 'npm run embed'
+    },
+    {
+      id: 'report', group: 'later',
+      title: 'Tell CodeCraft their docs are wrong',
+      why: "Their Claude Code section says to point <em>ANTHROPIC_BASE_URL</em> at the API directly. That surface does not exist — <em>/v1/messages</em> returns 404 and only the OpenAI route is implemented. Anyone following it fails on their first message.",
+      cmd: null
+    }
+  ];
+
+  var DECISIONS = [
+    {
+      q: 'Pay for a Gemini tier?',
+      a: 'Roughly 5,900 vectors remain. On the free tier that is about six days of repeated runs; on a paid key it is one afternoon. Without them search still works — it just matches words rather than meaning, and loses the per-card explanations.'
+    },
+    {
+      q: 'Should the app itself use CodeCraft instead of Gemini?',
+      a: 'CodeCraft serves both chat and embeddings through one key you already pay for, which would retire the Gemini quota problem entirely. It is a real change to the finder, not a config flip, so I have not touched it.'
+    }
+  ];
+
+  var KEY = 'atlas-runbook-done';
+  var done = {};
+  try {
+    done = JSON.parse(localStorage.getItem(KEY)) || {};
+  } catch (e) {
+    done = {};
+  }
+
+  var CHECK = '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6.4l2.6 2.6L10 3.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square"/></svg>';
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function stepHtml(s) {
+    var on = done[s.id] ? '1' : '0';
+    var tag = s.tag ? '<span class="tag" data-kind="' + (s.kind || '') + '">' + s.tag + '</span>' : '';
+    var cmd = s.cmd
+      ? '<div class="cmd"><pre><code>' + esc(s.cmd) + '</code></pre>' +
+        '<button type="button" data-copy="' + s.id + '">Copy</button></div>'
+      : '';
+    return '<div class="step" data-done="' + on + '">' +
+      '<button class="box" type="button" data-toggle="' + s.id + '" role="checkbox" aria-checked="' +
+        (on === '1') + '" aria-label="' + esc(s.title) + '">' + CHECK + '</button>' +
+      '<div class="body">' +
+        '<div class="row"><span class="title">' + esc(s.title) + '</span>' + tag + '</div>' +
+        '<p class="why">' + s.why + '</p>' + cmd +
+      '</div></div>';
+  }
+
+  function byGroup(g) {
+    return STEPS.filter(function (s) { return s.group === g; }).map(stepHtml).join('');
+  }
+
+  function render() {
+    document.getElementById('steps-now').innerHTML = byGroup('now');
+    document.getElementById('steps-later').innerHTML = byGroup('later');
+    document.getElementById('decisions').innerHTML = DECISIONS.map(function (d) {
+      return '<div class="decision"><h3>' + esc(d.q) + '</h3><p>' + esc(d.a) + '</p></div>';
+    }).join('');
+
+    var n = STEPS.filter(function (s) { return done[s.id]; }).length;
+    document.getElementById('meter').innerHTML = STEPS.map(function (s) {
+      return '<span class="cell" data-on="' + (done[s.id] ? 1 : 0) + '"></span>';
+    }).join('');
+    document.getElementById('count').innerHTML = '<b>' + n + '</b> of ' + STEPS.length + ' done';
+    document.getElementById('foot').innerHTML = n === STEPS.length
+      ? 'All clear. The app is at <code>localhost:5173</code>; ECC and CodeCraft are scoped to this project only.'
+      : 'Ticks are saved in this browser. Scoped to <code>colour-fun/solid-colour</code> — your global config is untouched.';
+  }
+
+  function save() {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(done));
+    } catch (e) { /* private window, or storage blocked */ }
+  }
+
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-toggle]');
+    if (t) {
+      var id = t.getAttribute('data-toggle');
+      if (done[id]) { delete done[id]; } else { done[id] = true; }
+      save();
+      render();
+      return;
+    }
+    var c = e.target.closest('[data-copy]');
+    if (!c) return;
+    var step = STEPS.filter(function (s) { return s.id === c.getAttribute('data-copy'); })[0];
+    if (!step || !step.cmd) return;
+    var reset = function (label) {
+      c.textContent = label;
+      setTimeout(function () { c.textContent = 'Copy'; }, 1400);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(step.cmd).then(function () { reset('Copied'); }, function () { reset('Select it'); });
+    } else {
+      reset('Select it');
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
