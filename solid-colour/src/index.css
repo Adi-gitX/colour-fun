@@ -207,6 +207,7 @@
   }
 
   html {
+  scroll-behavior: smooth;
     font-size: 16px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -415,6 +416,7 @@ kbd,
     transition-duration: 0.01ms !important;
   }
   html {
+  scroll-behavior: smooth;
     scroll-behavior: auto;
   }
 }
