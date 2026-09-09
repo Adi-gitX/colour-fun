@@ -1,6 +1,12 @@
 {
-  "buildCommand": "cd solid-colour && npm install && npm run build",
+  "framework": "vite",
+  "buildCommand": "npm --prefix solid-colour run build",
   "outputDirectory": "solid-colour/dist",
-  "installCommand": "cd solid-colour && npm install",
-  "framework": "vite"
+  "installCommand": "npm --prefix solid-colour install",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
 }
