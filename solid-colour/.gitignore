@@ -6,3 +6,7 @@ dist/
 # Playwright
 playwright-report/
 test-results/
+
+.cache/
+public/embeddings.bin
+.env.codecraft
