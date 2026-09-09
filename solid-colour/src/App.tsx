@@ -50,7 +50,7 @@ function App() {
               <div className="footer-content">
                 <div className="footer-brand">
                   <DotMark size={14} />
-                  <span>Atlas</span>
+                  <span>Garden</span>
                   <span className="version">v{APP_VERSION}</span>
                 </div>
                 <p>Every component installs from its own library and keeps its own licence.</p>

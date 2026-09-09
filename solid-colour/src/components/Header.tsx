@@ -103,10 +103,10 @@ export const Header = () => {
           type="button"
           className={styles.brand}
           onClick={() => go('home')}
-          aria-label="Atlas home"
+          aria-label="Garden home"
         >
           <DotMark size={20} />
-          <span className={styles.brandText}>Atlas</span>
+          <span className={styles.brandText}>Grdn</span>
         </button>
 
         <nav className={styles.nav} aria-label="Primary">

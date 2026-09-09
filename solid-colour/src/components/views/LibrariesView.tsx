@@ -4,7 +4,6 @@ import libraries from '../../data/libraries.json';
 import { useAppStore } from '../../store/appStore';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
-import { ScrollArea } from '../ui/scroll-area';
 import styles from './LibrariesView.module.css';
 
 interface Library {
@@ -108,73 +107,71 @@ export function LibrariesView() {
               </Badge>
             </p>
           </div>
-          <ScrollArea className={styles.scroll}>
-            <div className={styles.grid}>
-              {g.libs.map((lib) => (
-                <article key={lib.id} className={styles.card}>
-                  <div className={styles.cardHead}>
-                    <h3 className={styles.name}>{lib.name}</h3>
-                    <Badge
-                      variant={lib.status === 'live' ? 'default' : 'outline'}
-                      className={styles.status}
-                    >
-                      {STATUS_LABEL[lib.status] ?? lib.status}
-                    </Badge>
+          <div className={styles.grid}>
+            {g.libs.map((lib) => (
+              <article key={lib.id} className={styles.card}>
+                <div className={styles.cardHead}>
+                  <h3 className={styles.name}>{lib.name}</h3>
+                  <Badge
+                    variant={lib.status === 'live' ? 'default' : 'outline'}
+                    className={styles.status}
+                  >
+                    {STATUS_LABEL[lib.status] ?? lib.status}
+                  </Badge>
+                </div>
+                <dl className={styles.meta}>
+                  <div>
+                    <dt>Install</dt>
+                    <dd>{INSTALL_LABEL[lib.installs]}</dd>
                   </div>
-                  <dl className={styles.meta}>
+                  <div>
+                    <dt>Licence</dt>
+                    <dd>{lib.license}</dd>
+                  </div>
+                  <div>
+                    <dt>Source</dt>
+                    <dd>{KIND_LABEL[lib.kind] ?? lib.kind}</dd>
+                  </div>
+                  {lib.indexed > 0 && (
                     <div>
-                      <dt>Install</dt>
-                      <dd>{INSTALL_LABEL[lib.installs]}</dd>
+                      <dt>Indexed</dt>
+                      <dd>{lib.indexed.toLocaleString()}</dd>
                     </div>
-                    <div>
-                      <dt>Licence</dt>
-                      <dd>{lib.license}</dd>
-                    </div>
-                    <div>
-                      <dt>Source</dt>
-                      <dd>{KIND_LABEL[lib.kind] ?? lib.kind}</dd>
-                    </div>
-                    {lib.indexed > 0 && (
-                      <div>
-                        <dt>Indexed</dt>
-                        <dd>{lib.indexed.toLocaleString()}</dd>
-                      </div>
-                    )}
-                  </dl>
-                  <div className={styles.actions}>
+                  )}
+                </dl>
+                <div className={styles.actions}>
+                  <Button asChild variant="link" size="xs" className={styles.visit}>
+                    <a href={lib.homepage} target="_blank" rel="noreferrer noopener">
+                      Visit site <ArrowUpRight />
+                    </a>
+                  </Button>
+                  {lib.github && (
                     <Button asChild variant="link" size="xs" className={styles.visit}>
-                      <a href={lib.homepage} target="_blank" rel="noreferrer noopener">
-                        Visit site <ArrowUpRight />
+                      <a
+                        href={lib.github}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        aria-label={`${lib.name} on GitHub`}
+                      >
+                        <Github /> GitHub
                       </a>
                     </Button>
-                    {lib.github && (
-                      <Button asChild variant="link" size="xs" className={styles.visit}>
-                        <a
-                          href={lib.github}
-                          target="_blank"
-                          rel="noreferrer noopener"
-                          aria-label={`${lib.name} on GitHub`}
-                        >
-                          <Github /> GitHub
-                        </a>
-                      </Button>
-                    )}
-                    {lib.indexed > 0 && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="xs"
-                        className={styles.askBtn}
-                        onClick={() => setCurrentSection('home')}
-                      >
-                        Ask
-                      </Button>
-                    )}
-                  </div>
-                </article>
-              ))}
-            </div>
-          </ScrollArea>
+                  )}
+                  {lib.indexed > 0 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="xs"
+                      className={styles.askBtn}
+                      onClick={() => setCurrentSection('home')}
+                    >
+                      Ask
+                    </Button>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
         </section>
       ))}
     </div>

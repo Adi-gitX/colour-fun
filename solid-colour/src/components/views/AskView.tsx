@@ -43,7 +43,7 @@ const uid = () => `m${++nextId}`;
 
 const ENGINE_LINE: Record<typeof askEngine, string> = {
   gemini: 'Ranked by Gemini',
-  api: 'Ranked by the Atlas API',
+  api: 'Ranked by the Garden API',
   local: 'Ranked by search. Add a Gemini key in .env for explanations',
 };
 
@@ -216,7 +216,7 @@ function ThinkingMessage({ libraryCount }: { libraryCount: number }) {
         : [
             `Searching ${libraryCount} libraries`,
             'Matching meaning',
-            askEngine === 'gemini' ? 'Asking Gemini' : 'Asking the Atlas API',
+            askEngine === 'gemini' ? 'Asking Gemini' : 'Asking the Garden API',
           ],
     [libraryCount]
   );

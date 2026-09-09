@@ -1,5 +1,5 @@
 /* ===========================================================
-   Atlas — background image catalog.
+   Garden — background image catalog.
 
    Two providers, both reliable + free + no auth required:
    - Lummi.ai (curated AI-generated abstract backgrounds)

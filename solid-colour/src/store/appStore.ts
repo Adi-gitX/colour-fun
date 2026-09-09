@@ -237,7 +237,7 @@ export const useAppStore = create<AppState>()(
       removeToast: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
     }),
     {
-      name: 'atlas-storage',
+      name: 'garden-storage',
       partialize: (state) => ({
         theme: state.theme,
         bookmarks: state.bookmarks,
@@ -255,12 +255,13 @@ export const useAppStore = create<AppState>()(
 );
 
 if (typeof window !== 'undefined') {
-  // One-shot migration: read legacy stax-storage if atlas-storage doesn't exist
-  const legacy = localStorage.getItem('stax-storage');
-  if (legacy && !localStorage.getItem('atlas-storage')) {
-    localStorage.setItem('atlas-storage', legacy);
+  // One-shot migration through the rename chain (stax -> atlas -> garden), newest name wins, so
+  // an existing visitor keeps their theme, bookmarks and favourites across both renames.
+  if (!localStorage.getItem('garden-storage')) {
+    const legacy = localStorage.getItem('atlas-storage') ?? localStorage.getItem('stax-storage');
+    if (legacy) localStorage.setItem('garden-storage', legacy);
   }
-  const stored = localStorage.getItem('atlas-storage');
+  const stored = localStorage.getItem('garden-storage');
   let initialTheme: 'light' | 'dark' = 'dark';
   if (stored) {
     try {

@@ -256,7 +256,7 @@ export const CommandPalette = () => {
               close
             </span>
           </div>
-          <span>Atlas command</span>
+          <span>Garden command</span>
         </div>
       </Command>
     </div>

@@ -48,7 +48,7 @@ export const SettingsModal = () => {
         <DialogHeader className={styles.head}>
           <DialogTitle className={styles.title}>Settings</DialogTitle>
           <DialogDescription className={styles.description}>
-            Appearance and what Atlas keeps on this device.
+            Appearance and what Garden keeps on this device.
           </DialogDescription>
         </DialogHeader>
 
@@ -120,7 +120,7 @@ export const SettingsModal = () => {
         <section className={styles.about}>
           <DotMark size={28} />
           <div className={styles.aboutText}>
-            <span className={styles.aboutName}>Atlas</span>
+            <span className={styles.aboutName}>Garden</span>
             <span className={styles.aboutVersion}>v{APP_VERSION}</span>
             <p>
               Describe the component, get the install command. Every result installs from its own

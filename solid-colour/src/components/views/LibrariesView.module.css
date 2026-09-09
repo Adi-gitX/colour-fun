@@ -101,23 +101,17 @@
   font-variant-numeric: tabular-nums;
 }
 
-.scroll {
-  max-height: 720px;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-lg);
-  background: var(--bg-primary);
-}
-.scroll > [data-slot='scroll-area-viewport'] > div {
-  display: block !important;
-}
-.grid {
-  padding: 12px;
-}
-
+/* One grid per group, flowing with the page. An inner scroll region was tried and removed: the
+   viewport grew to its content instead of the container's height, so the cards escaped the
+   rounded border and overlapped the next group, and it trapped the page scroll besides. */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  background: var(--bg-primary);
 }
 
 /* ===== Card ===== */
@@ -184,7 +178,7 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-top: 4px;
+  margin-top: auto; /* pin to the bottom so every footer in a row shares a baseline */
   padding-top: 12px;
   border-top: 1px solid var(--border-light);
 }

@@ -1,15 +1,15 @@
 import styles from './DotMark.module.css';
 
 /**
- * The Atlas mark: a 5×5 dot matrix with the letter A lit. `animate` runs a slow sweep across
+ * The Garden mark: a 5×5 dot matrix with the letter G lit. `animate` runs a slow sweep across
  * the lit dots, used on the home hero and as a loading pulse; the static version is the logo.
  */
-const A = [
-  [0, 0, 1, 0, 0],
-  [0, 1, 0, 1, 0],
-  [1, 1, 1, 1, 1],
-  [1, 0, 0, 0, 1],
-  [1, 0, 0, 0, 1],
+const G = [
+  [0, 1, 1, 1, 0],
+  [1, 0, 0, 0, 0],
+  [1, 0, 1, 1, 0],
+  [1, 0, 0, 1, 0],
+  [0, 1, 1, 1, 0],
 ];
 
 interface Props {
@@ -21,7 +21,7 @@ interface Props {
   title?: string;
 }
 
-export function DotMark({ size = 28, animate = false, tile = false, className = '', title = 'Atlas' }: Props) {
+export function DotMark({ size = 28, animate = false, tile = false, className = '', title = 'Garden' }: Props) {
   const gap = size / 5;
   const r = gap * 0.34;
   return (
@@ -32,7 +32,7 @@ export function DotMark({ size = 28, animate = false, tile = false, className = 
       aria-label={title}
     >
       <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} aria-hidden>
-        {A.flatMap((row, y) =>
+        {G.flatMap((row, y) =>
           row.map((on, x) => (
             <circle
               key={`${x}-${y}`}

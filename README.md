@@ -1,164 +1,132 @@
 <div align="center">
 
-# Atlas
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/wordmark-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset=".github/assets/wordmark-light.svg">
+  <img alt="Garden" src=".github/assets/wordmark-dark.svg" width="420">
+</picture>
 
-**Every design resource a developer or designer ever needs, in one place.**
+<br>
+
+**Describe the component. Get the install command.**
 
 [![Tests](https://github.com/Adi-gitX/colour-fun/actions/workflows/tests.yml/badge.svg)](https://github.com/Adi-gitX/colour-fun/actions/workflows/tests.yml)
 [![Pipeline](https://github.com/Adi-gitX/colour-fun/actions/workflows/pipeline.yml/badge.svg)](https://github.com/Adi-gitX/colour-fun/actions/workflows/pipeline.yml)
-[![Deploy (ECR + ECS)](https://github.com/Adi-gitX/colour-fun/actions/workflows/deploy.yml/badge.svg)](https://github.com/Adi-gitX/colour-fun/actions/workflows/deploy.yml)
 [![Secret scan](https://github.com/Adi-gitX/colour-fun/actions/workflows/secret-scan.yml/badge.svg)](https://github.com/Adi-gitX/colour-fun/actions/workflows/secret-scan.yml)
 [![CodeQL](https://github.com/Adi-gitX/colour-fun/actions/workflows/codeql.yml/badge.svg)](https://github.com/Adi-gitX/colour-fun/actions/workflows/codeql.yml)
 
 </div>
 
-The web has scattered design resources across thousands of disconnected sites — Awwwards for inspiration, shadcn for components, Coolors for palettes, Lucide for icons, Mobbin for mobile UI, Dribbble for trends. Atlas pulls every category that matters into one curated, searchable, opinionated library. One tab. Everything.
-
-> [!TIP]
-> **Try it →** ⌘K from anywhere fans search across libraries, design systems, components, colors, fonts, hooks, inspiration sites, and tools. Press `?` for the keyboard shortcut cheat sheet.
-
 ---
 
-## Live deploys
+Finding a React component means opening a dozen registry sites and reading a dozen docs pages. Garden indexes **6,918 components across 52 open-source libraries** and answers in the other direction: say what you need in plain words, get back the one-line install command for the closest match.
 
-| Channel               | URL                                                       | Behind                                             |
-| --------------------- | --------------------------------------------------------- | -------------------------------------------------- |
-| **AWS — ECS Fargate** | http://54.167.106.8:8080                                  | Multi-stage Docker → ECR → ECS Fargate (Terraform) |
-| **AWS — S3 site**     | http://atlas-prod-site.s3-website-us-east-1.amazonaws.com | Vite build → S3 Static Website Hosting (Terraform) |
-| Vercel                | https://colour-fun.vercel.app                             | Vite build → Vercel CDN                            |
-| GitHub Pages          | https://adi-gitx.github.io/colour-fun/                    | Vite build → Pages                                 |
+Every result installs from its own library and keeps its own licence and author. Garden re-hosts nothing.
 
-Both AWS channels are provisioned by Terraform under [`infra/`](infra/) and [`terraform/`](terraform/) and ship on every push to `main` via [`pipeline.yml`](.github/workflows/pipeline.yml) and [`deploy.yml`](.github/workflows/deploy.yml). State lives in `s3://atlas-tfstate-<account>/` with DynamoDB locking via `atlas-tfstate-locks`.
-
----
-
-## What's inside
-
-Atlas indexes resources across nine categories. Every entry is tagged, searchable, and one click from its source.
-
-| Category                | Examples                                                                                                     |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------ |
-| **Component libraries** | shadcn/ui · Radix · MUI · Mantine · Chakra · Headless UI · Park UI · Ariakit · Tremor · 25+ more             |
-| **Design systems**      | Material 3 · Apple HIG · Polaris · Atlassian · Carbon · Fluent · Lightning · Primer · Spectrum · 17 more     |
-| **UI inspiration**      | Awwwards · Mobbin · Land-book · SaaS Landing Pages · Page Flows · Typewolf · Refero · Codrops · 20+ more     |
-| **Components & blocks** | 50+ real OSS UI projects with GitHub stars, install snippets, pros/cons, and alternatives                    |
-| **Solid backgrounds**   | 238 hand-picked color tones — exportable at 1080p, 4K, or custom dimensions in PNG / JPEG / WebP             |
-| **Gradients**           | 90 named presets across Sunset / Ocean / Forest / Pastel / Vivid / Mono / Mesh / Neon, plus a live generator |
-| **Fonts & typography**  | 44 typefaces — Google Fonts curated, Fontshare open-tier, JetBrains / Geist / IBM Plex monos                 |
-| **React hooks**         | 46 hooks from `react-use`, `usehooks-ts`, TanStack Query, and the Mantine team — copy-paste install ready    |
-| **Toolbox utilities**   | In-app contrast checker · palette generator · type scale · shadow generator                                  |
-
-Plus 84 stock backgrounds, embedded interactive tools, ⌘K palette, keyboard shortcuts, bookmarks + collections, and curated playlists ("SaaS launch stack", "Build a dashboard people actually use", "Free alternatives to MUI").
-
----
-
-## Architecture
-
-```mermaid
-flowchart TB
-    user["🧑 user"] --> shell
-
-    subgraph shell["Shell"]
-        sidebar["Sidebar<br/>section nav"]
-        header["Header<br/>search · theme · ⌘K trigger"]
-        palette["⌘K Palette<br/>universal search"]
-        shortcuts["? Shortcuts overlay"]
-    end
-
-    shell --> store
-
-    store[("Zustand store<br/>theme · section · bookmarks · favorites · palette · recent searches")]
-
-    store --> views
-
-    subgraph views["Views"]
-        home["HomeView<br/>trending + playlists + featured"]
-        browse["BrowseView<br/>filtered grid"]
-        discover["DiscoverView<br/>libraries · systems · inspiration · fonts · tools"]
-        detail["LibraryDetailView<br/>install + pros/cons + alts"]
-        studio["Studio<br/>colors · gradients · backgrounds"]
-        toolbox["Toolbox<br/>contrast · palette · type scale · shadow"]
-        bookmarks["LibraryView<br/>my bookmarks"]
-    end
-
-    views --> data
-
-    data[("data/<br/>components · libraries · designSystems · inspiration<br/>tools · fonts · hooks · gradients · colors · images · playlists")]
-
-    classDef store fill:#5E6AD2,stroke:#3F4699,color:#fff
-    classDef data fill:#22C55E,stroke:#15803D,color:#fff
-    class store store
-    class data data
+```
+"a loader for a checkout page"     →  npx shadcn@latest add "https://…/dotm-square-3.json"
+"a hero with an aurora background" →  npx shadcn@latest add "https://…/aurora-background.json"
 ```
 
-Single-page app, single-store state, single source of truth in `src/data/*.ts`. Search is fanned out across every data file by [`useUniversalSearch`](solid-colour/src/hooks/useUniversalSearch.ts) using Fuse.js — title weighted 3× over haystack, capped per category.
-
 ---
 
-## CI / CD
+## How the finder works
 
-Push to `main` triggers up to five workflows in parallel. The two AWS deploys are gated behind feature flags so unconfigured forks stay green.
+Retrieval runs two independent rankings and fuses them, then a model picks and explains. Each stage degrades to the one below it, so the app answers with no key, no network and no model.
 
 ```mermaid
 flowchart LR
-    push["git push<br/>origin main"] --> tests
-    push --> secret
-    push --> codeql
-    push --> ghpages
-    push --> pipe
-    push --> dep
+    q["plain-words request"] --> kw["keyword rank<br/>title · category · tags · synonyms"]
+    q --> emb["query embedding<br/>gemini-embedding-001"]
+    emb --> dense["dense rank<br/>cosine vs 6,918 vectors"]
+    kw --> rrf["reciprocal rank fusion"]
+    dense --> rrf
+    rrf --> rank["gemini-flash-latest<br/>picks · explains · JSON schema"]
+    rank --> out["ranked matches<br/>+ install command + agent prompt"]
 
-    subgraph CI["GitHub Actions"]
-        tests["tests.yml<br/>lint · format · vitest · build · e2e · hadolint · ci-success"]
-        secret["secret-scan.yml<br/>gitleaks (push + PR + weekly cron)"]
-        codeql["codeql.yml<br/>SAST · security-and-quality"]
-        ghpages["gh-pages.yml<br/>vite build → Pages"]
-        pipe["pipeline.yml<br/>gated by AWS_DEPLOY_ENABLED"]
-        dep["deploy.yml<br/>gated by LAB_DEPLOY_ENABLED"]
-    end
-
-    pipe --> tfA["terraform/infra<br/>apply"]
-    tfA --> s3sync["aws s3 sync<br/>dist/"]
-    s3sync --> s3[("S3 — atlas-prod-site<br/>Static Website Hosting")]
-
-    dep --> tfB["terraform/<br/>apply (ECR-only)"]
-    tfB --> docker["docker build<br/>+ push to ECR"]
-    docker --> tfBfull["terraform/<br/>apply (ECS)"]
-    tfBfull --> ecsroll["aws ecs update-service<br/>--force-new-deployment"]
-    ecsroll --> ecs[("ECS Fargate<br/>atlas-cluster / atlas-service")]
-
-    classDef awsbox fill:#FF9900,stroke:#CC7700,color:#fff
-    class s3,ecs awsbox
+    classDef model fill:#0b0b0c,stroke:#3f3f46,color:#fafafa
+    class emb,dense,rank model
 ```
 
-Concurrency locks prevent two pipelines racing the same Terraform state. Workflow permissions are `contents: read` baseline plus `id-token: write` for future OIDC. The `tests.yml` pipeline finishes a full lint+test+build+e2e+hadolint cycle in **~1m40s** on a public-repo runner.
+- **Keyword ranking** always runs, in the browser, over the bundled index. Field-weighted with a synonym table, so "loader" also reaches spinner, skeleton and progress.
+- **Dense ranking** compares the request against precomputed embeddings, quantised to `int8` at 256 dimensions so the whole catalogue ships as a ~1.7 MB binary and searches on device.
+- **Fusion** is reciprocal rank, which merges the two lists by position and needs no weight tuning between incomparable scores.
+- **Reranking** hands ~24 candidates to Gemini under a JSON schema. It never invents a slug; anything not in the candidate list is dropped.
+
+Without a key the finder still returns fused or keyword results — it just loses the per-card explanations.
+
+---
+
+## Quickstart
+
+```bash
+git clone git@github.com:Adi-gitX/colour-fun.git garden
+cd garden/solid-colour
+npm install
+npm run dev                # → http://localhost:5173
+```
+
+The index is committed, so the app is fully searchable straight after clone. No key, no backend, no ingest required.
+
+### Optional: enable the model
+
+```bash
+cp .env.example .env       # then paste a Gemini key
+npm run embed              # embeds the catalogue (resumable, cached by content hash)
+```
+
+| Variable                | Purpose                                                                 |
+| ----------------------- | ----------------------------------------------------------------------- |
+| `GEMINI_API_KEY`        | Build-time only. Used by `npm run embed`; never shipped to the browser. |
+| `VITE_GEMINI_API_KEY`   | Development only. `VITE_`-prefixed values are compiled into the bundle. |
+| `VITE_ATLAS_API_URL`    | Production. Points the app at the registry API, which holds the key.    |
+
+> [!IMPORTANT]
+> `VITE_` variables are public. For anything deployed, leave `VITE_GEMINI_API_KEY` empty and route through the API instead.
+
+---
+
+## Sections
+
+| Section        | What it does                                                                                     |
+| -------------- | ------------------------------------------------------------------------------------------------ |
+| **Ask**        | The finder. Plain-words request in, ranked components out, each with install, agent prompt and source. |
+| **Libraries**  | All 104 known libraries, 52 of them indexed, with licence, author and a direct link.             |
+| **Wallpapers** | 238 solid colours, 90 gradients and 84 images, exportable to 8K in PNG, JPEG or WebP.            |
+
+⌘K opens universal search from anywhere; `?` shows the shortcut sheet.
+
+---
+
+## Design
+
+Dark-first, built on a pure black ground with hairline `#0a0a0a` surfaces and a white-only accent. Type is two self-hosted faces from [freefaces.gallery](https://www.freefaces.gallery): **Martian Mono** (SIL OFL) for display and **Commit Mono** (MIT) for everything else. The identity is the 5×5 dot matrix — the mark, the wordmark above and the six loading states are all drawn from the same grid by [`scripts/gen-icons.mjs`](solid-colour/scripts/gen-icons.mjs), so they cannot drift apart.
+
+---
+
+## Data pipeline
+
+Component data comes from a sibling repository, `atlas-registry`, which ingests every library's public registry. This repo holds the built artefacts, so the pipeline is only needed to refresh them.
+
+```bash
+npm run sync    # rebuild public/data/index.json + libraries.json from the registry
+npm run embed   # re-embed anything whose text changed
+```
+
+`sync` exits without writing when the registry is absent, which is why `prebuild` can run it unconditionally — a CI or Vercel build with no sibling repo falls through to the committed index.
 
 ---
 
 ## Tech stack
 
-| Layer                    | Choice                                                                       |
-| ------------------------ | ---------------------------------------------------------------------------- |
-| Framework                | React 19 + TypeScript 5.9                                                    |
-| Build                    | Vite 7                                                                       |
-| State                    | Zustand                                                                      |
-| Styling                  | CSS Modules                                                                  |
-| Animations               | Framer Motion                                                                |
-| Search                   | Fuse.js (title weighted 3×, ranked across every data file)                   |
-| Command palette          | cmdk (Vercel)                                                                |
-| PWA                      | Vite PWA Plugin (offline-first)                                              |
-| Unit / integration tests | Vitest + React Testing Library                                               |
-| E2E                      | Playwright (production-preview build)                                        |
-| Lint                     | ESLint 9 (flat config), `--max-warnings 0`                                   |
-| Format                   | Prettier with husky + lint-staged                                            |
-| Container                | Multi-stage Docker → `nginxinc/nginx-unprivileged:1.27-alpine`               |
-| AWS — static site        | Terraform: S3 + Static Website Hosting (`infra/`)                            |
-| AWS — container          | Terraform: ECR + ECS Fargate, ECS task uses Academy `LabRole` (`terraform/`) |
-| State backend            | S3 (`atlas-tfstate-<account>`) + DynamoDB lock table (`atlas-tfstate-locks`) |
-| CI                       | GitHub Actions with concurrency, timeouts, hadolint, `ci-success` aggregator |
-| Security                 | gitleaks · CodeQL (security-and-quality) · dependabot auto-merge             |
-
-For the full product spec — vision, JTBD, principles, success metrics — see [`PRD.md`](PRD.md).
+| Layer      | Choice                                                          |
+| ---------- | --------------------------------------------------------------- |
+| Framework  | React 19 · TypeScript 5.9 · Vite 7                              |
+| Styling    | Tailwind CSS 4 · CSS Modules · shadcn/ui primitives on Radix    |
+| State      | Zustand 5, persisted to `localStorage`                          |
+| Motion     | Motion 13 / Framer Motion 12                                    |
+| Offline    | `vite-plugin-pwa` (Workbox `generateSW`)                        |
+| Testing    | Vitest 4 · Playwright · ESLint 9 · Prettier 3                   |
 
 ---
 
@@ -167,144 +135,84 @@ For the full product spec — vision, JTBD, principles, success metrics — see 
 ```
 .
 ├── .github/
-│   ├── dependabot.yml
-│   ├── ISSUE_TEMPLATE/
-│   ├── PULL_REQUEST_TEMPLATE.md
+│   ├── assets/                         # dot-matrix wordmarks (generated)
 │   └── workflows/
-│       ├── tests.yml                  # lint · test · build · e2e · hadolint · ci-success
+│       ├── tests.yml                   # lint · test · build · e2e · hadolint
 │       ├── pipeline.yml                # AWS S3 static-site path (gated)
 │       ├── deploy.yml                  # AWS ECR + ECS Fargate path (gated)
 │       ├── secret-scan.yml             # gitleaks
 │       ├── codeql.yml                  # SAST
-│       ├── gh-pages.yml                # GitHub Pages
-│       └── dependabot-auto-merge.yml   # safe-bump auto-merge
+│       └── gh-pages.yml                # GitHub Pages
 │
-├── solid-colour/                       # the Vite + React frontend
+├── solid-colour/                       # the Vite + React app
+│   ├── public/
+│   │   ├── data/index.json             # the committed component index
+│   │   ├── previews/                   # rendered component previews
+│   │   └── fonts/                      # Martian Mono · Commit Mono
 │   ├── src/
-│   │   ├── components/                 # Header · Sidebar · CommandPalette · ShortcutsOverlay · …
-│   │   ├── components/views/           # HomeView · BrowseView · DiscoverView · LibraryView · LibraryDetailView · FontsView · HooksView
-│   │   ├── components/tools/           # ContrastChecker · PaletteGenerator · TypeScale · ShadowGenerator
-│   │   ├── data/                       # components · libraries · designSystems · inspiration · tools · fonts · hooks · gradients · colors · images · playlists
-│   │   ├── hooks/useUniversalSearch.ts # Fuse.js fan-out across every data file
-│   │   ├── store/appStore.ts           # single Zustand store, persisted
-│   │   └── utils/                      # colorUtils · imageGenerator
-│   ├── e2e/smoke.spec.ts               # Playwright smoke
-│   ├── Dockerfile                      # multi-stage, non-root nginx
-│   ├── nginx.conf                      # SPA fallback, security headers, gzip
-│   ├── vitest.config.ts
-│   └── playwright.config.ts
+│   │   ├── components/views/           # AskView · LibrariesView · WallpapersView
+│   │   ├── components/brand/DotMark    # the 5×5 dot-matrix mark
+│   │   ├── components/ui/              # shadcn primitives + dot-matrix loaders
+│   │   ├── lib/ask/                    # retrieval · fusion · Gemini client
+│   │   ├── store/appStore.ts           # single persisted Zustand store
+│   │   └── data/                       # colours · gradients · images · libraries
+│   ├── scripts/
+│   │   ├── sync-registry.mjs           # registry → index.json
+│   │   ├── embed-index.mjs             # index.json → embeddings.bin
+│   │   └── gen-icons.mjs               # glyph → favicon · PWA icons · wordmark
+│   ├── bin/                            # CodeCraft API launcher + protocol proxy
+│   └── e2e/                            # Playwright specs
 │
-├── infra/                              # Terraform — S3 Static Website (AWS)
-├── terraform/                          # Terraform — ECR + ECS Fargate (AWS)
-├── Dockerfile                          # repo-root container (used by deploy.yml)
-├── docker-compose.yml                  # locked-down local runtime
-├── render.yaml                         # PaaS deploy
-├── scripts/scrape-awesome.ts           # devtool — re-seed catalogs from awesome-lists
-├── PRD.md                              # full product spec
-└── README.md
+├── infra/                              # Terraform — S3 static website
+├── terraform/                          # Terraform — ECR + ECS Fargate
+└── docker-compose.yml                  # locked-down local runtime
 ```
 
 ---
 
-## Quickstart
+## Scripts
 
-```bash
-git clone git@github.com:Adi-gitX/colour-fun.git atlas
-cd atlas
-npm install                            # root: husky, lint-staged, prettier
-npm install --prefix solid-colour      # frontend deps
-npm run dev --prefix solid-colour      # → http://localhost:5173
-```
+Run from `solid-colour/`.
 
-### Container
-
-```bash
-docker compose up --build              # → http://localhost:8080
-```
-
-The image runs as the non-root `nginx` user, on a read-only filesystem, with all Linux capabilities dropped except those nginx workers strictly need.
-
-### Frontend scripts (in `solid-colour/`)
-
-| Script                 | What it does                                                       |
-| ---------------------- | ------------------------------------------------------------------ |
-| `npm run dev`          | Vite dev server with HMR                                           |
-| `npm run build`        | TypeScript check + production Vite build                           |
-| `npm run preview`      | Serve the production build locally                                 |
-| `npm test`             | Vitest                                                             |
-| `npm run test:ci`      | Vitest with v8 coverage + JUnit (`CI=true` enables JUnit reporter) |
-| `npm run test:e2e`     | Playwright e2e (boots `vite preview` in CI, `vite dev` locally)    |
-| `npm run lint`         | ESLint with `--max-warnings 0`                                     |
-| `npm run format`       | Prettier write                                                     |
-| `npm run format:check` | Prettier check                                                     |
+| Script                 | What it does                                                    |
+| ---------------------- | --------------------------------------------------------------- |
+| `npm run dev`          | Vite dev server with HMR                                        |
+| `npm run build`        | TypeScript project build + production Vite build                |
+| `npm run preview`      | Serve the production build locally                              |
+| `npm test`             | Vitest                                                          |
+| `npm run test:ci`      | Vitest with v8 coverage + JUnit                                 |
+| `npm run test:e2e`     | Playwright                                                      |
+| `npm run lint`         | ESLint, `--max-warnings 0`                                      |
+| `npm run sync`         | Rebuild the index from the registry, then embed                 |
+| `npm run embed`        | Embed the catalogue (resumable)                                 |
 
 ---
 
-## Deploying to AWS
+## Deploys
 
-Both Terraform stacks are independent. Apply either or both.
+| Channel               | URL                                                       | Behind                                             |
+| --------------------- | --------------------------------------------------------- | -------------------------------------------------- |
+| **Vercel**            | https://colour-fun.vercel.app                             | Vite build → Vercel CDN                            |
+| **AWS — ECS Fargate** | http://54.167.106.8:8080                                  | Multi-stage Docker → ECR → ECS Fargate (Terraform) |
+| **AWS — S3 site**     | http://atlas-prod-site.s3-website-us-east-1.amazonaws.com | Vite build → S3 Static Website Hosting (Terraform) |
+| GitHub Pages          | https://adi-gitx.github.io/colour-fun/                    | Vite build → Pages                                 |
 
-### Static-site path → S3 Website
+Both AWS channels are provisioned by Terraform under [`infra/`](infra/) and [`terraform/`](terraform/) and ship on every push to `main`, gated behind feature flags so unconfigured forks stay green. State lives in `s3://atlas-tfstate-<account>/` with DynamoDB locking.
 
-```bash
-cd infra
-terraform init
-terraform plan
-terraform apply                # provisions atlas-prod-site bucket + website
-```
-
-Output: `terraform output site_url`.
-
-### Container path → ECS Fargate
-
-```bash
-cd terraform
-cat > terraform.tfvars <<EOF
-subnet_id         = "subnet-xxxxxxxx"   # any default-VPC public subnet
-security_group_id = "sg-yyyyyyyy"        # SG with TCP:8080 inbound rule
-EOF
-terraform init
-terraform apply                # provisions ECR + ECS cluster + service
-```
-
-Output: `terraform output ecr_repository_url`, `terraform output ecs_service_name`.
-
-### CI takes over from there
-
-Push to `main` with the right repo variables and secrets set, and both pipelines roll the live deploys without a laptop in the loop. Step-by-step bootstrap is in [`infra/README.md`](infra/README.md) and [`terraform/README.md`](terraform/README.md).
+Vercel builds from the `solid-colour` root directory; its install, build and output settings are pinned in [`solid-colour/vercel.json`](solid-colour/vercel.json) so the deploy does not depend on dashboard fields.
 
 ---
 
-## Security posture
+## Security
 
-- **Non-root container** — `nginxinc/nginx-unprivileged:1.27-alpine`, port 8080, no `CAP_NET_BIND`
-- **Hardened `docker-compose.yml`** — `read_only: true`, scoped tmpfs, `cap_drop: ALL`, `no-new-privileges`
-- **Real security headers** — X-Frame-Options · X-Content-Type-Options · Referrer-Policy · Permissions-Policy · baseline CSP
-- **Pre-commit secret blocking** — gitleaks runs on every push and weekly cron
-- **CodeQL** with the `security-and-quality` query pack
-- **Pinned base image** — nginx pinned to a minor (`1.27`), not `:alpine`
-- **`.npmrc` gitignored** — auth tokens never reach the repo
-- **Workflow least-privilege** — `contents: read` baseline plus `id-token: write` only where a future OIDC migration needs it
+- `gitleaks` on every push, pull request and weekly cron
+- CodeQL SAST on the `security-and-quality` suite
+- Dependabot with auto-merge limited to safe bumps
+- Container runs as non-root on a read-only filesystem with capabilities dropped
+- No key ever reaches the browser in a production build
 
 ---
 
-## Contributing
+## Licence
 
-PRs welcome. Run the local CI dry-run before opening one:
-
-```bash
-cd solid-colour
-npm run lint                # eslint --max-warnings 0
-npm run format:check        # prettier
-CI=true npm run test:ci     # vitest + coverage + junit
-npm run build               # vite build
-npm run test:e2e            # playwright
-```
-
-The PR template walks through the checklist. Dependabot auto-merge handles patch + dev-dep minor bumps.
-
----
-
-## License
-
-MIT
+MIT. Every indexed component keeps the licence and author of the library it comes from; Garden stores the pointer, never a copy.

@@ -16,8 +16,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-        name: 'Atlas — Every design resource in one place',
-        short_name: 'Atlas',
+        name: 'Garden — Every design resource in one place',
+        short_name: 'Garden',
         description:
           'Component libraries, design systems, UI inspiration, palettes, gradients and tools — curated, searchable, fast.',
         theme_color: '#0a0a0a',

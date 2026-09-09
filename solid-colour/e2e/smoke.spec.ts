@@ -5,9 +5,9 @@ import { test, expect } from '@playwright/test';
 // feature tests should live in their own spec files.
 
 test.describe('app smoke', () => {
-  test('home page loads with the Atlas title', async ({ page }) => {
+  test('home page loads with the Garden title', async ({ page }) => {
     await page.goto('/');
-    await expect(page).toHaveTitle(/Atlas/);
+    await expect(page).toHaveTitle(/Garden/);
   });
 
   test('react root renders content', async ({ page }) => {

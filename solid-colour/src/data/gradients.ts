@@ -1,5 +1,5 @@
 /* ===========================================================
-   Atlas — gradient presets.
+   Garden — gradient presets.
 
    Source seeds:
      - Ghosh/uiGradients gradients.json — main branch as of
