@@ -1,25 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowUpRight, Check, Copy, CornerDownLeft, RotateCcw } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ArrowUpRight, Check, Code, Copy, Layers, Package, RotateCcw, Terminal } from 'lucide-react';
 import { ask, askEngine, promptFor, promptForAll } from '../../lib/ask';
 import type { AskMatch, AskResponse } from '../../lib/ask';
 import libraries from '../../data/libraries.json';
 import { DotMark } from '../brand/DotMark';
-import { DotmSquare3 } from '../ui/dotm-square-3';
 import { DotmSquare5 } from '../ui/dotm-square-5';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Kbd } from '../ui/kbd';
+import { PromptInput, type PromptInputOption } from '../ui/ai-chat-input';
 import { Conversation, ConversationContent, ConversationScrollButton } from '../ai-elements/conversation';
 import { Message, MessageContent } from '../ai-elements/message';
-import {
-  PromptInput,
-  PromptInputBody,
-  PromptInputFooter,
-  PromptInputSubmit,
-  PromptInputTextarea,
-  PromptInputTools,
-} from '../ai-elements/prompt-input';
 import { Suggestion } from '../ai-elements/suggestion';
 import { Loader } from '../ai-elements/loader';
 import styles from './AskView.module.css';
@@ -33,8 +26,21 @@ const EXAMPLES = [
   'a glassmorphism button',
 ];
 
+/** Where results may install from; `any` leaves the ranking untouched. */
+type Source = 'any' | 'shadcn' | 'npm' | 'copy';
+
+const SOURCES: Array<PromptInputOption & { value: Source }> = [
+  { value: 'any', label: 'Any source', icon: <Layers /> },
+  { value: 'shadcn', label: 'shadcn registry', icon: <Terminal /> },
+  { value: 'npm', label: 'npm package', icon: <Package /> },
+  { value: 'copy', label: 'Copy-paste code', icon: <Code /> },
+];
+
+const RESULT_COUNTS = [4, 8, 12];
+const RESULT_LABELS = RESULT_COUNTS.map((n) => `${n} results`);
+
 type Message =
-  | { id: string; role: 'user'; text: string }
+  | { id: string; role: 'user'; text: string; scope: string | null }
   | { id: string; role: 'assistant'; status: 'thinking'; request: string }
   | { id: string; role: 'assistant'; status: 'ranking' | 'done'; request: string; response: AskResponse };
 
@@ -288,36 +294,41 @@ function AnswerMessage({
 export function AskView() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [query, setQuery] = useState('');
+  const [source, setSource] = useState<Source>('any');
+  const [countIndex, setCountIndex] = useState(1);
   const [copied, copy] = useCopy();
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const libs = libraries as Array<{ indexed: number }>;
   const libraryCount = libs.filter((l) => l.indexed > 0).length;
   const componentCount = libs.reduce((n, l) => n + l.indexed, 0);
   const busy = messages.some((m) => m.role === 'assistant' && m.status === 'thinking');
-
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
+  const landing = messages.length === 0;
 
   const send = async (raw: string) => {
     const text = raw.trim();
     if (!text || busy) return;
+    const k = RESULT_COUNTS[countIndex];
+    const scoped = source !== 'any';
     const answerId = uid();
     setMessages((m) => [
       ...m,
-      { id: uid(), role: 'user', text },
+      { id: uid(), role: 'user', text, scope: scoped ? SOURCES.find((s) => s.value === source)!.label : null },
       { id: answerId, role: 'assistant', status: 'thinking', request: text },
     ]);
     setQuery('');
+    // A source filter over-fetches, then keeps the first k that install that way.
+    const narrow = (r: AskResponse): AskResponse =>
+      scoped ? { ...r, matches: r.matches.filter((m) => m.component.installKind === source).slice(0, k) } : r;
     const update = (status: 'ranking' | 'done', response: AskResponse) =>
       setMessages((m) =>
-        m.map((msg) => (msg.id === answerId ? { id: answerId, role: 'assistant', status, request: text, response } : msg))
+        m.map((msg) =>
+          msg.id === answerId ? { id: answerId, role: 'assistant', status, request: text, response: narrow(response) } : msg
+        )
       );
-    const finish = (response: AskResponse) => update('done', response);
     try {
-      finish(await ask(text, 8, { onCandidates: (partial) => update('ranking', partial) }));
+      update('done', await ask(text, scoped ? k * 3 : k, { onCandidates: (partial) => update('ranking', partial) }));
     } catch {
-      finish({ query: text, mode: 'search', summary: null, matches: [] });
+      update('done', { query: text, mode: 'search', summary: null, matches: [] });
     } finally {
       inputRef.current?.focus();
     }
@@ -329,96 +340,96 @@ export function AskView() {
     inputRef.current?.focus();
   };
 
-  const composer = (
-    <PromptInput className={styles.form} onSubmit={({ text }) => void send(text)}>
-      <PromptInputBody>
-        <PromptInputTextarea
-          ref={inputRef}
-          className={styles.input}
-          value={query}
-          onChange={(e) => setQuery(e.currentTarget.value)}
-          placeholder={messages.length ? 'Ask for another component' : 'I need a loader for a checkout page'}
-          aria-label="What do you need?"
-        />
-      </PromptInputBody>
-      <PromptInputFooter className={styles.footer}>
-        <PromptInputTools className={styles.hints}>
-          <span>
-            <Kbd>↵</Kbd> send
+  return (
+    <div className={styles.root} data-state={landing ? 'landing' : 'chat'}>
+      <div className={styles.aurora} aria-hidden />
+
+      {landing ? (
+        <section className={styles.hero}>
+          <span className={styles.pill}>
+            <span className={styles.pillDot} aria-hidden />
+            {libraryCount} libraries · {componentCount.toLocaleString()} components indexed
           </span>
-          <span>
-            <Kbd>⇧ ↵</Kbd> new line
+          <h1 className={styles.welcome}>
+            Describe the component. <span className={styles.welcomeMuted}>Get the install command.</span>
+          </h1>
+          <p className={styles.welcomeNote}>
+            Ask in plain words. Garden searches every indexed library at once and hands back a one-line install for
+            your terminal or your coding agent.
+          </p>
+        </section>
+      ) : (
+        <Conversation className={styles.thread}>
+          <ConversationContent className={styles.threadInner}>
+            {messages.map((m) =>
+              m.role === 'user' ? (
+                <Message key={m.id} from="user" className={styles.userRow}>
+                  <MessageContent className={styles.bubble}>{m.text}</MessageContent>
+                  {m.scope && <span className={styles.bubbleScope}>{m.scope} only</span>}
+                </Message>
+              ) : m.status === 'thinking' ? (
+                <ThinkingMessage key={m.id} libraryCount={libraryCount} />
+              ) : (
+                <AnswerMessage key={m.id} message={m} copied={copied} copy={copy} />
+              )
+            )}
+          </ConversationContent>
+          <ConversationScrollButton className={styles.scrollButton} aria-label="Scroll to the latest" />
+        </Conversation>
+      )}
+
+      {/* One composer for both states: it glides from the hero to the dock instead of remounting. */}
+      <motion.div
+        layout="position"
+        transition={{ type: 'spring', stiffness: 320, damping: 34 }}
+        className={styles.dock}
+      >
+        <PromptInput
+          inputRef={inputRef}
+          className={styles.prompt}
+          value={query}
+          onChange={setQuery}
+          onSubmit={(text) => void send(text)}
+          placeholder={landing ? 'I need a loader for a checkout page…' : 'Ask for another component…'}
+          inputLabel="What do you need?"
+          models={SOURCES}
+          model={source}
+          onModelChange={(v) => setSource(v as Source)}
+          efforts={RESULT_LABELS}
+          effortIndex={countIndex}
+          onEffortChange={setCountIndex}
+          allowAttachments={false}
+          collapsible={false}
+          expandedWidth={760}
+          busy={busy}
+          autoFocus
+        />
+        <div className={styles.dockMeta}>
+          <span className={styles.hints}>
+            <Kbd>↵</Kbd> send <Kbd>⇧ ↵</Kbd> new line
           </span>
           <span className={styles.engine}>{ENGINE_LINE[askEngine]}</span>
-          {messages.length > 0 && (
+          {!landing && (
             <Button type="button" variant="ghost" size="xs" onClick={reset} className={styles.reset}>
               <RotateCcw /> New thread
             </Button>
           )}
-        </PromptInputTools>
-        <PromptInputSubmit
-          size="sm"
-          status={busy ? 'submitted' : undefined}
-          disabled={busy || !query.trim()}
-          className={styles.send}
-          aria-label={busy ? 'Searching' : 'Find it'}
-        >
-          {busy ? (
-            <>
-              <DotmSquare3 size={14} dotSize={2} ariaLabel="Searching" /> Searching
-            </>
-          ) : (
-            <>
-              Find it <CornerDownLeft />
-            </>
-          )}
-        </PromptInputSubmit>
-      </PromptInputFooter>
-    </PromptInput>
-  );
-
-  if (messages.length === 0) {
-    return (
-      <div className={styles.landing}>
-        <div className={styles.empty}>
-          <h1 className={styles.welcome}>Describe the component. Get the install command.</h1>
-          <p className={styles.welcomeNote}>
-            {libraryCount} libraries and {componentCount.toLocaleString()} components are indexed. Ask in plain words;
-            the answer is a one-line install for your terminal or your coding agent.
-          </p>
-          <div className={styles.heroComposer}>{composer}</div>
-          <div className={styles.suggestionsBlock}>
-            <span className="eyebrow">Try one</span>
-            <div className={styles.suggestions}>
-              {EXAMPLES.map((ex) => (
-                <Suggestion key={ex} suggestion={ex} onClick={(s) => void send(s)} className={styles.suggestion} />
-              ))}
-            </div>
-          </div>
         </div>
-      </div>
-    );
-  }
+      </motion.div>
 
-  return (
-    <div className={styles.chat}>
-      <Conversation className={styles.thread}>
-        <ConversationContent className={styles.threadInner}>
-          {messages.map((m) =>
-            m.role === 'user' ? (
-              <Message key={m.id} from="user" className={styles.userRow}>
-                <MessageContent className={styles.bubble}>{m.text}</MessageContent>
-              </Message>
-            ) : m.status === 'thinking' ? (
-              <ThinkingMessage key={m.id} libraryCount={libraryCount} />
-            ) : (
-              <AnswerMessage key={m.id} message={m} copied={copied} copy={copy} />
-            )
-          )}
-        </ConversationContent>
-        <ConversationScrollButton className={styles.scrollButton} aria-label="Scroll to the latest" />
-      </Conversation>
-      <div className={styles.composer}>{composer}</div>
+      {landing && (
+        <div className={styles.suggestions}>
+          {EXAMPLES.map((ex, i) => (
+            <Suggestion
+              key={ex}
+              suggestion={ex}
+              onClick={(s) => void send(s)}
+              className={styles.suggestion}
+              style={{ animationDelay: `${120 + i * 40}ms` }}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

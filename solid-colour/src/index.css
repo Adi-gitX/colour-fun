@@ -146,6 +146,15 @@
   --scrollbar-track: transparent;
   --scrollbar-thumb: #2a2a2a;
   --scrollbar-thumb-hover: #404040;
+
+  /* Hero aurora + composer lift */
+  --glow-a: rgba(99, 102, 241, 0.32);
+  --glow-b: rgba(236, 72, 153, 0.24);
+  --glow-c: rgba(249, 115, 22, 0.2);
+  --shadow-composer: 0 0 0 1px rgba(255, 255, 255, 0.02), 0 12px 40px -12px rgba(0, 0, 0, 0.9),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.04);
+  --shadow-composer-focus: 0 0 0 4px rgba(255, 255, 255, 0.04), 0 16px 48px -12px rgba(0, 0, 0, 0.95),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
 }
 
 [data-theme='light'] {
@@ -192,6 +201,12 @@
 
   --scrollbar-thumb: #d4d4d8;
   --scrollbar-thumb-hover: #a1a1aa;
+
+  --glow-a: rgba(99, 102, 241, 0.22);
+  --glow-b: rgba(236, 72, 153, 0.18);
+  --glow-c: rgba(249, 115, 22, 0.16);
+  --shadow-composer: 0 1px 2px rgba(0, 0, 0, 0.04), 0 12px 32px -12px rgba(0, 0, 0, 0.12);
+  --shadow-composer-focus: 0 0 0 4px rgba(0, 0, 0, 0.04), 0 16px 40px -12px rgba(0, 0, 0, 0.16);
 }
 
 /* App-wide base styles live in Tailwind's base layer so the primitives' utility classes
@@ -207,7 +222,7 @@
   }
 
   html {
-  scroll-behavior: smooth;
+    scroll-behavior: smooth;
     font-size: 16px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -349,6 +364,33 @@
   border: 0;
 }
 
+/* ai-chat-input: the card's lift and the quiet scrollbar it uses for text and attachments. */
+.prompt-card {
+  box-shadow: var(--shadow-composer);
+}
+.prompt-card:focus-within {
+  box-shadow: var(--shadow-composer-focus);
+}
+.prompt-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+.prompt-scrollbar:hover {
+  scrollbar-color: color-mix(in oklab, var(--text-secondary) 30%, transparent) transparent;
+}
+.prompt-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+  background: transparent;
+}
+.prompt-scrollbar::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 4px;
+}
+.prompt-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--text-secondary) 30%, transparent);
+}
+
 /* kbd badge — small mono pill */
 kbd,
 .kbd {
@@ -416,7 +458,6 @@ kbd,
     transition-duration: 0.01ms !important;
   }
   html {
-  scroll-behavior: smooth;
     scroll-behavior: auto;
   }
 }
