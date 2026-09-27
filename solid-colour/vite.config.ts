@@ -57,8 +57,10 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      // Live answers come from /api; the service worker must never stand in for it.
-      workbox: { navigateFallbackDenylist: [/^\/api\//] },
+      // Garden answers live from the web, so there is no offline mode. Earlier builds installed an
+      // offline service worker; this one replaces it, unregisters itself and clears its caches,
+      // so nobody is left on a stale copy. The web app manifest (name, icons) stays.
+      selfDestroying: true,
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {

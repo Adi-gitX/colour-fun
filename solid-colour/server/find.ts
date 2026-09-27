@@ -205,6 +205,19 @@ const sameSite = (a: string, b: string) => {
   return ha === hb || ha.endsWith(`.${hb}`) || hb.endsWith(`.${ha}`);
 };
 
+/** Vercel stops the function at 120 s; every answer must finish well before that. */
+const JUDGE_DEADLINE_MS = 75_000;
+const VERIFY_PER_SITE_MS = 25_000;
+
+/** Resolves to `fallback` if `work` has not settled within `ms`. */
+function within<T>(work: Promise<T>, ms: number, fallback: T): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const late = new Promise<T>((resolve) => {
+    timer = setTimeout(() => resolve(fallback), ms);
+  });
+  return Promise.race([work, late]).finally(() => clearTimeout(timer));
+}
+
 export async function find(req: FindRequest, emit: (e: FindEvent) => void): Promise<void> {
   const started = Date.now();
   const query = req.query.trim().slice(0, 300);
@@ -259,6 +272,7 @@ ${sourceList}`;
   let judge = '';
   try {
     const res = await judgeJson<{ summary: string; picks: Pick[] }>({
+      deadline: started + JUDGE_DEADLINE_MS,
       system: JUDGE_SYSTEM,
       prompt,
       schema: JUDGE_SCHEMA,
@@ -288,7 +302,10 @@ ${sourceList}`;
   const sourceUrls = new Set(sources.map((s) => s.url));
   const sectionFound = new Map<number, boolean>();
   const checked = await Promise.all(
-    picks.map(async (p, i): Promise<SiteResult | null> => {
+    picks.map((p, i) => within(verifyPick(p, i), VERIFY_PER_SITE_MS, null))
+  );
+  async function verifyPick(p: Pick, i: number): Promise<SiteResult | null> {
+    {
       const listed = p.siteId ? byId.get(p.siteId) : undefined;
       if (p.siteId && !listed) return null; // an id the model made up
       if (listed && type !== 'any' && listed.type !== type) return null;
@@ -339,8 +356,8 @@ ${sourceList}`;
         description: info.description,
         image: info.image,
       };
-    })
-  );
+    }
+  }
 
   // Sites where the exact section was found come first; homepage-only picks keep their order after.
   const results = checked

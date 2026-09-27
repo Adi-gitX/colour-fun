@@ -22,6 +22,8 @@ interface Call {
   schema: JsonSchema;
   /** Checks the parsed object; a model that returns the wrong shape counts as a failure. */
   valid: (x: unknown) => boolean;
+  /** Epoch ms after which no further provider is tried, and each call is cut short. */
+  deadline?: number;
 }
 
 export interface JsonResult<T> {
@@ -33,6 +35,9 @@ const cooldown = new Map<string, number>();
 const cooling = (name: string) => (cooldown.get(name) ?? 0) > Date.now();
 
 class RateLimited extends Error {}
+
+/** Milliseconds a call may take: its own cap, or whatever is left before the deadline. */
+const budget = (call: Call, cap: number) => Math.max(1_000, Math.min(cap, (call.deadline ?? Infinity) - Date.now()));
 
 /** Gemini's schema dialect: upper-case type names. */
 function toGemini(s: JsonSchema): object {
@@ -72,7 +77,7 @@ async function openAiCompatible(
       ],
       ...extra,
     }),
-    signal: AbortSignal.timeout(60_000),
+    signal: AbortSignal.timeout(budget(call, 45_000)),
   });
   const data = (await res.json().catch(() => ({}))) as { choices?: Array<{ message?: { content?: string } }>; error?: { message?: string } };
   if (res.status === 429) throw new RateLimited(`${model}: ${data.error?.message ?? 'rate limited'}`);
@@ -109,7 +114,13 @@ const PROVIDERS: Provider[] = [
       enabled: () => Boolean(process.env.GEMINI_API_KEY),
       run: async (call) => {
         try {
-          const res = await generate([model], { system: call.system, prompt: call.prompt, schema: toGemini(call.schema), temperature: 0.2 });
+          const res = await generate([model], {
+            system: call.system,
+            prompt: call.prompt,
+            schema: toGemini(call.schema),
+            temperature: 0.2,
+            timeoutMs: budget(call, 45_000),
+          });
           return res.text;
         } catch (err) {
           if (err instanceof GeminiError && err.status === 429) throw new RateLimited(err.message);
@@ -136,6 +147,10 @@ export async function judgeJson<T>(call: Call): Promise<JsonResult<T>> {
   const failures: string[] = [];
   for (const p of PROVIDERS) {
     if (!p.enabled() || cooling(p.name)) continue;
+    if (call.deadline && Date.now() > call.deadline - 2_000) {
+      failures.push('out of time');
+      break;
+    }
     try {
       const data = parseJson(await p.run(call));
       if (!call.valid(data)) throw new Error('reply had the wrong shape');

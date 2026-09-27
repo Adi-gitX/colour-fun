@@ -1,6 +1,5 @@
 export { Header } from './Header';
 export { SettingsModal } from './SettingsModal';
-export { ReloadPrompt } from './ReloadPrompt';
 export { ToastContainer } from './ToastContainer';
 export { ColorGrid } from './ColorGrid';
 export { ColorPicker } from './ColorPicker';

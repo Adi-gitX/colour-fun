@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { Header } from './components/Header';
 import { SettingsModal } from './components/SettingsModal';
-import { ReloadPrompt } from './components/ReloadPrompt';
 import { ColorPicker } from './components/ColorPicker';
 import { DownloadModal } from './components/DownloadModal';
 import { ToastContainer } from './components/ToastContainer';
@@ -52,7 +51,6 @@ function App() {
         <CommandPalette />
         <ShortcutsOverlay />
         <ToastContainer />
-        <ReloadPrompt />
       </div>
     </TooltipProvider>
   );

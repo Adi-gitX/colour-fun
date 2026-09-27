@@ -8,6 +8,8 @@ import type { FindEvent, FindRequest } from '../src/lib/find/types.js';
 
 export const config = { maxDuration: 120 };
 
+const HARD_STOP_MS = 100_000;
+
 /**
  * Each answer spends paid AI calls, so one visitor gets a handful per window. The count lives in
  * the function instance's memory: loose across many instances, enough to stop a runaway loop.
@@ -50,14 +52,31 @@ export async function POST(request: Request): Promise<Response> {
   const encoder = new TextEncoder();
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
-      const emit = (e: FindEvent) => controller.enqueue(encoder.encode(JSON.stringify(e) + '\n'));
+      let closed = false;
+      const emit = (e: FindEvent) => {
+        if (!closed) controller.enqueue(encoder.encode(JSON.stringify(e) + '\n'));
+      };
+      const finish = () => {
+        if (closed) return;
+        closed = true;
+        controller.close();
+      };
+      // Hard stop well inside Vercel's 120 s limit: the answer always ends with a clear message,
+      // never a connection that is cut mid-way.
+      const guard = setTimeout(() => {
+        emit({ type: 'error', message: 'This one took too long. Try again, or ask a little more specifically.' });
+        emit({ type: 'done', ms: HARD_STOP_MS, checked: 0 });
+        finish();
+      }, HARD_STOP_MS);
       try {
         await find(body, emit);
       } catch (err) {
-        emit({ type: 'error', message: `Something broke on Garden's side: ${String(err).slice(0, 160)}` });
+        console.error('[find] crashed', err);
+        emit({ type: 'error', message: 'Something broke on Garden’s side. Try again.' });
         emit({ type: 'done', ms: 0, checked: 0 });
       } finally {
-        controller.close();
+        clearTimeout(guard);
+        finish();
       }
     },
   });

@@ -93,7 +93,7 @@ async function jina(queries: string[]): Promise<Source[]> {
     queries.map(async (q) => {
       const res = await fetch(`https://s.jina.ai/?q=${encodeURIComponent(q)}`, {
         headers: { authorization: `Bearer ${key}`, accept: 'application/json', 'x-respond-with': 'no-content' },
-        signal: AbortSignal.timeout(30_000),
+        signal: AbortSignal.timeout(20_000),
       });
       if (res.status === 402 || res.status === 429) throw new QuotaError(`jina ${res.status}`);
       if (!res.ok) throw new Error(`jina ${res.status}`);
@@ -110,7 +110,7 @@ async function google(query: string, kind: string): Promise<{ sources: Source[];
     const res = await generate(SEARCH_MODELS, {
       prompt: `A developer building a website wants: "${query}". Search the web for the websites where the best ${query} can be found${kind ? ` (${kind})` : ''}. Look for reviews, Reddit / Hacker News / X threads and roundups. For each site give its name, the most specific URL for this, and what people say about it.`,
       search: true,
-      timeoutMs: 60_000,
+      timeoutMs: 30_000,
     });
     const raw = res.grounding?.sources ?? [];
     const sources = await Promise.all(
@@ -180,7 +180,13 @@ export async function webEvidence(query: string, kind: string, domains: string[]
   const hn = hackerNews(query);
   let found: { name: string; sources: Source[]; queries: string[] } | null = null;
   const failures: string[] = [];
+  // Search gets at most ~40 s in total, so the judge and the live checks keep their share.
+  const searchDeadline = Date.now() + 40_000;
   for (const p of PROVIDERS) {
+    if (Date.now() > searchDeadline) {
+      failures.push('out of time');
+      break;
+    }
     if (cooling(p.name)) {
       failures.push(`${p.name} (resting)`);
       continue;

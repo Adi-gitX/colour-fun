@@ -47,7 +47,10 @@ function sameSiteLinks(html: string, base: string): PageInfo['links'] {
   const host = new URL(base).hostname;
   const out: PageInfo['links'] = [];
   const seen = new Set<string>();
-  for (const m of html.matchAll(/<a\b[^>]*href\s*=\s*["']([^"'#]+)["'][^>]*>([\s\S]*?)<\/a>/gi)) {
+  // Linear on any input: match only the opening tag, then read a bounded run of text after it.
+  // (A lazy "up to </a>" pattern backtracks badly on messy pages and can block the process.)
+  const tag = /<a\b[^>]{0,2000}?\bhref\s*=\s*["']([^"'#]{1,500})["'][^>]{0,2000}>/gi;
+  for (let m = tag.exec(html); m; m = tag.exec(html)) {
     let href: URL;
     try {
       href = new URL(m[1], base);
@@ -58,7 +61,10 @@ function sameSiteLinks(html: string, base: string): PageInfo['links'] {
     const key = href.origin + href.pathname;
     if (seen.has(key)) continue;
     seen.add(key);
-    out.push({ href: key, text: decode(m[2].replace(/<[^>]+>/g, ' ')).slice(0, 80) });
+    const after = html.slice(tag.lastIndex, tag.lastIndex + 400);
+    const end = after.indexOf('</a');
+    const text = decode((end >= 0 ? after.slice(0, end) : after).replace(/<[^>]*>/g, ' ')).slice(0, 80);
+    out.push({ href: key, text });
     if (out.length >= 600) break;
   }
   return out;
