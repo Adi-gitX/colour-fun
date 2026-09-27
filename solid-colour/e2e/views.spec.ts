@@ -1,6 +1,7 @@
+import { readFileSync } from 'node:fs';
 import { test, expect, type Page } from '@playwright/test';
 
-// The three sections of the top-bar shell: the Ask thread, Libraries, and the Wallpapers tabs.
+// The three sections of the top-bar shell: Ask, Sites, and the Wallpapers tabs.
 // Third-party image hosts are blocked so the suite does not depend on them from a CI runner.
 
 async function open(page: Page, path = '/') {
@@ -12,53 +13,77 @@ async function open(page: Page, path = '/') {
   await page.waitForLoadState('networkidle');
 }
 
-test.describe('ask thread', () => {
-  test('starts empty, then shows the request and result cards', async ({ page }) => {
+// /api/find runs live web search on the server; the UI tests replay a recorded answer instead.
+const FOOTER_ANSWER = readFileSync(new URL('./fixtures/find-footer.ndjson', import.meta.url), 'utf8');
+
+test.describe('ask', () => {
+  test('streams progress, then verified site cards, and threads follow-ups', async ({ page }) => {
+    await page.route('**/api/find', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/x-ndjson', body: FOOTER_ANSWER })
+    );
     await open(page);
-    await expect(page.getByRole('heading', { level: 1 })).toContainText('Describe it');
-    // The composer floats as a collapsed pill on the landing page; opening it and sending starts the thread.
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Stunning');
     await page.getByRole('button', { name: 'Open prompt input' }).click();
-    await page.getByLabel('What do you need?').fill('a loader for a checkout page');
+    await page.getByLabel('What do you need?').fill('footer designs');
     await page.keyboard.press('Enter');
-    // The request is echoed as a message, then answered with cards carrying an install tab.
-    await expect(page.getByText('a loader for a checkout page').first()).toBeVisible();
-    await expect(page.locator('article').first()).toBeVisible({ timeout: 30_000 });
-    await expect(page.getByRole('tab', { name: 'Install' }).first()).toBeVisible();
+    await expect(page.getByText('footer designs').first()).toBeVisible();
+    await expect(page.locator('article')).toHaveCount(2);
+    await expect(page.getByRole('link', { name: /Visit footer\.design/ })).toHaveAttribute('href', 'https://www.footer.design/browse');
+    await expect(page.getByText('Found on the web')).toBeVisible();
+    await expect(page.getByText('Start with Footer Design for structure')).toBeVisible();
     // A second question appends to the same thread.
-    await page.getByLabel('What do you need?').fill('a pricing table');
+    await page.getByLabel('What do you need?').fill('pricing pages');
     await page.keyboard.press('Enter');
-    await expect(page.locator('article')).toHaveCount(16, { timeout: 30_000 });
+    await expect(page.locator('article')).toHaveCount(4);
     await page.getByRole('button', { name: 'New thread' }).click();
     await expect(page.locator('article')).toHaveCount(0);
   });
+
+  test('shows a failure plainly and retries it', async ({ page }) => {
+    let calls = 0;
+    await page.route('**/api/find', (route) => {
+      calls += 1;
+      return calls === 1
+        ? route.fulfill({ status: 500, body: 'boom' })
+        : route.fulfill({ status: 200, contentType: 'application/x-ndjson', body: FOOTER_ANSWER });
+    });
+    await open(page);
+    await page.getByRole('button', { name: 'Open prompt input' }).click();
+    await page.getByLabel('What do you need?').fill('footer designs');
+    await page.keyboard.press('Enter');
+    await expect(page.getByRole('alert')).toContainText('Garden answered 500');
+    await page.getByRole('button', { name: 'Try again' }).click();
+    await expect(page.locator('article')).toHaveCount(2);
+  });
 });
 
-test.describe('libraries', () => {
-  test('lists every library with a status badge', async ({ page }) => {
+test.describe('sites', () => {
+  test('lists every hand-picked site with a direct link', async ({ page }) => {
     await open(page);
-    await page.getByRole('button', { name: 'Libraries', exact: true }).click();
-    await expect(page.getByRole('heading', { level: 1, name: 'Libraries' })).toBeVisible();
-    await expect(page.getByText('Indexed', { exact: true }).first()).toBeVisible();
+    await page.getByRole('button', { name: 'Sites', exact: true }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Sites' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 2, name: 'Component libraries' })).toBeVisible();
     await expect(page.locator('article').first()).toBeVisible();
   });
 });
 
 test.describe('wallpapers', () => {
-  test('switches between solid, gradients and images with tabs', async ({ page }) => {
+  test('opens on images, then switches to gradients and solid colours', async ({ page }) => {
     await open(page);
     await page.getByRole('button', { name: 'Wallpapers', exact: true }).click();
-    await expect(page.getByRole('heading', { level: 1, name: 'Solid colours' })).toBeVisible();
-    await expect(page.getByRole('tab', { name: /Solid/ })).toHaveAttribute('aria-selected', 'true');
+    await expect(page.getByRole('heading', { level: 1, name: 'Images' })).toBeVisible();
+    await expect(page.getByRole('tab', { name: /Images/ })).toHaveAttribute('aria-selected', 'true');
     await page.getByRole('tab', { name: /Gradients/ }).click();
     await expect(page.getByRole('heading', { level: 1, name: 'Gradients' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Copy CSS' })).toBeVisible();
-    await page.getByRole('tab', { name: /Images/ }).click();
-    await expect(page.getByRole('heading', { level: 1, name: 'Images' })).toBeVisible();
+    await page.getByRole('tab', { name: /Solid/ }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Solid colours' })).toBeVisible();
   });
 
   test('filters solid colours by name', async ({ page }) => {
     await open(page);
     await page.getByRole('button', { name: 'Wallpapers', exact: true }).click();
+    await page.getByRole('tab', { name: /Solid/ }).click();
     await page.getByLabel('Filter colours').fill('crimson');
     await expect(page.getByText('Crimson', { exact: true })).toBeVisible();
     await expect(page.getByText('Pure Red', { exact: true })).toHaveCount(0);

@@ -1,20 +1,19 @@
-import { useRef, useState } from 'react';
 import {
   ArrowRight,
   ArrowUpRight,
-  Check,
-  Copy,
   Download,
+  Globe,
   Image as ImageIcon,
   Layers,
-  MessageSquareText,
+  MessageSquareQuote,
   Palette,
+  Plug,
+  ScanEye,
   Sparkles,
-  SquareTerminal,
   Code,
-  RefreshCw,
 } from 'lucide-react';
-import libraries from '../../data/libraries.json';
+import sitesJson from '../../data/sites.json';
+import type { Site } from '../../lib/find/types';
 import { colors } from '../../data/colors';
 import { gradients } from '../../data/gradients';
 import { imageUrls } from '../../data/images';
@@ -30,16 +29,8 @@ import styles from './Landing.module.css';
    AskView owns the composer, which floats over all of it.
    =========================================================== */
 
-interface Library {
-  name: string;
-  homepage: string;
-  indexed: number;
-}
-const indexedLibraries = (libraries as unknown as Library[]).filter((l) => l.indexed > 0);
-const topLibraries = [...indexedLibraries].sort((a, b) => b.indexed - a.indexed);
-const componentCount = indexedLibraries.reduce((n, l) => n + l.indexed, 0);
-
-const HERO_COMMAND = 'npx shadcn@latest add "https://ui.aceternity.com/registry/3d-globe.json"';
+const sites = sitesJson as Site[];
+const HERO_ASK = 'footer designs';
 
 /** Each letter is a short reel of itself that spins down into place, staggered left to right. */
 function SlotLine({ text, delay = 0 }: { text: string; delay?: number }) {
@@ -62,43 +53,23 @@ function SlotLine({ text, delay = 0 }: { text: string; delay?: number }) {
   );
 }
 
-function useCopied(): [boolean, (text: string) => void] {
-  const [copied, setCopied] = useState(false);
-  const timer = useRef<number | null>(null);
-  return [
-    copied,
-    (text) => {
-      void navigator.clipboard.writeText(text);
-      setCopied(true);
-      if (timer.current) window.clearTimeout(timer.current);
-      timer.current = window.setTimeout(() => setCopied(false), 1500);
-    },
-  ];
-}
-
-export function LandingHero({ onStart }: { onStart: () => void }) {
-  const [copied, copy] = useCopied();
+export function LandingHero({ onStart, onAsk }: { onStart: () => void; onAsk: (text: string) => void }) {
   return (
     <section className={styles.hero}>
-      <p className={styles.serif}>Garden&rsquo;s</p>
+      <p className={styles.serif}>Garden, for people who build with AI</p>
       <h1 className={styles.display}>
-        <span className="visually-hidden">Describe it. Install it.</span>
-        <SlotLine text="DESCRIBE IT." />
-        <SlotLine text="INSTALL IT." delay={260} />
+        <span className="visually-hidden">Stunning, not slop.</span>
+        <SlotLine text="STUNNING," />
+        <SlotLine text="NOT SLOP." delay={260} />
       </h1>
-      <p className={styles.serif}>For shadcn/ui &amp; React</p>
+      <p className={styles.serif}>Find the design worth using, checked live</p>
 
       <div className={styles.heroActions}>
-        <button
-          type="button"
-          className={styles.command}
-          onClick={() => copy(HERO_COMMAND)}
-          aria-label="Copy install command for 3D Globe"
-        >
+        <button type="button" className={styles.command} onClick={() => onAsk(HERO_ASK)} aria-label={`Ask Garden for ${HERO_ASK}`}>
           <span className={styles.commandText}>
-            npx shadcn add aceternity<span className={styles.commandMuted}>/3d-globe</span>
+            garden ask <span className={styles.commandMuted}>&quot;{HERO_ASK}&quot;</span>
           </span>
-          {copied ? <Check size={14} /> : <Copy size={14} />}
+          <ArrowRight size={14} />
         </button>
         <button type="button" className={styles.quickStart} onClick={onStart}>
           Ask Garden
@@ -116,21 +87,51 @@ interface Showcase {
 }
 
 const SHOWCASE: Showcase[] = [
-  { title: '3D Globe', image: '3d-globe', area: styles.aGlobe },
-  { title: '3D Marquee', image: '3d-marquee', area: styles.aMarquee },
-  { title: 'Animated Testimonials', image: 'animated-testimonials', area: styles.aTestimonials },
-  { title: 'Apple Cards Carousel', image: 'apple-cards-carousel', area: styles.aApple },
-  { title: 'Background Beams', image: 'background-beams', area: styles.aBeams },
-  { title: 'Aurora Background', image: 'aurora-background', area: styles.aAurora },
-  { title: '3D Card', image: '3d-card', area: styles.aCard },
+  { title: 'An interactive 3D globe', image: '3d-globe', area: styles.aGlobe },
+  { title: 'A tilted screenshot marquee', image: '3d-marquee', area: styles.aMarquee },
+  { title: 'Testimonials that feel human', image: 'animated-testimonials', area: styles.aTestimonials },
+  { title: 'A card carousel like Apple’s', image: 'apple-cards-carousel', area: styles.aApple },
+  { title: 'Animated background beams', image: 'background-beams', area: styles.aBeams },
+  { title: 'Soft aurora backgrounds', image: 'aurora-background', area: styles.aAurora },
+  { title: 'Cards that tilt in 3D on hover', image: '3d-card', area: styles.aCard },
 ];
 
-const STACK = ['shadcn/ui', 'Tailwind CSS', 'React', 'Motion'];
+const BUILT_FOR = ['Claude Code', 'Cursor', 'Windsurf', 'v0'];
 
-const WALLPAPERS: Array<{ section: Section; glyph: string; tone: string }> = [
-  { section: 'solid-colors', glyph: 'Aa', tone: styles.toneSolid },
-  { section: 'gradients', glyph: 'Aa', tone: styles.toneGradient },
-  { section: 'backgrounds', glyph: 'Aa', tone: styles.toneImage },
+const SLOP = [
+  { n: '01', title: 'Every site looks the same', body: 'The same purple gradient, the same centred hero, the same three-card bento. Generated, not designed.' },
+  { n: '02', title: 'Nobody chose the parts', body: 'Components land in the codebase because a model reached for them, not because anyone compared them to the best.' },
+  { n: '03', title: 'Taste is buried', body: 'The libraries and galleries that set the bar are scattered across a hundred sites, lists and threads.' },
+];
+
+/** A real answer from the live pipeline (28 Sep 2026), shown as the demo. */
+const DEMO = {
+  query: 'footer designs',
+  picks: [
+    { name: 'Footer Design', path: 'footer.design', why: 'A gallery of real-world footers, filtered by style, typography and grid.' },
+    { name: 'Aceternity UI', path: 'ui.aceternity.com/categories/footer', why: 'Animated footers in React, Tailwind and Motion. Free, copy-paste.' },
+    { name: 'Flowbite', path: 'flowbite.com/blocks/marketing/footer', why: 'Clean Tailwind footer blocks: sitemaps, newsletters, legal bars.' },
+    { name: '21st.dev', path: '21st.dev/community/components/s/footer', why: 'Community footers for shadcn/ui, each with a live preview.' },
+  ],
+};
+
+const STEPS = [
+  { n: '01', title: 'Search', body: 'Live web search for reviews, roundups and threads, plus a search inside every site on the list.' },
+  { n: '02', title: 'Judge', body: `A model weighs ${'{count}'} hand-picked sites against that evidence. Every pick needs a reason and a place to look.` },
+  { n: '03', title: 'Verify', body: 'Each pick is opened live and its own links are followed to the exact section. Dead links never reach you.' },
+];
+
+const ROADMAP = [
+  { when: 'Now', title: 'The right sites', body: 'Ask for any piece of a site and get the few places worth your time, checked live.' },
+  { when: 'Next', title: 'The exact component', body: 'Go one level deeper: the specific block on that site, with its install command.' },
+  { when: 'Then', title: 'Garden as an MCP server', body: 'Your editor asks Garden before it writes UI: Claude Code, Cursor and Windsurf pull taste in directly.' },
+  { when: 'Later', title: 'A taste check', body: 'Point Garden at your site and see where it falls short of the best in its category.' },
+];
+
+const WALLPAPERS: Array<{ section: Section; glyph: string; label: string; tone: string }> = [
+  { section: 'gradients', glyph: 'Aa', label: 'gradients', tone: styles.toneGradient },
+  { section: 'backgrounds', glyph: 'Aa', label: 'images', tone: styles.toneImage },
+  { section: 'solid-colors', glyph: 'Aa', label: 'solid colours', tone: styles.toneSolid },
 ];
 
 function SectionHead({ title, children }: { title: React.ReactNode; children?: React.ReactNode }) {
@@ -154,17 +155,103 @@ export function LandingSections({ onAsk, onStart }: { onAsk: (text: string) => v
   const theme = useAppStore((s) => s.theme);
   const setCurrentSection = useAppStore((s) => s.setCurrentSection);
   const base = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
-  const names = topLibraries.slice(1).map((l) => l.name);
-  const featured = topLibraries[0];
+  const names = sites.map((s) => s.name);
 
   return (
     <div className={styles.sections}>
+      {/* ===== The problem ===== */}
+      <section className={styles.section}>
+        <span className={styles.pill}>The problem</span>
+        <h2 className={`${styles.sectionTitle} ${styles.statement}`}>
+          AI made building a site free.
+          <br />
+          <span className={styles.muted}>It also made every site look the same.</span>
+        </h2>
+        <div className={styles.problems}>
+          {SLOP.map((p) => (
+            <div key={p.n} className={styles.problem}>
+              <span className={styles.problemN}>{p.n}</span>
+              <h3>{p.title}</h3>
+              <p>{p.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ===== The fix: a real answer ===== */}
+      <section className={styles.section}>
+        <span className={styles.pill}>The fix</span>
+        <SectionHead title="Garden sends you to the source">
+          Ask for any piece of a site. Get the few places on the web that do it best, with the reason and the exact page.
+        </SectionHead>
+        <div className={styles.demo}>
+          <div className={styles.demoBar}>
+            <span className={styles.demoDots} aria-hidden>
+              <i />
+              <i />
+              <i />
+            </span>
+            <span className={styles.demoQuery}>garden ask &quot;{DEMO.query}&quot;</span>
+            <span className={styles.demoMeta}>23 sources · 4 sites opened live</span>
+          </div>
+          <ol className={styles.demoList}>
+            {DEMO.picks.map((p, i) => (
+              <li key={p.name}>
+                <span className={styles.demoRank}>{String(i + 1).padStart(2, '0')}</span>
+                <div>
+                  <strong>{p.name}</strong>
+                  <span className={styles.demoPath}>{p.path}</span>
+                  <p>{p.why}</p>
+                </div>
+                <ArrowUpRight size={16} className={styles.demoArrow} aria-hidden />
+              </li>
+            ))}
+          </ol>
+        </div>
+        <button type="button" className={styles.more} onClick={() => onAsk(DEMO.query)}>
+          Run it live <ArrowRight size={14} />
+        </button>
+      </section>
+
+      {/* ===== How it works ===== */}
+      <section className={styles.section}>
+        <span className={styles.pill}>How it works</span>
+        <SectionHead title="Search, judge, verify" />
+        <div className={styles.steps}>
+          {STEPS.map((st) => (
+            <div key={st.n} className={styles.step}>
+              <span className={styles.stepN}>{st.n}</span>
+              <h3>{st.title}</h3>
+              <p>{st.body.replace('{count}', String(sites.length))}</p>
+            </div>
+          ))}
+        </div>
+        <dl className={styles.numbers}>
+          <div>
+            <dt>Hand-picked sites</dt>
+            <dd>{sites.length}</dd>
+          </div>
+          <div>
+            <dt>Picks on the exact section</dt>
+            <dd>73%</dd>
+          </div>
+          <div>
+            <dt>Median answer</dt>
+            <dd>12s</dd>
+          </div>
+          <div>
+            <dt>Dead links shown</dt>
+            <dd>0</dd>
+          </div>
+        </dl>
+        <p className={styles.numbersNote}>Measured on eight real requests against the live web, 28 Sep 2026.</p>
+      </section>
+
       {/* ===== Showcase bento ===== */}
       <section className={styles.section}>
-        <SectionHead title={<>{componentCount.toLocaleString()}+ Outstanding components</>}>
-          No extra packages — each one installs from its own library,
-          <br />
-          straight into your project with the shadcn CLI.
+        <SectionHead title="Ask for anything worth building">
+          Tap one to run it live: Garden searches the web, weighs real reviews against {sites.length} hand-picked
+          sites, and opens every link before you see it.
         </SectionHead>
         <div className={styles.bento}>
           {SHOWCASE.map((item) => (
@@ -190,44 +277,22 @@ export function LandingSections({ onAsk, onStart }: { onAsk: (text: string) => v
           ))}
         </div>
         <button type="button" className={styles.more} onClick={() => setCurrentSection('libraries')}>
-          Explore all libraries <ArrowRight size={14} />
+          See all {sites.length} sites <ArrowRight size={14} />
         </button>
       </section>
 
-      {/* ===== Open-source credit ===== */}
+      {/* ===== The list ===== */}
       <section className={`${styles.section} ${styles.narrow}`}>
-        <div className={styles.creditHead}>
-          <h2 className={styles.sectionTitle}>
-            <span className={styles.dot} aria-hidden />
-            Open source first
-          </h2>
-          <p className={styles.sectionNote}>
-            Garden never re-hosts a component. Every result links back to the library that made it, keeps its licence
-            and credits its author. Go and support them.
-          </p>
-        </div>
-        <ul className={styles.linkList}>
-          {topLibraries.slice(0, 3).map((l) => (
-            <li key={l.name}>
-              <a href={l.homepage} target="_blank" rel="noreferrer noopener">
-                <span>{l.name}</span>
-                <span className={styles.linkLine} aria-hidden />
-                <ArrowUpRight size={15} />
-              </a>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {/* ===== Libraries ===== */}
-      <section className={`${styles.section} ${styles.narrow}`}>
-        <SectionHead title="Garden searches the finest in the industry" />
-        <DashedRule label="Most indexed" />
-        <a className={styles.featured} href={featured.homepage} target="_blank" rel="noreferrer noopener">
+        <span className={styles.pill}>Why now</span>
+        <SectionHead title="Code is solved. Taste is the bottleneck.">
+          Everyone ships with an AI editor now. What they reach for decides whether the result looks designed or generated.
+        </SectionHead>
+        <DashedRule label="Always considered" />
+        <button type="button" className={styles.featured} onClick={() => setCurrentSection('libraries')}>
           <DotMark size={26} />
-          {featured.name}
-        </a>
-        <DashedRule label="Indexed libraries" />
+          {sites.length} hand-picked sites
+        </button>
+        <DashedRule label="In the list" />
         <div className={styles.marquee}>
           <div className={styles.marqueeTrack}>
             {[...names, ...names].map((name, i) => (
@@ -237,19 +302,36 @@ export function LandingSections({ onAsk, onStart }: { onAsk: (text: string) => v
             ))}
           </div>
         </div>
-        <DashedRule label="Tools & stack" />
+        <DashedRule label="Built for" />
         <div className={styles.stack}>
-          {STACK.map((s) => (
+          {BUILT_FOR.map((s) => (
             <span key={s}>{s}</span>
           ))}
         </div>
         <DashedRule />
         <p className={styles.creditNote}>
-          Garden is made possible by every library above
+          Know a site with real taste?
           <a href="https://github.com/Adi-gitX/colour-fun/issues" target="_blank" rel="noreferrer noopener">
-            suggest one <ArrowRight size={13} />
+            suggest it <ArrowRight size={13} />
           </a>
         </p>
+      </section>
+
+      {/* ===== Roadmap ===== */}
+      <section className={`${styles.section} ${styles.narrow}`}>
+        <span className={styles.pill}>Roadmap</span>
+        <SectionHead title="From the right site to the right pixel" />
+        <ol className={styles.roadmap}>
+          {ROADMAP.map((r, i) => (
+            <li key={r.when} className={i === 0 ? styles.roadNow : undefined}>
+              <span className={styles.roadWhen}>{r.when}</span>
+              <div>
+                <h3>{r.title}</h3>
+                <p>{r.body}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
       </section>
 
       {/* ===== Wallpapers ===== */}
@@ -259,7 +341,9 @@ export function LandingSections({ onAsk, onStart }: { onAsk: (text: string) => v
           <span>×</span>
           <Sparkles size={20} />
         </div>
-        <SectionHead title="Rare Wallpapers" />
+        <SectionHead title="Also in the Garden: wallpapers">
+          Images, gradients and flat colours, exported at up to 8K.
+        </SectionHead>
         <div className={styles.trio}>
           {WALLPAPERS.map((w, i) => (
             <button
@@ -267,39 +351,40 @@ export function LandingSections({ onAsk, onStart }: { onAsk: (text: string) => v
               type="button"
               className={`${styles.trioCard} ${w.tone} ${i === 1 ? styles.trioCenter : ''}`}
               onClick={() => setCurrentSection(w.section)}
-              aria-label={`Open ${w.section === 'solid-colors' ? 'solid colours' : w.section === 'gradients' ? 'gradients' : 'images'}`}
+              aria-label={`Open ${w.label}`}
             >
               <span className={styles.trioGlyph}>{w.glyph}</span>
             </button>
           ))}
         </div>
-        <button type="button" className={styles.more} onClick={() => setCurrentSection('solid-colors')}>
+        <button type="button" className={styles.more} onClick={() => setCurrentSection('backgrounds')}>
           Open wallpapers <ArrowRight size={14} />
         </button>
       </section>
 
       {/* ===== Plans ===== */}
       <section className={styles.section}>
-        <SectionHead title={<>Just free and open, no subscription</>} />
+        <span className={styles.pill}>Pricing</span>
+        <SectionHead title="Free while it grows, no subscription" />
         <div className={styles.plans}>
           <div className={styles.plan}>
-            <span className={styles.planName}>Search</span>
+            <span className={styles.planName}>Ask</span>
             <span className={styles.planPrice}>$0</span>
             <ul>
               <li>
-                <Layers size={15} /> {indexedLibraries.length} libraries at once
+                <Globe size={15} /> Live web search, every time
               </li>
               <li>
-                <SquareTerminal size={15} /> One-line install commands
+                <MessageSquareQuote size={15} /> Weighed against real reviews
               </li>
               <li>
-                <MessageSquareText size={15} /> Prompts for your coding agent
+                <Layers size={15} /> {sites.length} hand-picked sites first
               </li>
               <li>
-                <Code size={15} /> Copy-paste source code
+                <ScanEye size={15} /> Every link opened before you see it
               </li>
               <li>
-                <RefreshCw size={15} /> Re-indexed continuously
+                <Plug size={15} /> MCP server for your editor, soon
               </li>
             </ul>
             <button type="button" className={styles.planBtn} onClick={onStart}>
@@ -311,13 +396,13 @@ export function LandingSections({ onAsk, onStart }: { onAsk: (text: string) => v
             <span className={styles.planPrice}>$0</span>
             <ul>
               <li>
-                <Palette size={15} /> {colors.length} solid colours
+                <ImageIcon size={15} /> {imageUrls.length} images
               </li>
               <li>
                 <Sparkles size={15} /> {gradients.length} gradients
               </li>
               <li>
-                <ImageIcon size={15} /> {imageUrls.length} images
+                <Palette size={15} /> {colors.length} solid colours
               </li>
               <li>
                 <Download size={15} /> PNG, JPEG or WebP up to 8K
@@ -326,7 +411,7 @@ export function LandingSections({ onAsk, onStart }: { onAsk: (text: string) => v
                 <Code size={15} /> Copy the CSS
               </li>
             </ul>
-            <button type="button" className={styles.planBtn} onClick={() => setCurrentSection('solid-colors')}>
+            <button type="button" className={styles.planBtn} onClick={() => setCurrentSection('backgrounds')}>
               Open wallpapers
             </button>
           </div>
@@ -337,9 +422,9 @@ export function LandingSections({ onAsk, onStart }: { onAsk: (text: string) => v
       <section className={`${styles.section} ${styles.closing}`}>
         <span className={styles.pill}>Start here</span>
         <h2 className={styles.sectionTitle}>
-          Describe the component
+          Make your site
           <br />
-          you need
+          worth looking at
         </h2>
         <button type="button" className={styles.seal} onClick={onStart} aria-label="Ask Garden">
           <svg viewBox="0 0 200 200" className={styles.sealText} aria-hidden>
@@ -347,11 +432,14 @@ export function LandingSections({ onAsk, onStart }: { onAsk: (text: string) => v
               <path id="seal-circle" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0" />
             </defs>
             <text>
-              <textPath href="#seal-circle">GARDEN · COMPONENT FINDER · OPEN SOURCE · ALWAYS CREDITED ·</textPath>
+              <textPath href="#seal-circle">GARDEN · NO AI SLOP · EVER · MADE WITH TASTE ·</textPath>
             </text>
           </svg>
           <span className={styles.sealRing} aria-hidden />
           <span className={styles.sealOrb} aria-hidden />
+        </button>
+        <button type="button" className={styles.quickStart} onClick={onStart}>
+          Ask Garden
         </button>
       </section>
 

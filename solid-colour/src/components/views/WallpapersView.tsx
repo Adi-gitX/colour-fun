@@ -24,13 +24,13 @@ interface Tab {
 
 const TABS: Tab[] = [
   {
-    id: 'solid-colors',
-    label: 'Solid',
-    icon: Palette,
-    count: colors.length,
-    title: 'Solid colours',
+    id: 'backgrounds',
+    label: 'Images',
+    icon: ImageIcon,
+    count: imageUrls.length,
+    title: 'Images',
     blurb:
-      'Curated flat colours plus a custom picker. Export any of them at up to 8K in PNG, JPEG or WebP.',
+      'High-resolution photos and abstract backgrounds from Lummi and Picsum. Open one to download the full-size file.',
   },
   {
     id: 'gradients',
@@ -42,13 +42,13 @@ const TABS: Tab[] = [
       'Start from a preset or two colours of your own, set the angle, copy the CSS or export the image.',
   },
   {
-    id: 'backgrounds',
-    label: 'Images',
-    icon: ImageIcon,
-    count: imageUrls.length,
-    title: 'Images',
+    id: 'solid-colors',
+    label: 'Solid',
+    icon: Palette,
+    count: colors.length,
+    title: 'Solid colours',
     blurb:
-      'High-resolution abstract backgrounds from Lummi and Picsum. Open one to download the full-size file.',
+      'Curated flat colours plus a custom picker. Export any of them at up to 8K in PNG, JPEG or WebP.',
   },
 ];
 

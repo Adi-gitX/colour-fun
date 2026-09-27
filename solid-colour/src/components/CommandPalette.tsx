@@ -11,11 +11,11 @@ const NAV_SHORTCUTS: Array<{
   label: string;
   icon: typeof Home;
 }> = [
-  { section: 'home', label: 'Ask for a component', icon: Home },
-  { section: 'libraries', label: 'Libraries', icon: Compass },
-  { section: 'solid-colors', label: 'Wallpapers · Solid', icon: Sparkles },
-  { section: 'gradients', label: 'Wallpapers · Gradients', icon: Sparkles },
+  { section: 'home', label: 'Ask Garden', icon: Home },
+  { section: 'libraries', label: 'Sites', icon: Compass },
   { section: 'backgrounds', label: 'Wallpapers · Images', icon: Sparkles },
+  { section: 'gradients', label: 'Wallpapers · Gradients', icon: Sparkles },
+  { section: 'solid-colors', label: 'Wallpapers · Solid colours', icon: Sparkles },
 ];
 
 export const CommandPalette = () => {
@@ -101,7 +101,7 @@ export const CommandPalette = () => {
             ref={inputRef}
             value={query}
             onValueChange={setQuery}
-            placeholder="Search components and colours"
+            placeholder="Search sites and colours"
             className={styles.input}
           />
           <span className={styles.kbd}>esc</span>

@@ -1,48 +1,76 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowUpRight, Check, Code, Copy, Layers, Package, RotateCcw, Terminal } from 'lucide-react';
-import { ask, askEngine, promptFor, promptForAll } from '../../lib/ask';
-import type { AskMatch, AskResponse } from '../../lib/ask';
-import libraries from '../../data/libraries.json';
-import { DotMark } from '../brand/DotMark';
-import { DotmSquare5 } from '../ui/dotm-square-5';
+import { ArrowUpRight, Blocks, Check, Copy, Eye, Layers, RotateCcw, Sparkles, TriangleAlert } from 'lucide-react';
+import { findSites } from '../../lib/find';
+import type { Evidence, FindEvent, SiteResult, SiteType } from '../../lib/find';
+import sites from '../../data/sites.json';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Kbd } from '../ui/kbd';
 import { PromptInput, type PromptInputOption } from '../ui/ai-chat-input';
 import { Conversation, ConversationContent, ConversationScrollButton } from '../ai-elements/conversation';
 import { Message, MessageContent } from '../ai-elements/message';
 import { Loader } from '../ai-elements/loader';
+import { DotMark } from '../brand/DotMark';
 import { LandingHero, LandingSections } from './Landing';
 import styles from './AskView.module.css';
 
-/** Where results may install from; `any` leaves the ranking untouched. */
-type Source = 'any' | 'shadcn' | 'npm' | 'copy';
+type Filter = SiteType | 'any';
 
-const SOURCES: Array<PromptInputOption & { value: Source }> = [
-  { value: 'any', label: 'Any source', icon: <Layers /> },
-  { value: 'shadcn', label: 'shadcn registry', icon: <Terminal /> },
-  { value: 'npm', label: 'npm package', icon: <Package /> },
-  { value: 'copy', label: 'Copy-paste code', icon: <Code /> },
+const FILTERS: Array<PromptInputOption & { value: Filter }> = [
+  { value: 'any', label: 'Any site', icon: <Layers /> },
+  { value: 'components', label: 'Component libraries', icon: <Blocks /> },
+  { value: 'inspiration', label: 'Inspiration', icon: <Eye /> },
+  { value: 'library', label: 'Animation & UI', icon: <Sparkles /> },
 ];
+const COUNTS = [3, 6, 9];
+const COUNT_LABELS = COUNTS.map((n) => `${n} sites`);
 
-const RESULT_COUNTS = [4, 8, 12];
-const RESULT_LABELS = RESULT_COUNTS.map((n) => `${n} results`);
+const TYPE_LABEL: Record<SiteType, string> = {
+  components: 'Components',
+  library: 'Library',
+  inspiration: 'Inspiration',
+};
 
-type Message =
-  | { id: string; role: 'user'; text: string; scope: string | null }
-  | { id: string; role: 'assistant'; status: 'thinking'; request: string }
-  | { id: string; role: 'assistant'; status: 'ranking' | 'done'; request: string; response: AskResponse };
+interface Turn {
+  id: string;
+  query: string;
+  filter: Filter;
+  count: number;
+  status: 'running' | 'done' | 'error';
+  stages: Array<{ id: string; label: string }>;
+  notes: string[];
+  queries: string[];
+  sources: Evidence[];
+  results: SiteResult[];
+  summary: string | null;
+  error: string | null;
+  ms: number | null;
+  via: { search: string; judge: string; cachedAt?: number } | null;
+}
 
 let nextId = 0;
-const uid = () => `m${++nextId}`;
+const uid = () => `t${++nextId}`;
 
-const ENGINE_LINE: Record<typeof askEngine, string> = {
-  gemini: 'Ranked by Gemini',
-  api: 'Ranked by the Garden API',
-  local: 'Ranked by search. Add a Gemini key in .env for explanations',
-};
+function reduce(turn: Turn, e: FindEvent): Turn {
+  switch (e.type) {
+    case 'stage':
+      return { ...turn, stages: [...turn.stages, { id: e.id, label: e.label }] };
+    case 'note':
+      return { ...turn, notes: [...turn.notes, e.text] };
+    case 'meta':
+      return { ...turn, via: { search: e.search, judge: e.judge, cachedAt: e.cachedAt } };
+    case 'sources':
+      return { ...turn, queries: e.queries, sources: e.items };
+    case 'result':
+      return { ...turn, results: [...turn.results, e.site] };
+    case 'summary':
+      return { ...turn, summary: e.text };
+    case 'error':
+      return { ...turn, status: 'error', error: e.message };
+    case 'done':
+      return { ...turn, status: turn.status === 'error' ? 'error' : 'done', ms: e.ms };
+  }
+}
 
 function useCopy(): [string | null, (key: string, text: string) => void] {
   const [copied, setCopied] = useState<string | null>(null);
@@ -56,276 +84,254 @@ function useCopy(): [string | null, (key: string, text: string) => void] {
   return [copied, copy];
 }
 
-/** Rotates through status lines while mounted; the caller remounts it per request. */
-function useStatusLine(lines: string[]) {
-  const [i, setI] = useState(0);
+/** "3 hours ago" for cached answers. */
+function ago(at: number): string {
+  const mins = Math.round((Date.now() - at) / 60_000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins} min ago`;
+  const hours = Math.round(mins / 60);
+  if (hours < 24) return `${hours} h ago`;
+  return `${Math.round(hours / 24)} d ago`;
+}
+
+const host = (url: string) => {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return url;
+  }
+};
+
+/** Counts up while a turn runs, so a long answer visibly keeps working. */
+function Elapsed({ since }: { since: number }) {
+  const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
-    const t = window.setInterval(() => setI((n) => (n + 1) % lines.length), 1100);
+    const t = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(t);
-  }, [lines]);
-  return lines[i];
+  }, []);
+  return <span className={styles.elapsed}>{Math.max(0, Math.round((now - since) / 1000))}s</span>;
 }
 
-function CopyBlock({
-  text,
-  copyKey,
-  copied,
-  copy,
-  label,
-}: {
-  text: string;
-  copyKey: string;
-  copied: string | null;
-  copy: (k: string, t: string) => void;
-  label: string;
-}) {
-  const done = copied === copyKey;
-  return (
-    <div className={styles.copyBlock}>
-      <pre className={styles.copyText}>
-        <code>{text}</code>
-      </pre>
-      <Button
-        type="button"
-        variant="outline"
-        size="icon-sm"
-        className={styles.copyBtn}
-        onClick={() => copy(copyKey, text)}
-        aria-label={done ? 'Copied' : label}
-      >
-        {done ? <Check /> : <Copy />}
-      </Button>
-    </div>
-  );
-}
-
-function MatchCard({
-  match,
-  request,
-  rank,
-  copied,
-  copy,
-}: {
-  match: AskMatch;
-  request: string;
-  rank: number;
-  copied: string | null;
-  copy: (k: string, t: string) => void;
-}) {
-  const c = match.component;
-  const base = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
-  const hasInstall = Boolean(c.installCommand);
-  const hasCode = Boolean(c.code);
+function SiteCard({ site, copied, copy }: { site: SiteResult; copied: string | null; copy: (k: string, t: string) => void }) {
+  const [imageOk, setImageOk] = useState(Boolean(site.image));
+  const key = `link:${site.url}`;
   return (
     <article className={styles.card}>
-      {c.previewImage ? (
-        <div className={styles.preview}>
-          <img src={`${base}/${c.previewImage}`} alt="" loading="lazy" />
-          <span className={styles.rank}>{String(rank).padStart(2, '0')}</span>
-        </div>
-      ) : (
-        <div className={styles.previewEmpty} aria-hidden>
-          <DotMark size={18} />
-          <span className={styles.previewLibrary}>{c.library}</span>
-          <span className={styles.rank}>{String(rank).padStart(2, '0')}</span>
-        </div>
-      )}
+      <a className={styles.preview} href={site.url} target="_blank" rel="noreferrer noopener" tabIndex={-1} aria-hidden>
+        {imageOk && site.image ? (
+          <img src={site.image} alt="" loading="lazy" referrerPolicy="no-referrer" onError={() => setImageOk(false)} />
+        ) : (
+          <span className={styles.previewEmpty}>
+            <img
+              src={new URL('/favicon.ico', site.url).toString()}
+              alt=""
+              referrerPolicy="no-referrer"
+              onError={(e) => (e.currentTarget.style.display = 'none')}
+            />
+            {site.domain}
+          </span>
+        )}
+        <span className={styles.rank}>{String(site.rank).padStart(2, '0')}</span>
+      </a>
       <div className={styles.cardBody}>
         <div className={styles.cardHead}>
           <div className={styles.cardTitleBlock}>
-            <h3 className={styles.cardTitle}>{c.title}</h3>
-            <p className={styles.cardMeta}>
-              <a href={c.sourceUrl} target="_blank" rel="noreferrer noopener">
-                {c.library} <ArrowUpRight size={11} />
-              </a>
-              {c.author ? <span> · {c.author}</span> : null}
-              <span> · {c.license}</span>
-            </p>
+            <h3 className={styles.cardTitle}>{site.name}</h3>
+            <p className={styles.cardMeta}>{host(site.url)}{site.url.replace(/\/$/, '') !== new URL(site.url).origin ? ` · ${new URL(site.url).pathname}` : ''}</p>
           </div>
-          <Badge variant="outline" className={styles.category}>
-            {c.category.replace(/-/g, ' ')}
-          </Badge>
+          <div className={styles.badges}>
+            {site.type && <span className={styles.badge}>{TYPE_LABEL[site.type]}</span>}
+            {site.paid && <span className={styles.badge}>Paid</span>}
+            <span className={`${styles.badge} ${site.origin === 'web' ? styles.badgeWeb : ''}`}>
+              {site.origin === 'garden' ? 'In Garden' : 'Found on the web'}
+            </span>
+          </div>
         </div>
-        {(match.why || c.description) && <p className={styles.why}>{match.why ?? c.description}</p>}
-
-        <Tabs defaultValue={hasInstall ? 'install' : 'prompt'} className={styles.tabs}>
-          <TabsList variant="line" className={styles.tabList}>
-            {hasInstall && <TabsTrigger value="install">Install</TabsTrigger>}
-            <TabsTrigger value="prompt">Prompt</TabsTrigger>
-            {hasCode && <TabsTrigger value="code">Code</TabsTrigger>}
-            <a className={styles.docsLink} href={c.docsUrl} target="_blank" rel="noreferrer noopener">
-              Docs <ArrowUpRight size={11} />
+        <p className={styles.why}>{site.why}</p>
+        {site.lookFor && (
+          <p className={styles.lookFor}>
+            <span>Look for</span> {site.lookFor}
+          </p>
+        )}
+        {site.evidence.length > 0 && (
+          <div className={styles.evidence}>
+            <span className={styles.evidenceLabel}>Backed by</span>
+            {site.evidence.map((ev) => (
+              <a key={ev.url} href={ev.url} target="_blank" rel="noreferrer noopener" title={ev.url}>
+                {host(ev.url)}
+              </a>
+            ))}
+          </div>
+        )}
+        <div className={styles.actions}>
+          <Button asChild size="sm" className={styles.visit}>
+            <a href={site.url} target="_blank" rel="noreferrer noopener">
+              Visit {site.domain} <ArrowUpRight />
             </a>
-          </TabsList>
-          {hasInstall && (
-            <TabsContent value="install">
-              <CopyBlock
-                text={c.installCommand!}
-                copyKey={`cmd:${c.slug}`}
-                copied={copied}
-                copy={copy}
-                label="Copy install command"
-              />
-            </TabsContent>
-          )}
-          <TabsContent value="prompt">
-            <CopyBlock
-              text={promptFor(match, request)}
-              copyKey={`prompt:${c.slug}`}
-              copied={copied}
-              copy={copy}
-              label="Copy prompt for your agent"
-            />
-          </TabsContent>
-          {hasCode && (
-            <TabsContent value="code">
-              <CopyBlock
-                text={c.code!}
-                copyKey={`code:${c.slug}`}
-                copied={copied}
-                copy={copy}
-                label="Copy component code"
-              />
-            </TabsContent>
-          )}
-        </Tabs>
+          </Button>
+          <Button type="button" variant="ghost" size="sm" onClick={() => copy(key, site.url)} className={styles.copyLink}>
+            {copied === key ? <Check /> : <Copy />} {copied === key ? 'Copied' : 'Copy link'}
+          </Button>
+        </div>
       </div>
     </article>
   );
 }
 
-function AssistantMessage({ children, className }: { children: React.ReactNode; className?: string }) {
+function Progress({ turn, since }: { turn: Turn; since: number }) {
+  const running = turn.status === 'running';
+  if (running) {
+    return (
+      <ol className={styles.stages} aria-live="polite">
+        {turn.stages.map((s, i) => {
+          const current = i === turn.stages.length - 1;
+          return (
+            <li key={s.id} className={current ? styles.stageCurrent : styles.stageDone}>
+              {current ? <Loader size={13} /> : <Check size={13} />}
+              <span>{s.label}</span>
+              {current && <Elapsed since={since} />}
+            </li>
+          );
+        })}
+        {turn.stages.length === 0 && (
+          <li className={styles.stageCurrent}>
+            <Loader size={13} /> <span>Starting</span>
+          </li>
+        )}
+      </ol>
+    );
+  }
   return (
-    <Message from="assistant" className={styles.assistantRow}>
-      <div className={styles.avatar}>
-        <DotMark size={22} />
-      </div>
-      <MessageContent className={`${styles.assistantContent} ${className ?? ''}`}>{children}</MessageContent>
-    </Message>
+    <details className={styles.trail}>
+      <summary>
+        {turn.via?.cachedAt
+          ? `Saved answer from ${ago(turn.via.cachedAt)}, links checked then`
+          : `${turn.sources.length > 0 ? `Read ${turn.sources.length} web sources` : 'Judged from Garden’s list'} · opened ${
+              turn.results.length
+            } ${turn.results.length === 1 ? 'site' : 'sites'} live${turn.ms ? ` · ${Math.round(turn.ms / 1000)}s` : ''}`}
+      </summary>
+      {turn.via && (
+        <p className={styles.trailQueries}>
+          Searched with {turn.via.search} · judged by {turn.via.judge}
+        </p>
+      )}
+      {turn.queries.length > 0 && <p className={styles.trailQueries}>Searched: {turn.queries.join(' · ')}</p>}
+      <ul>
+        {turn.sources.map((s) => (
+          <li key={s.url}>
+            <a href={s.url} target="_blank" rel="noreferrer noopener">
+              {s.url.replace(/^https?:\/\/(www\.)?/, '')}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </details>
   );
 }
 
-function ThinkingMessage({ libraryCount }: { libraryCount: number }) {
-  const lines = useMemo(
-    () =>
-      askEngine === 'local'
-        ? [`Searching ${libraryCount} libraries`]
-        : [
-            `Searching ${libraryCount} libraries`,
-            'Matching meaning',
-            askEngine === 'gemini' ? 'Asking Gemini' : 'Asking the Garden API',
-          ],
-    [libraryCount]
-  );
-  const line = useStatusLine(lines);
+function AnswerTurn({
+  turn,
+  onRetry,
+  copied,
+  copy,
+}: {
+  turn: Turn;
+  onRetry: () => void;
+  copied: string | null;
+  copy: (k: string, t: string) => void;
+}) {
+  const [since] = useState(() => Date.now());
   return (
-    <Message from="assistant" className={styles.assistantRow} role="status" aria-live="polite">
+    <Message from="assistant" className={styles.assistantRow}>
       <div className={styles.avatar}>
-        <DotmSquare5 size={22} dotSize={3} ariaLabel="Thinking" />
+        <DotMark size={20} animate={turn.status === 'running'} />
       </div>
-      <MessageContent className={`${styles.assistantContent} ${styles.thinking}`}>
-        <Loader size={14} className={styles.thinkingSpinner} />
-        <span className={styles.thinkingLine} key={line}>
-          {line}
-        </span>
+      <MessageContent className={styles.assistantContent}>
+        <Progress turn={turn} since={since} />
+        {turn.notes.map((n) => (
+          <p key={n} className={styles.note}>
+            {n}
+          </p>
+        ))}
+        {turn.summary && <p className={styles.summary}>{turn.summary}</p>}
+        {turn.results.length > 0 && (
+          <div className={styles.grid}>
+            {turn.results.map((r) => (
+              <SiteCard key={r.url} site={r} copied={copied} copy={copy} />
+            ))}
+          </div>
+        )}
+        {turn.status === 'error' && (
+          <div className={styles.error} role="alert">
+            <TriangleAlert size={15} />
+            <p>{turn.error}</p>
+            <Button type="button" variant="outline" size="sm" onClick={onRetry}>
+              <RotateCcw /> Try again
+            </Button>
+          </div>
+        )}
       </MessageContent>
     </Message>
   );
 }
 
-function AnswerMessage({
-  message,
-  copied,
-  copy,
-}: {
-  message: Extract<Message, { status: 'done' | 'ranking' }>;
-  copied: string | null;
-  copy: (k: string, t: string) => void;
-}) {
-  const { response, request, id } = message;
-  const n = response.matches.length;
-  const ranking = message.status === 'ranking';
-  return (
-    <AssistantMessage className={styles.answer}>
-      <div className={styles.answerHead}>
-        <p className={styles.answerLine} aria-live="polite">
-          {n === 0
-            ? 'Nothing close. Try fewer words, or the name of the thing itself: loader, hero, pricing, carousel.'
-            : ranking
-              ? `${n} candidates found. ${askEngine === 'gemini' ? 'Gemini' : 'The model'} is picking the best and explaining why`
-              : `${n} ${n === 1 ? 'match' : 'matches'} across every indexed library, ${
-                  response.mode === 'agent' ? 'picked and explained by the model.' : 'ranked by search.'
-                }`}
-          {ranking && <span className={styles.rankingDots} aria-hidden>…</span>}
-        </p>
-        {n > 1 && (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => copy(`all:${id}`, promptForAll(response.matches.slice(0, 4), request))}
-          >
-            {copied === `all:${id}` ? <Check /> : <Copy />}
-            {copied === `all:${id}` ? 'Copied' : 'Copy top 4 as one prompt'}
-          </Button>
-        )}
-      </div>
-      {response.summary && <p className={styles.summary}>{response.summary}</p>}
-      {n > 0 && (
-        <div className={styles.grid}>
-          {response.matches.map((m, i) => (
-            <MatchCard key={m.component.slug} match={m} request={request} rank={i + 1} copied={copied} copy={copy} />
-          ))}
-        </div>
-      )}
-    </AssistantMessage>
-  );
-}
-
 export function AskView() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [turns, setTurns] = useState<Turn[]>([]);
   const [query, setQuery] = useState('');
-  const [source, setSource] = useState<Source>('any');
+  const [filter, setFilter] = useState<Filter>('any');
   const [countIndex, setCountIndex] = useState(1);
   const [copied, copy] = useCopy();
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const libs = libraries as Array<{ indexed: number }>;
-  const libraryCount = libs.filter((l) => l.indexed > 0).length;
-  const busy = messages.some((m) => m.role === 'assistant' && m.status === 'thinking');
-  const landing = messages.length === 0;
+  const aborts = useRef(new Set<AbortController>());
+  const busy = turns.some((t) => t.status === 'running');
+  const landing = turns.length === 0;
 
-  const send = async (raw: string) => {
+  useEffect(() => {
+    const live = aborts.current;
+    return () => live.forEach((a) => a.abort());
+  }, []);
+
+  const run = async (text: string, f: Filter, count: number, replaceId?: string) => {
+    const id = replaceId ?? uid();
+    const fresh: Turn = {
+      id,
+      query: text,
+      filter: f,
+      count,
+      status: 'running',
+      stages: [],
+      notes: [],
+      queries: [],
+      sources: [],
+      results: [],
+      summary: null,
+      error: null,
+      ms: null,
+      via: null,
+    };
+    setTurns((ts) => (replaceId ? ts.map((t) => (t.id === id ? fresh : t)) : [...ts, fresh]));
+    const ac = new AbortController();
+    aborts.current.add(ac);
+    await findSites(
+      { query: text, type: f, count },
+      (e) => setTurns((ts) => ts.map((t) => (t.id === id ? reduce(t, e) : t))),
+      ac.signal
+    );
+    aborts.current.delete(ac);
+    inputRef.current?.focus({ preventScroll: true });
+  };
+
+  const send = (raw: string) => {
     const text = raw.trim();
     if (!text || busy) return;
-    const k = RESULT_COUNTS[countIndex];
-    const scoped = source !== 'any';
-    const answerId = uid();
-    setMessages((m) => [
-      ...m,
-      { id: uid(), role: 'user', text, scope: scoped ? SOURCES.find((s) => s.value === source)!.label : null },
-      { id: answerId, role: 'assistant', status: 'thinking', request: text },
-    ]);
     setQuery('');
-    // A source filter over-fetches, then keeps the first k that install that way.
-    const narrow = (r: AskResponse): AskResponse =>
-      scoped ? { ...r, matches: r.matches.filter((m) => m.component.installKind === source).slice(0, k) } : r;
-    const update = (status: 'ranking' | 'done', response: AskResponse) =>
-      setMessages((m) =>
-        m.map((msg) =>
-          msg.id === answerId ? { id: answerId, role: 'assistant', status, request: text, response: narrow(response) } : msg
-        )
-      );
-    try {
-      update('done', await ask(text, scoped ? k * 3 : k, { onCandidates: (partial) => update('ranking', partial) }));
-    } catch {
-      update('done', { query: text, mode: 'search', summary: null, matches: [] });
-    } finally {
-      inputRef.current?.focus();
-    }
+    void run(text, filter, COUNTS[countIndex]);
   };
 
   const reset = () => {
-    setMessages([]);
+    aborts.current.forEach((a) => a.abort());
+    aborts.current.clear();
+    setTurns([]);
     setQuery('');
     inputRef.current?.focus();
   };
@@ -333,45 +339,40 @@ export function AskView() {
   return (
     <div className={styles.root} data-state={landing ? 'landing' : 'chat'}>
       {landing ? (
-        <LandingHero onStart={() => inputRef.current?.focus()} />
+        <LandingHero onStart={() => inputRef.current?.focus()} onAsk={(text) => send(text)} />
       ) : (
         <Conversation className={styles.thread}>
           <ConversationContent className={styles.threadInner}>
-            {messages.map((m) =>
-              m.role === 'user' ? (
-                <Message key={m.id} from="user" className={styles.userRow}>
-                  <MessageContent className={styles.bubble}>{m.text}</MessageContent>
-                  {m.scope && <span className={styles.bubbleScope}>{m.scope} only</span>}
+            {turns.map((t) => (
+              <div key={t.id} className={styles.turn}>
+                <Message from="user" className={styles.userRow}>
+                  <MessageContent className={styles.bubble}>{t.query}</MessageContent>
+                  {t.filter !== 'any' && (
+                    <span className={styles.bubbleScope}>{FILTERS.find((f) => f.value === t.filter)?.label} only</span>
+                  )}
                 </Message>
-              ) : m.status === 'thinking' ? (
-                <ThinkingMessage key={m.id} libraryCount={libraryCount} />
-              ) : (
-                <AnswerMessage key={m.id} message={m} copied={copied} copy={copy} />
-              )
-            )}
+                <AnswerTurn turn={t} onRetry={() => void run(t.query, t.filter, t.count, t.id)} copied={copied} copy={copy} />
+              </div>
+            ))}
           </ConversationContent>
           <ConversationScrollButton className={styles.scrollButton} aria-label="Scroll to the latest" />
         </Conversation>
       )}
 
       {/* One composer for both states: it glides from the hero to the dock instead of remounting. */}
-      <motion.div
-        layout="position"
-        transition={{ type: 'spring', stiffness: 320, damping: 34 }}
-        className={styles.dock}
-      >
+      <motion.div layout="position" transition={{ type: 'spring', stiffness: 320, damping: 34 }} className={styles.dock}>
         <PromptInput
           inputRef={inputRef}
           className={styles.prompt}
           value={query}
           onChange={setQuery}
-          onSubmit={(text) => void send(text)}
-          placeholder={landing ? 'Describe a component you need…' : 'Ask for another component…'}
+          onSubmit={(text) => send(text)}
+          placeholder={landing ? 'What are you designing?' : 'Ask about something else…'}
           inputLabel="What do you need?"
-          models={SOURCES}
-          model={source}
-          onModelChange={(v) => setSource(v as Source)}
-          efforts={RESULT_LABELS}
+          models={FILTERS}
+          model={filter}
+          onModelChange={(v) => setFilter(v as Filter)}
+          efforts={COUNT_LABELS}
           effortIndex={countIndex}
           onEffortChange={setCountIndex}
           allowAttachments={false}
@@ -385,28 +386,24 @@ export function AskView() {
           <span className={styles.hints}>
             <Kbd>↵</Kbd> send <Kbd>⇧ ↵</Kbd> new line
           </span>
-          <span className={styles.engine}>{ENGINE_LINE[askEngine]}</span>
-          {!landing && (
-            <Button type="button" variant="ghost" size="xs" onClick={reset} className={styles.reset}>
-              <RotateCcw /> New thread
-            </Button>
-          )}
+          <span className={styles.engine}>Searched live across the web and {sites.length} hand-picked sites</span>
+          <Button type="button" variant="ghost" size="xs" onClick={reset} className={styles.reset}>
+            <RotateCcw /> New thread
+          </Button>
         </div>
       </motion.div>
 
       {landing && (
-        <>
-          <LandingSections
-            onAsk={(text) => {
-              window.scrollTo({ top: 0 });
-              void send(text);
-            }}
-            onStart={() => {
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-              inputRef.current?.focus({ preventScroll: true });
-            }}
-          />
-        </>
+        <LandingSections
+          onAsk={(text) => {
+            window.scrollTo({ top: 0 });
+            send(text);
+          }}
+          onStart={() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            inputRef.current?.focus({ preventScroll: true });
+          }}
+        />
       )}
     </div>
   );

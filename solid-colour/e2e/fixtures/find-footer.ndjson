@@ -1,0 +1,8 @@
+{"type":"stage","id":"search","label":"Searching the web for reviews and recommendations"}
+{"type":"sources","queries":["best footer design inspiration"],"items":[{"title":"footer.design","url":"https://www.footer.design/browse"},{"title":"reddit.com","url":"https://www.reddit.com/r/web_design/comments/lhzo8x/i_designed_a_ton_of_footers_so_you_dont_have_to/"}]}
+{"type":"stage","id":"judge","label":"Weighing 103 Garden sites against what the web says"}
+{"type":"stage","id":"verify","label":"Opening 2 sites to check they are live"}
+{"type":"result","site":{"rank":1,"name":"Footer Design","url":"https://www.footer.design/browse","domain":"footer.design","origin":"garden","type":"inspiration","paid":false,"why":"A gallery of real-world footers filtered by style, typography and grid.","lookFor":"Browse by style: Typographic, Dark, Grid","evidence":[{"title":"footer.design","url":"https://www.footer.design/browse"}],"title":"Footer Design","description":null,"image":null}}
+{"type":"result","site":{"rank":2,"name":"Landingfolio","url":"https://www.landingfolio.com/components/footer","domain":"landingfolio.com","origin":"web","type":"inspiration","paid":false,"why":"Production footers from SaaS landing pages.","lookFor":"Footer component gallery","evidence":[],"title":"Landingfolio","description":null,"image":null}}
+{"type":"summary","text":"Start with Footer Design for structure, then take markup from a component library."}
+{"type":"done","ms":1200,"checked":2}

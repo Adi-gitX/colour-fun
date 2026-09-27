@@ -1,0 +1,666 @@
+[
+  {
+    "id": "shadcn",
+    "name": "shadcn/ui",
+    "url": "https://ui.shadcn.com",
+    "type": "components",
+    "github": "https://github.com/shadcn-ui/ui"
+  },
+  {
+    "id": "kokonutui",
+    "name": "KokonutUI",
+    "url": "https://kokonutui.com",
+    "type": "components",
+    "github": "https://github.com/kokonut-labs/kokonutui"
+  },
+  {
+    "id": "magicui",
+    "name": "Magic UI",
+    "url": "https://magicui.design",
+    "type": "components",
+    "github": "https://github.com/magicuidesign/magicui"
+  },
+  {
+    "id": "aceternity",
+    "name": "Aceternity UI",
+    "url": "https://ui.aceternity.com",
+    "type": "components"
+  },
+  {
+    "id": "animate-ui",
+    "name": "Animate UI",
+    "url": "https://animate-ui.com",
+    "type": "components",
+    "github": "https://github.com/imskyleen/animate-ui"
+  },
+  {
+    "id": "kibo-ui",
+    "name": "Kibo UI",
+    "url": "https://www.kibo-ui.com",
+    "type": "components",
+    "github": "https://github.com/haydenbleasel/kibo"
+  },
+  {
+    "id": "react-bits",
+    "name": "React Bits",
+    "url": "https://reactbits.dev",
+    "type": "components",
+    "github": "https://github.com/DavidHDev/react-bits"
+  },
+  {
+    "id": "eldoraui",
+    "name": "Eldora UI",
+    "url": "https://eldoraui.site",
+    "type": "components"
+  },
+  {
+    "id": "smoothui",
+    "name": "SmoothUI",
+    "url": "https://smoothui.dev",
+    "type": "components"
+  },
+  {
+    "id": "fancy-components",
+    "name": "Fancy Components",
+    "url": "https://fancycomponents.dev",
+    "type": "components",
+    "github": "https://github.com/danielpetho/fancy"
+  },
+  {
+    "id": "spectrumui",
+    "name": "Spectrum UI",
+    "url": "https://ui.spectrumhq.in",
+    "type": "components"
+  },
+  {
+    "id": "basecn",
+    "name": "basecn",
+    "url": "https://basecn.dev",
+    "type": "components"
+  },
+  {
+    "id": "beautifului",
+    "name": "Beautiful UI",
+    "url": "https://beautifului.dev",
+    "type": "components"
+  },
+  {
+    "id": "tailark",
+    "name": "Tailark",
+    "url": "https://tailark.com",
+    "type": "components"
+  },
+  {
+    "id": "ui-layouts",
+    "name": "UI Layouts",
+    "url": "https://ui-layouts.com",
+    "type": "components"
+  },
+  {
+    "id": "lightswind",
+    "name": "Lightswind",
+    "url": "https://lightswind.com",
+    "type": "components"
+  },
+  {
+    "id": "skiper-ui",
+    "name": "Skiper UI",
+    "url": "https://skiper-ui.com",
+    "type": "components"
+  },
+  {
+    "id": "neobrutalism",
+    "name": "Neobrutalism Components",
+    "url": "https://www.neobrutalism.dev",
+    "type": "components",
+    "github": "https://github.com/ekmas/neobrutalism-components"
+  },
+  {
+    "id": "cult-ui",
+    "name": "Cult UI",
+    "url": "https://cult-ui.com",
+    "type": "components",
+    "github": "https://github.com/nolly-studio/cult-ui"
+  },
+  {
+    "id": "motion-primitives",
+    "name": "Motion Primitives",
+    "url": "https://motion-primitives.com",
+    "type": "components",
+    "github": "https://github.com/ibelick/motion-primitives"
+  },
+  {
+    "id": "originui",
+    "name": "Origin UI",
+    "url": "https://coss.com/origin",
+    "type": "components",
+    "github": "https://github.com/cosscom/coss"
+  },
+  {
+    "id": "mvpblocks",
+    "name": "Mvpblocks",
+    "url": "https://blocks.mvp-subha.me",
+    "type": "components",
+    "github": "https://github.com/subhadeeproy3902/mvpblocks"
+  },
+  {
+    "id": "syntaxui",
+    "name": "SyntaxUI",
+    "url": "https://syntaxui.com",
+    "type": "components",
+    "github": "https://github.com/SyntaxUI/syntaxui"
+  },
+  {
+    "id": "twentyfirst",
+    "name": "21st.dev",
+    "url": "https://21st.dev",
+    "type": "components",
+    "github": "https://github.com/serafimcloud/21st"
+  },
+  {
+    "id": "reui",
+    "name": "ReUI",
+    "url": "https://reui.io",
+    "type": "components",
+    "paid": true
+  },
+  {
+    "id": "threeui",
+    "name": "ThreeUI",
+    "url": "https://github.com/MengTo/threeui",
+    "type": "components",
+    "github": "https://github.com/MengTo/threeui"
+  },
+  {
+    "id": "gsap",
+    "name": "GSAP",
+    "url": "https://gsap.com",
+    "type": "library"
+  },
+  {
+    "id": "animejs",
+    "name": "anime.js",
+    "url": "https://animejs.com",
+    "type": "library"
+  },
+  {
+    "id": "lenis",
+    "name": "Lenis",
+    "url": "https://lenis.darkroom.engineering",
+    "type": "library"
+  },
+  {
+    "id": "paper-shaders",
+    "name": "Paper Shaders",
+    "url": "https://shaders.paper.design",
+    "type": "library",
+    "github": "https://github.com/paper-design/shaders"
+  },
+  {
+    "id": "headlessui",
+    "name": "Headless UI",
+    "url": "https://headlessui.com",
+    "type": "library"
+  },
+  {
+    "id": "heroui",
+    "name": "HeroUI (formerly NextUI)",
+    "url": "https://www.heroui.com",
+    "type": "library",
+    "github": "https://github.com/heroui-inc/heroui"
+  },
+  {
+    "id": "framer-motion",
+    "name": "Motion (Framer Motion)",
+    "url": "https://motion.dev",
+    "type": "library"
+  },
+  {
+    "id": "hyperui",
+    "name": "HyperUI",
+    "url": "https://www.hyperui.dev",
+    "type": "components",
+    "github": "https://github.com/markmead/hyperui"
+  },
+  {
+    "id": "flowbite",
+    "name": "Flowbite",
+    "url": "https://flowbite.com",
+    "type": "components",
+    "github": "https://github.com/themesberg/flowbite"
+  },
+  {
+    "id": "preline",
+    "name": "Preline UI",
+    "url": "https://preline.co",
+    "type": "components"
+  },
+  {
+    "id": "tailgrids",
+    "name": "TailGrids",
+    "url": "https://tailgrids.com",
+    "type": "components"
+  },
+  {
+    "id": "flyonui",
+    "name": "FlyonUI",
+    "url": "https://flyonui.com",
+    "type": "components",
+    "github": "https://github.com/themeselection/flyonui"
+  },
+  {
+    "id": "daisyui",
+    "name": "daisyUI",
+    "url": "https://daisyui.com",
+    "type": "components",
+    "github": "https://github.com/saadeghi/daisyui"
+  },
+  {
+    "id": "kimia-ui",
+    "name": "Kimia UI",
+    "url": "https://kimia-ui.vercel.app",
+    "type": "components"
+  },
+  {
+    "id": "toolfolio",
+    "name": "Toolfolio",
+    "url": "https://toolfolio.io",
+    "type": "inspiration"
+  },
+  {
+    "id": "unsection",
+    "name": "Unsection",
+    "url": "https://www.unsection.com",
+    "type": "inspiration"
+  },
+  {
+    "id": "designvault",
+    "name": "DesignVault",
+    "url": "https://designvault.io",
+    "type": "inspiration"
+  },
+  {
+    "id": "8bitcn",
+    "name": "8bitcn/ui",
+    "url": "https://www.8bitcn.com",
+    "type": "components",
+    "github": "https://github.com/TheOrcDev/8bitcn-ui"
+  },
+  {
+    "id": "coss-ui",
+    "name": "coss ui",
+    "url": "https://coss.com/ui",
+    "type": "components",
+    "github": "https://github.com/cosscom/coss"
+  },
+  {
+    "id": "velora-ui",
+    "name": "Velora UI",
+    "url": "https://velora.colorlib.com",
+    "type": "components",
+    "github": "https://github.com/ColorlibHQ/velora-ui"
+  },
+  {
+    "id": "watermelon-ui",
+    "name": "Watermelon UI",
+    "url": "https://ui.watermelon.sh",
+    "type": "components",
+    "github": "https://github.com/WatermelonCorp/watermellon-registry"
+  },
+  {
+    "id": "amicro",
+    "name": "Amicro",
+    "url": "https://amicro.vercel.app",
+    "type": "components",
+    "github": "https://github.com/Subhan-code/Amicro--Micro-transitions-"
+  },
+  {
+    "id": "sera-ui",
+    "name": "Sera UI",
+    "url": "https://seraui.com",
+    "type": "components",
+    "github": "https://github.com/seraui/seraui"
+  },
+  {
+    "id": "flowui",
+    "name": "FlowUI",
+    "url": "https://flowui-registry.vercel.app",
+    "type": "components",
+    "github": "https://github.com/KushalXCoder/flowui"
+  },
+  {
+    "id": "ninna-ui",
+    "name": "Ninna UI",
+    "url": "https://www.ninna-ui.dev",
+    "type": "library",
+    "github": "https://github.com/ninna-ui/ninna-ui"
+  },
+  {
+    "id": "bui",
+    "name": "BUI",
+    "url": "https://bui.dd360.mx",
+    "type": "library",
+    "github": "https://github.com/dd3tech/bui"
+  },
+  {
+    "id": "meraki-ui",
+    "name": "Meraki UI",
+    "url": "https://merakiui.com",
+    "type": "components",
+    "github": "https://github.com/merakiuilabs/merakiui"
+  },
+  {
+    "id": "opensource-ui",
+    "name": "Opensource UI",
+    "url": "https://opensourceui.in",
+    "type": "components",
+    "github": "https://github.com/bidyut10/opensourceui"
+  },
+  {
+    "id": "easy-ui",
+    "name": "Easy UI",
+    "url": "https://www.easyui.pro",
+    "type": "components",
+    "github": "https://github.com/DarkInventor/easy-ui"
+  },
+  {
+    "id": "reverse-ui",
+    "name": "Reverse UI",
+    "url": "https://reverseui.com",
+    "type": "components",
+    "paid": true
+  },
+  {
+    "id": "chanhdai",
+    "name": "Chánh Đại",
+    "url": "https://chanhdai.com",
+    "type": "components",
+    "github": "https://github.com/ncdai/chanhdai.com"
+  },
+  {
+    "id": "torph-lochie",
+    "name": "Torph",
+    "url": "https://torph.lochie.me",
+    "type": "components",
+    "github": "https://github.com/lochie/torph"
+  },
+  {
+    "id": "fluidfunctionalism",
+    "name": "Fluidfunctionalism",
+    "url": "https://fluidfunctionalism.com",
+    "type": "components"
+  },
+  {
+    "id": "ui-unlumen",
+    "name": "unlumen UI",
+    "url": "https://ui.unlumen.com",
+    "type": "components",
+    "github": "https://github.com/wicki-leonard-emf/unlumen-ui-pv"
+  },
+  {
+    "id": "animmasterlib",
+    "name": "Animmaster Lib",
+    "url": "https://animmasterlib.dev",
+    "type": "components"
+  },
+  {
+    "id": "originkit",
+    "name": "Originkit",
+    "url": "https://originkit.dev",
+    "type": "components"
+  },
+  {
+    "id": "transitions",
+    "name": "Transitions",
+    "url": "https://transitions.dev",
+    "type": "components"
+  },
+  {
+    "id": "websiteprompts-ai",
+    "name": "Website Prompts",
+    "url": "https://websiteprompts.ai",
+    "type": "inspiration"
+  },
+  {
+    "id": "3dicons-co",
+    "name": "3dicons",
+    "url": "https://3dicons.co",
+    "type": "library"
+  },
+  {
+    "id": "vengeanceui",
+    "name": "Vengeance UI",
+    "url": "https://vengeanceui.com",
+    "type": "components",
+    "github": "https://github.com/Ashutoshx7/VengenceUI"
+  },
+  {
+    "id": "60fps",
+    "name": "60fps",
+    "url": "https://60fps.design",
+    "type": "inspiration"
+  },
+  {
+    "id": "glass3d",
+    "name": "Glass3D",
+    "url": "https://glass3d.dev",
+    "type": "components"
+  },
+  {
+    "id": "aura",
+    "name": "Aura",
+    "url": "https://aura.build",
+    "type": "components"
+  },
+  {
+    "id": "cta",
+    "name": "CTA.gallery",
+    "url": "https://cta.gallery",
+    "type": "inspiration"
+  },
+  {
+    "id": "asccli",
+    "name": "asc",
+    "url": "https://asccli.sh",
+    "type": "components",
+    "github": "https://github.com/rorkai/App-Store-Connect-CLI"
+  },
+  {
+    "id": "balsamiq",
+    "name": "Balsamiq",
+    "url": "https://balsamiq.com",
+    "type": "inspiration"
+  },
+  {
+    "id": "motionsites",
+    "name": "Motion Sites",
+    "url": "https://motionsites.dev",
+    "type": "inspiration",
+    "github": "https://github.com/kvalen-code/Motionsites-Dev"
+  },
+  {
+    "id": "bentogrids",
+    "name": "Bento Grids",
+    "url": "https://bentogrids.com",
+    "type": "inspiration",
+    "github": "https://github.com/features/copilot"
+  },
+  {
+    "id": "saaspo",
+    "name": "Saaspo",
+    "url": "https://saaspo.com",
+    "type": "inspiration"
+  },
+  {
+    "id": "supahero",
+    "name": "Supahero",
+    "url": "https://supahero.io",
+    "type": "inspiration"
+  },
+  {
+    "id": "dark",
+    "name": "Dark Design",
+    "url": "https://dark.design",
+    "type": "inspiration"
+  },
+  {
+    "id": "toggle",
+    "name": "Toggle Supply",
+    "url": "https://toggle.supply",
+    "type": "inspiration",
+    "github": "https://github.com/jaretpeerson/toggleSupply"
+  },
+  {
+    "id": "v0",
+    "name": "v0 by Vercel",
+    "url": "https://v0.app",
+    "type": "inspiration"
+  },
+  {
+    "id": "templifica",
+    "name": "Templifica",
+    "url": "https://templifica.com",
+    "type": "inspiration"
+  },
+  {
+    "id": "refero",
+    "name": "Refero",
+    "url": "https://refero.design",
+    "type": "inspiration"
+  },
+  {
+    "id": "footer",
+    "name": "Footer Design",
+    "url": "https://footer.design",
+    "type": "inspiration"
+  },
+  {
+    "id": "nav",
+    "name": "Nav.Supply",
+    "url": "https://nav.supply",
+    "type": "inspiration"
+  },
+  {
+    "id": "selected",
+    "name": "Selected",
+    "url": "https://selected.site",
+    "type": "inspiration"
+  },
+  {
+    "id": "designcodeui",
+    "name": "DesignCode UI",
+    "url": "https://designcodeui.com",
+    "type": "components"
+  },
+  {
+    "id": "navbar",
+    "name": "Navbar Gallery",
+    "url": "https://navbar.gallery",
+    "type": "inspiration",
+    "github": "https://github.com/relumetech/powerups"
+  },
+  {
+    "id": "supaframe",
+    "name": "Supaframe",
+    "url": "https://supaframe.io",
+    "type": "components"
+  },
+  {
+    "id": "uxsnaps",
+    "name": "UX Snaps",
+    "url": "https://uxsnaps.com",
+    "type": "inspiration"
+  },
+  {
+    "id": "forthemakers",
+    "name": "For The Makers",
+    "url": "https://forthemakers.design",
+    "type": "inspiration"
+  },
+  {
+    "id": "layers",
+    "name": "Layers",
+    "url": "https://layers.to",
+    "type": "inspiration"
+  },
+  {
+    "id": "shaders",
+    "name": "Shaders",
+    "url": "https://shaders.com",
+    "type": "components"
+  },
+  {
+    "id": "devouringdetails",
+    "name": "Devouring Details",
+    "url": "https://devouringdetails.com",
+    "type": "inspiration",
+    "github": "https://github.com/pacocoursey/cmdk"
+  },
+  {
+    "id": "interfacecraft",
+    "name": "Interfacecraft",
+    "url": "https://interfacecraft.dev",
+    "type": "components"
+  },
+  {
+    "id": "contentcore",
+    "name": "ContentCore",
+    "url": "https://contentcore.xyz",
+    "type": "inspiration"
+  },
+  {
+    "id": "byq",
+    "name": "BYQ Supply",
+    "url": "https://byq.supply",
+    "type": "inspiration"
+  },
+  {
+    "id": "flicker-laurie",
+    "name": "Flicker",
+    "url": "https://flicker.laurie.fyi",
+    "type": "inspiration"
+  },
+  {
+    "id": "before-click",
+    "name": "before.click",
+    "url": "https://before.click",
+    "type": "inspiration"
+  },
+  {
+    "id": "uilora",
+    "name": "Uilora",
+    "url": "https://uilora.com",
+    "type": "components"
+  },
+  {
+    "id": "iconsax",
+    "name": "Iconsax",
+    "url": "https://iconsax.io",
+    "type": "library",
+    "github": "https://github.com/lusaxweb/iconsax"
+  },
+  {
+    "id": "primeui",
+    "name": "Prime UI",
+    "url": "https://primeui.com",
+    "type": "library"
+  },
+  {
+    "id": "miromiro",
+    "name": "Miromiro",
+    "url": "https://miromiro.com",
+    "type": "inspiration"
+  },
+  {
+    "id": "shipstudio",
+    "name": "ShipStudio",
+    "url": "https://shipstudio.io",
+    "type": "inspiration"
+  },
+  {
+    "id": "dotmatrix-zzzzshawn-cloud",
+    "name": "Dot Matrix",
+    "url": "https://dotmatrix.zzzzshawn.cloud",
+    "type": "components"
+  }
+]

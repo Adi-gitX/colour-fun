@@ -108,7 +108,7 @@
    rounded border and overlapped the next group, and it trapped the page scroll besides. */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 12px;
 }
 
@@ -143,37 +143,21 @@
 }
 
 .status {
-  composes: eyebrow from global;
-  font-size: 10px;
+  height: 20px;
+  padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
   flex-shrink: 0;
-}
-.status[data-variant='default'] {
-  color: var(--accent-on-primary);
-}
-
-.meta {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px 16px;
-  margin: 0;
-}
-.meta dt {
-  font-family: var(--font-sans);
-  font-size: 11px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-card);
+  font-size: 10.5px;
   font-weight: 500;
-  letter-spacing: var(--tracking-eyebrow);
-  text-transform: uppercase;
-  color: var(--text-tertiary);
-  font-size: 10px;
-  margin: 0 0 2px;
-}
-.meta dd {
-  margin: 0;
-  font-size: 12.5px;
   color: var(--text-secondary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+}
+.domain {
+  margin: -8px 0 0;
+  font-size: 13px;
+  color: var(--text-tertiary);
 }
 
 .actions {
@@ -194,13 +178,6 @@
 .visit:hover {
   color: var(--text-primary);
 }
-.askBtn {
-  margin-left: auto;
-  font-family: var(--font-sans);
-  font-weight: 400;
-  color: var(--text-secondary);
-}
-
 @media (max-width: 768px) {
   .page {
     padding: 40px 16px 32px;

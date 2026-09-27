@@ -46,7 +46,7 @@ const SHORTCUT_GROUPS: Group[] = [
 const NAV_KEYS: Record<string, Section> = {
   h: 'home',
   l: 'libraries',
-  w: 'solid-colors',
+  w: 'backgrounds',
   g: 'gradients',
   b: 'backgrounds',
 };

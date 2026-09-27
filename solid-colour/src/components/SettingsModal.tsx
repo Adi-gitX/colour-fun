@@ -123,11 +123,11 @@ export const SettingsModal = () => {
             <span className={styles.aboutName}>Garden</span>
             <span className={styles.aboutVersion}>v{APP_VERSION}</span>
             <p>
-              Describe the component, get the install command. Every result installs from its own
-              library and keeps its own licence.
+              Stunning, not slop. Garden finds the design worth using, judged from live web search
+              and real reviews, and checks every link before you see it.
             </p>
             <Button asChild variant="link" size="xs" className={styles.aboutLink}>
-              <a href="https://github.com" target="_blank" rel="noreferrer noopener">
+              <a href="https://github.com/Adi-gitX/colour-fun" target="_blank" rel="noreferrer noopener">
                 <Github /> Source <ArrowUpRight />
               </a>
             </Button>

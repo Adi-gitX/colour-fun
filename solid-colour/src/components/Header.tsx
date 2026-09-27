@@ -25,14 +25,14 @@ interface NavLink {
 
 const NAV: NavLink[] = [
   { id: 'home', label: 'Ask', matches: ['home'] },
-  { id: 'libraries', label: 'Libraries', matches: ['libraries'] },
-  { id: 'solid-colors', label: 'Wallpapers', matches: WALLPAPER_SECTIONS },
+  { id: 'libraries', label: 'Sites', matches: ['libraries'] },
+  { id: 'backgrounds', label: 'Wallpapers', matches: WALLPAPER_SECTIONS },
 ];
 
 const WALLPAPER_LINKS: Array<{ id: Section; label: string; count: number }> = [
-  { id: 'solid-colors', label: 'Solid', count: colors.length },
-  { id: 'gradients', label: 'Gradients', count: gradients.length },
   { id: 'backgrounds', label: 'Images', count: imageUrls.length },
+  { id: 'gradients', label: 'Gradients', count: gradients.length },
+  { id: 'solid-colors', label: 'Solid colours', count: colors.length },
 ];
 
 function IconAction({
@@ -167,7 +167,7 @@ export const Header = () => {
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.16 }}
             >
-              {NAV.filter((l) => l.id !== 'solid-colors').map((link) => (
+              {NAV.filter((l) => l.id !== 'backgrounds').map((link) => (
                 <button
                   key={link.id}
                   type="button"

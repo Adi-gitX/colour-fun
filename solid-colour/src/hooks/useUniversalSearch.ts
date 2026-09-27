@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import Fuse, { type IFuseOptions } from 'fuse.js';
-import { loadIndex } from '../lib/ask';
-import type { IndexedComponent } from '../lib/ask';
+import sites from '../data/sites.json';
+import type { Site } from '../lib/find/types';
 import { colors as colorDatabase } from '../data/colors';
 import type { Section } from '../store/appStore';
 
-export type SearchKind = 'component' | 'color';
+export type SearchKind = 'site' | 'color';
 
 export interface SearchItem {
   id: string;
@@ -30,19 +30,26 @@ export interface SearchItem {
  * Flatten every data source into a single, searchable, normalized list.
  * This is what the command palette ranks against.
  */
-function buildCorpus(components: IndexedComponent[]): SearchItem[] {
+const SITE_KIND: Record<Site['type'], string> = {
+  components: 'Component library',
+  library: 'Animation & UI library',
+  inspiration: 'Inspiration',
+};
+
+function buildCorpus(): SearchItem[] {
   const items: SearchItem[] = [];
 
-  for (const c of components) {
+  for (const site of sites as Site[]) {
+    const host = site.url.replace(/^https?:\/\/(www\.)?/, '');
     items.push({
-      id: `component:${c.slug}`,
-      kind: 'component',
-      title: c.title,
-      subtitle: `${c.category} · ${c.library}`,
-      section: 'home',
-      haystack: `${c.title} ${c.category} ${c.library} ${(c.tags ?? []).join(' ')}`,
-      url: c.sourceUrl,
-      initials: c.library.slice(0, 2).toUpperCase(),
+      id: `site:${site.id}`,
+      kind: 'site',
+      title: site.name,
+      subtitle: `${SITE_KIND[site.type]} · ${host}`,
+      section: 'libraries',
+      haystack: `${site.name} ${host} ${SITE_KIND[site.type]}`,
+      url: site.url,
+      initials: site.name.slice(0, 2).toUpperCase(),
     });
   }
 
@@ -72,32 +79,12 @@ const FUSE_OPTIONS: IFuseOptions<SearchItem> = {
   shouldSort: true,
 };
 
-const KIND_ORDER: SearchKind[] = ['component', 'color'];
-
-const NO_COMPONENTS: IndexedComponent[] = [];
-let loadedComponents: IndexedComponent[] | null = null;
-
-/** The component index arrives over the network once; colours are searchable immediately. */
-function useComponents(): IndexedComponent[] {
-  const [components, setComponents] = useState<IndexedComponent[] | null>(loadedComponents);
-  useEffect(() => {
-    if (loadedComponents) return;
-    let live = true;
-    loadIndex()
-      .then((index) => {
-        loadedComponents = index.components;
-        if (live) setComponents(index.components);
-      })
-      .catch(() => {});
-    return () => {
-      live = false;
-    };
-  }, []);
-  return components ?? NO_COMPONENTS;
-}
+const KIND_ORDER: SearchKind[] = ['site', 'color'];
+const CORPUS = buildCorpus();
+const FUSE = new Fuse(CORPUS, FUSE_OPTIONS);
 
 export const KIND_LABELS: Record<SearchKind, string> = {
-  component: 'Components',
+  site: 'Sites',
   color: 'Colors',
 };
 
@@ -108,22 +95,18 @@ export interface SearchGroup {
 }
 
 /**
- * Universal search across every indexed data source.
+ * Universal search across Garden's sites and the colour library.
  *
  * - Empty query → returns the first N items per category, in a stable order.
  *   Used to power the palette's idle "browse" state.
  * - Non-empty query → fuzzy-ranked across the whole corpus.
  *
- * The Fuse instance is built once via `useMemo`, so re-renders are cheap.
+ * The corpus and its Fuse instance are built once at module load.
  */
 export function useUniversalSearch(
   query: string,
   options?: { limitPerCategory?: number; limit?: number }
 ): { groups: SearchGroup[]; total: number } {
-  const components = useComponents();
-  const corpus = useMemo(() => buildCorpus(components), [components]);
-  const fuse = useMemo(() => new Fuse(corpus, FUSE_OPTIONS), [corpus]);
-
   return useMemo(() => {
     const trimmed = query.trim();
     const perCat = options?.limitPerCategory ?? 6;
@@ -131,9 +114,9 @@ export function useUniversalSearch(
 
     let pool: SearchItem[];
     if (trimmed === '') {
-      pool = corpus;
+      pool = CORPUS;
     } else {
-      pool = fuse.search(trimmed, { limit: total * 3 }).map((r) => r.item);
+      pool = FUSE.search(trimmed, { limit: total * 3 }).map((r) => r.item);
     }
 
     const byKind: Map<SearchKind, SearchItem[]> = new Map();
@@ -156,5 +139,5 @@ export function useUniversalSearch(
     }
 
     return { groups, total: count };
-  }, [corpus, fuse, query, options?.limitPerCategory, options?.limit]);
+  }, [query, options?.limitPerCategory, options?.limit]);
 }

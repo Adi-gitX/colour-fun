@@ -26,6 +26,7 @@
 
 .inner {
   position: relative;
+  z-index: 46; /* above the menu scrim, so the bar stays sharp while the sheet is open */
   max-width: 760px;
   height: 52px;
   margin: 0 auto;
