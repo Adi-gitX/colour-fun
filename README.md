@@ -75,11 +75,11 @@ cp .env.example .env       # then paste a Gemini key
 npm run embed              # embeds the catalogue (resumable, cached by content hash)
 ```
 
-| Variable                | Purpose                                                                 |
-| ----------------------- | ----------------------------------------------------------------------- |
-| `GEMINI_API_KEY`        | Build-time only. Used by `npm run embed`; never shipped to the browser. |
-| `VITE_GEMINI_API_KEY`   | Development only. `VITE_`-prefixed values are compiled into the bundle. |
-| `VITE_ATLAS_API_URL`    | Production. Points the app at the registry API, which holds the key.    |
+| Variable              | Purpose                                                                 |
+| --------------------- | ----------------------------------------------------------------------- |
+| `GEMINI_API_KEY`      | Build-time only. Used by `npm run embed`; never shipped to the browser. |
+| `VITE_GEMINI_API_KEY` | Development only. `VITE_`-prefixed values are compiled into the bundle. |
+| `VITE_ATLAS_API_URL`  | Production. Points the app at the registry API, which holds the key.    |
 
 > [!IMPORTANT]
 > `VITE_` variables are public. For anything deployed, leave `VITE_GEMINI_API_KEY` empty and route through the API instead.
@@ -88,11 +88,11 @@ npm run embed              # embeds the catalogue (resumable, cached by content 
 
 ## Sections
 
-| Section        | What it does                                                                                     |
-| -------------- | ------------------------------------------------------------------------------------------------ |
+| Section        | What it does                                                                                           |
+| -------------- | ------------------------------------------------------------------------------------------------------ |
 | **Ask**        | The finder. Plain-words request in, ranked components out, each with install, agent prompt and source. |
-| **Libraries**  | All 104 known libraries, 52 of them indexed, with licence, author and a direct link.             |
-| **Wallpapers** | 238 solid colours, 90 gradients and 84 images, exportable to 8K in PNG, JPEG or WebP.            |
+| **Libraries**  | All 104 known libraries, 52 of them indexed, with licence, author and a direct link.                   |
+| **Wallpapers** | 238 solid colours, 90 gradients and 84 images, exportable to 8K in PNG, JPEG or WebP.                  |
 
 ⌘K opens universal search from anywhere; `?` shows the shortcut sheet.
 
@@ -119,14 +119,14 @@ npm run embed   # re-embed anything whose text changed
 
 ## Tech stack
 
-| Layer      | Choice                                                          |
-| ---------- | --------------------------------------------------------------- |
-| Framework  | React 19 · TypeScript 5.9 · Vite 7                              |
-| Styling    | Tailwind CSS 4 · CSS Modules · shadcn/ui primitives on Radix    |
-| State      | Zustand 5, persisted to `localStorage`                          |
-| Motion     | Motion 13 / Framer Motion 12                                    |
-| Offline    | `vite-plugin-pwa` (Workbox `generateSW`)                        |
-| Testing    | Vitest 4 · Playwright · ESLint 9 · Prettier 3                   |
+| Layer     | Choice                                                       |
+| --------- | ------------------------------------------------------------ |
+| Framework | React 19 · TypeScript 5.9 · Vite 7                           |
+| Styling   | Tailwind CSS 4 · CSS Modules · shadcn/ui primitives on Radix |
+| State     | Zustand 5, persisted to `localStorage`                       |
+| Motion    | Motion 13 / Framer Motion 12                                 |
+| Offline   | `vite-plugin-pwa` (Workbox `generateSW`)                     |
+| Testing   | Vitest 4 · Playwright · ESLint 9 · Prettier 3                |
 
 ---
 
@@ -174,17 +174,17 @@ npm run embed   # re-embed anything whose text changed
 
 Run from `solid-colour/`.
 
-| Script                 | What it does                                                    |
-| ---------------------- | --------------------------------------------------------------- |
-| `npm run dev`          | Vite dev server with HMR                                        |
-| `npm run build`        | TypeScript project build + production Vite build                |
-| `npm run preview`      | Serve the production build locally                              |
-| `npm test`             | Vitest                                                          |
-| `npm run test:ci`      | Vitest with v8 coverage + JUnit                                 |
-| `npm run test:e2e`     | Playwright                                                      |
-| `npm run lint`         | ESLint, `--max-warnings 0`                                      |
-| `npm run sync`         | Rebuild the index from the registry, then embed                 |
-| `npm run embed`        | Embed the catalogue (resumable)                                 |
+| Script             | What it does                                     |
+| ------------------ | ------------------------------------------------ |
+| `npm run dev`      | Vite dev server with HMR                         |
+| `npm run build`    | TypeScript project build + production Vite build |
+| `npm run preview`  | Serve the production build locally               |
+| `npm test`         | Vitest                                           |
+| `npm run test:ci`  | Vitest with v8 coverage + JUnit                  |
+| `npm run test:e2e` | Playwright                                       |
+| `npm run lint`     | ESLint, `--max-warnings 0`                       |
+| `npm run sync`     | Rebuild the index from the registry, then embed  |
+| `npm run embed`    | Embed the catalogue (resumable)                  |
 
 ---
 

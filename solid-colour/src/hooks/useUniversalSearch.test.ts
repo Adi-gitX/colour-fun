@@ -13,7 +13,9 @@ describe('useUniversalSearch', () => {
   });
 
   it('respects limitPerCategory', () => {
-    const { result } = renderHook(() => useUniversalSearch('', { limitPerCategory: 2, limit: 100 }));
+    const { result } = renderHook(() =>
+      useUniversalSearch('', { limitPerCategory: 2, limit: 100 })
+    );
     for (const g of result.current.groups) {
       expect(g.items.length).toBeLessThanOrEqual(2);
     }

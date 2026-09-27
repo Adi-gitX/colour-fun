@@ -125,7 +125,11 @@ export const Header = () => {
         </nav>
 
         <div className={styles.right}>
-          <IconAction label={`Search  ${isMac ? '⌘' : 'Ctrl'} K`} onClick={openPalette} aria-label="Open command palette">
+          <IconAction
+            label={`Search  ${isMac ? '⌘' : 'Ctrl'} K`}
+            onClick={openPalette}
+            aria-label="Open command palette"
+          >
             <Command />
           </IconAction>
           <IconAction

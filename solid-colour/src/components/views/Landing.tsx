@@ -40,7 +40,11 @@ function SlotLine({ text, delay = 0 }: { text: string; delay?: number }) {
         ch === ' ' ? (
           <span key={i} className={styles.slotSpace} />
         ) : (
-          <span key={i} className={styles.slotChar} style={{ '--d': `${delay + i * 45}ms` } as React.CSSProperties}>
+          <span
+            key={i}
+            className={styles.slotChar}
+            style={{ '--d': `${delay + i * 45}ms` } as React.CSSProperties}
+          >
             <span className={styles.slotReel}>
               {Array.from({ length: 7 }, (_, k) => (
                 <span key={k}>{ch}</span>
@@ -53,7 +57,13 @@ function SlotLine({ text, delay = 0 }: { text: string; delay?: number }) {
   );
 }
 
-export function LandingHero({ onStart, onAsk }: { onStart: () => void; onAsk: (text: string) => void }) {
+export function LandingHero({
+  onStart,
+  onAsk,
+}: {
+  onStart: () => void;
+  onAsk: (text: string) => void;
+}) {
   return (
     <section className={styles.hero}>
       <p className={styles.serif}>Garden, for people who build with AI</p>
@@ -65,7 +75,12 @@ export function LandingHero({ onStart, onAsk }: { onStart: () => void; onAsk: (t
       <p className={styles.serif}>Find the design worth using, checked live</p>
 
       <div className={styles.heroActions}>
-        <button type="button" className={styles.command} onClick={() => onAsk(HERO_ASK)} aria-label={`Ask Garden for ${HERO_ASK}`}>
+        <button
+          type="button"
+          className={styles.command}
+          onClick={() => onAsk(HERO_ASK)}
+          aria-label={`Ask Garden for ${HERO_ASK}`}
+        >
           <span className={styles.commandText}>
             garden ask <span className={styles.commandMuted}>&quot;{HERO_ASK}&quot;</span>
           </span>
@@ -89,7 +104,11 @@ interface Showcase {
 const SHOWCASE: Showcase[] = [
   { title: 'An interactive 3D globe', image: '3d-globe', area: styles.aGlobe },
   { title: 'A tilted screenshot marquee', image: '3d-marquee', area: styles.aMarquee },
-  { title: 'Testimonials that feel human', image: 'animated-testimonials', area: styles.aTestimonials },
+  {
+    title: 'Testimonials that feel human',
+    image: 'animated-testimonials',
+    area: styles.aTestimonials,
+  },
   { title: 'A card carousel like Apple’s', image: 'apple-cards-carousel', area: styles.aApple },
   { title: 'Animated background beams', image: 'background-beams', area: styles.aBeams },
   { title: 'Soft aurora backgrounds', image: 'aurora-background', area: styles.aAurora },
@@ -99,33 +118,89 @@ const SHOWCASE: Showcase[] = [
 const BUILT_FOR = ['Claude Code', 'Cursor', 'Windsurf', 'v0'];
 
 const SLOP = [
-  { n: '01', title: 'Every site looks the same', body: 'The same purple gradient, the same centred hero, the same three-card bento. Generated, not designed.' },
-  { n: '02', title: 'Nobody chose the parts', body: 'Components land in the codebase because a model reached for them, not because anyone compared them to the best.' },
-  { n: '03', title: 'Taste is buried', body: 'The libraries and galleries that set the bar are scattered across a hundred sites, lists and threads.' },
+  {
+    n: '01',
+    title: 'Every site looks the same',
+    body: 'The same purple gradient, the same centred hero, the same three-card bento. Generated, not designed.',
+  },
+  {
+    n: '02',
+    title: 'Nobody chose the parts',
+    body: 'Components land in the codebase because a model reached for them, not because anyone compared them to the best.',
+  },
+  {
+    n: '03',
+    title: 'Taste is buried',
+    body: 'The libraries and galleries that set the bar are scattered across a hundred sites, lists and threads.',
+  },
 ];
 
 /** A real answer from the live pipeline (28 Sep 2026), shown as the demo. */
 const DEMO = {
   query: 'footer designs',
   picks: [
-    { name: 'Footer Design', path: 'footer.design', why: 'A gallery of real-world footers, filtered by style, typography and grid.' },
-    { name: 'Aceternity UI', path: 'ui.aceternity.com/categories/footer', why: 'Animated footers in React, Tailwind and Motion. Free, copy-paste.' },
-    { name: 'Flowbite', path: 'flowbite.com/blocks/marketing/footer', why: 'Clean Tailwind footer blocks: sitemaps, newsletters, legal bars.' },
-    { name: '21st.dev', path: '21st.dev/community/components/s/footer', why: 'Community footers for shadcn/ui, each with a live preview.' },
+    {
+      name: 'Footer Design',
+      path: 'footer.design',
+      why: 'A gallery of real-world footers, filtered by style, typography and grid.',
+    },
+    {
+      name: 'Aceternity UI',
+      path: 'ui.aceternity.com/categories/footer',
+      why: 'Animated footers in React, Tailwind and Motion. Free, copy-paste.',
+    },
+    {
+      name: 'Flowbite',
+      path: 'flowbite.com/blocks/marketing/footer',
+      why: 'Clean Tailwind footer blocks: sitemaps, newsletters, legal bars.',
+    },
+    {
+      name: '21st.dev',
+      path: '21st.dev/community/components/s/footer',
+      why: 'Community footers for shadcn/ui, each with a live preview.',
+    },
   ],
 };
 
 const STEPS = [
-  { n: '01', title: 'Search', body: 'Live web search for reviews, roundups and threads, plus a search inside every site on the list.' },
-  { n: '02', title: 'Judge', body: `A model weighs ${'{count}'} hand-picked sites against that evidence. Every pick needs a reason and a place to look.` },
-  { n: '03', title: 'Verify', body: 'Each pick is opened live and its own links are followed to the exact section. Dead links never reach you.' },
+  {
+    n: '01',
+    title: 'Search',
+    body: 'Live web search for reviews, roundups and threads, plus a search inside every site on the list.',
+  },
+  {
+    n: '02',
+    title: 'Judge',
+    body: `A model weighs ${'{count}'} hand-picked sites against that evidence. Every pick needs a reason and a place to look.`,
+  },
+  {
+    n: '03',
+    title: 'Verify',
+    body: 'Each pick is opened live and its own links are followed to the exact section. Dead links never reach you.',
+  },
 ];
 
 const ROADMAP = [
-  { when: 'Now', title: 'The right sites', body: 'Ask for any piece of a site and get the few places worth your time, checked live.' },
-  { when: 'Next', title: 'The exact component', body: 'Go one level deeper: the specific block on that site, with its install command.' },
-  { when: 'Then', title: 'Garden as an MCP server', body: 'Your editor asks Garden before it writes UI: Claude Code, Cursor and Windsurf pull taste in directly.' },
-  { when: 'Later', title: 'A taste check', body: 'Point Garden at your site and see where it falls short of the best in its category.' },
+  {
+    when: 'Now',
+    title: 'The right sites',
+    body: 'Ask for any piece of a site and get the few places worth your time, checked live.',
+  },
+  {
+    when: 'Next',
+    title: 'The exact component',
+    body: 'Go one level deeper: the specific block on that site, with its install command.',
+  },
+  {
+    when: 'Then',
+    title: 'Garden as an MCP server',
+    body: 'Your editor asks Garden before it writes UI: Claude Code, Cursor and Windsurf pull taste in directly.',
+  },
+  {
+    when: 'Later',
+    title: 'A taste check',
+    body: 'Point Garden at your site and see where it falls short of the best in its category.',
+  },
 ];
 
 const WALLPAPERS: Array<{ section: Section; glyph: string; label: string; tone: string }> = [
@@ -151,7 +226,13 @@ function DashedRule({ label }: { label?: string }) {
   );
 }
 
-export function LandingSections({ onAsk, onStart }: { onAsk: (text: string) => void; onStart: () => void }) {
+export function LandingSections({
+  onAsk,
+  onStart,
+}: {
+  onAsk: (text: string) => void;
+  onStart: () => void;
+}) {
   const theme = useAppStore((s) => s.theme);
   const setCurrentSection = useAppStore((s) => s.setCurrentSection);
   const base = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
@@ -182,7 +263,8 @@ export function LandingSections({ onAsk, onStart }: { onAsk: (text: string) => v
       <section className={styles.section}>
         <span className={styles.pill}>The fix</span>
         <SectionHead title="Garden sends you to the source">
-          Ask for any piece of a site. Get the few places on the web that do it best, with the reason and the exact page.
+          Ask for any piece of a site. Get the few places on the web that do it best, with the
+          reason and the exact page.
         </SectionHead>
         <div className={styles.demo}>
           <div className={styles.demoBar}>
@@ -244,14 +326,16 @@ export function LandingSections({ onAsk, onStart }: { onAsk: (text: string) => v
             <dd>0</dd>
           </div>
         </dl>
-        <p className={styles.numbersNote}>Measured on eight real requests against the live web, 28 Sep 2026.</p>
+        <p className={styles.numbersNote}>
+          Measured on eight real requests against the live web, 28 Sep 2026.
+        </p>
       </section>
 
       {/* ===== Showcase bento ===== */}
       <section className={styles.section}>
         <SectionHead title="Ask for anything worth building">
-          Tap one to run it live: Garden searches the web, weighs real reviews against {sites.length} hand-picked
-          sites, and opens every link before you see it.
+          Tap one to run it live: Garden searches the web, weighs real reviews against{' '}
+          {sites.length} hand-picked sites, and opens every link before you see it.
         </SectionHead>
         <div className={styles.bento}>
           {SHOWCASE.map((item) => (
@@ -276,7 +360,11 @@ export function LandingSections({ onAsk, onStart }: { onAsk: (text: string) => v
             </button>
           ))}
         </div>
-        <button type="button" className={styles.more} onClick={() => setCurrentSection('libraries')}>
+        <button
+          type="button"
+          className={styles.more}
+          onClick={() => setCurrentSection('libraries')}
+        >
           See all {sites.length} sites <ArrowRight size={14} />
         </button>
       </section>
@@ -285,10 +373,15 @@ export function LandingSections({ onAsk, onStart }: { onAsk: (text: string) => v
       <section className={`${styles.section} ${styles.narrow}`}>
         <span className={styles.pill}>Why now</span>
         <SectionHead title="Code is solved. Taste is the bottleneck.">
-          Everyone ships with an AI editor now. What they reach for decides whether the result looks designed or generated.
+          Everyone ships with an AI editor now. What they reach for decides whether the result looks
+          designed or generated.
         </SectionHead>
         <DashedRule label="Always considered" />
-        <button type="button" className={styles.featured} onClick={() => setCurrentSection('libraries')}>
+        <button
+          type="button"
+          className={styles.featured}
+          onClick={() => setCurrentSection('libraries')}
+        >
           <DotMark size={26} />
           {sites.length} hand-picked sites
         </button>
@@ -311,7 +404,11 @@ export function LandingSections({ onAsk, onStart }: { onAsk: (text: string) => v
         <DashedRule />
         <p className={styles.creditNote}>
           Know a site with real taste?
-          <a href="https://github.com/Adi-gitX/colour-fun/issues" target="_blank" rel="noreferrer noopener">
+          <a
+            href="https://github.com/Adi-gitX/colour-fun/issues"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
             suggest it <ArrowRight size={13} />
           </a>
         </p>
@@ -357,7 +454,11 @@ export function LandingSections({ onAsk, onStart }: { onAsk: (text: string) => v
             </button>
           ))}
         </div>
-        <button type="button" className={styles.more} onClick={() => setCurrentSection('backgrounds')}>
+        <button
+          type="button"
+          className={styles.more}
+          onClick={() => setCurrentSection('backgrounds')}
+        >
           Open wallpapers <ArrowRight size={14} />
         </button>
       </section>
@@ -411,7 +512,11 @@ export function LandingSections({ onAsk, onStart }: { onAsk: (text: string) => v
                 <Code size={15} /> Copy the CSS
               </li>
             </ul>
-            <button type="button" className={styles.planBtn} onClick={() => setCurrentSection('backgrounds')}>
+            <button
+              type="button"
+              className={styles.planBtn}
+              onClick={() => setCurrentSection('backgrounds')}
+            >
               Open wallpapers
             </button>
           </div>
@@ -432,7 +537,9 @@ export function LandingSections({ onAsk, onStart }: { onAsk: (text: string) => v
               <path id="seal-circle" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0" />
             </defs>
             <text>
-              <textPath href="#seal-circle">GARDEN · NO AI SLOP · EVER · MADE WITH TASTE ·</textPath>
+              <textPath href="#seal-circle">
+                GARDEN · NO AI SLOP · EVER · MADE WITH TASTE ·
+              </textPath>
             </text>
           </svg>
           <span className={styles.sealRing} aria-hidden />

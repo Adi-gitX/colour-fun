@@ -295,7 +295,9 @@ ${sourceList}`;
       const home = listed?.url ?? p.url;
       if (!/^https?:\/\//.test(home)) return null;
       // A page is only trusted when it came from the search sources and sits on the same site.
-      const page = p.page && sourceUrls.has(p.page) && sameSite(p.page, home) ? cleanPage(p.page) : '';
+      const cleaned = p.page && sourceUrls.has(p.page) && sameSite(p.page, home) ? cleanPage(p.page) : '';
+      // A homepage is not a section page, even when a search result pointed at it.
+      const page = cleaned && new URL(cleaned).pathname.replace(/\/$/, '') !== '' ? cleaned : '';
 
       let info = await fetchPage(page || home);
       if (!info.ok && page) info = await fetchPage(home);

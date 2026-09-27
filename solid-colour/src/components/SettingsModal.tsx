@@ -127,7 +127,11 @@ export const SettingsModal = () => {
               and real reviews, and checks every link before you see it.
             </p>
             <Button asChild variant="link" size="xs" className={styles.aboutLink}>
-              <a href="https://github.com/Adi-gitX/colour-fun" target="_blank" rel="noreferrer noopener">
+              <a
+                href="https://github.com/Adi-gitX/colour-fun"
+                target="_blank"
+                rel="noreferrer noopener"
+              >
                 <Github /> Source <ArrowUpRight />
               </a>
             </Button>

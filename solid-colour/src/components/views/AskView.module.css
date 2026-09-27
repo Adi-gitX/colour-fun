@@ -480,19 +480,19 @@
     padding: 0 16px;
   }
   .root[data-state='landing'] .dock {
-  position: fixed;
-  left: 16px;
-  right: 16px;
-  bottom: 20px;
-  z-index: 40;
-  width: auto;
-  margin: 0 auto;
-  pointer-events: none;
-}
-.root[data-state='landing'] .dock > * {
-  pointer-events: auto;
-}
-.root[data-state='chat'] .dock {
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    bottom: 20px;
+    z-index: 40;
+    width: auto;
+    margin: 0 auto;
+    pointer-events: none;
+  }
+  .root[data-state='landing'] .dock > * {
+    pointer-events: auto;
+  }
+  .root[data-state='chat'] .dock {
     padding: 8px 12px 10px;
   }
   .hints,

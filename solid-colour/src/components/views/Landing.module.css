@@ -460,16 +460,13 @@
   letter-spacing: -0.04em;
 }
 .toneSolid {
-  background:
-    radial-gradient(60% 120% at 25% 20%, rgba(0, 0, 0, 0.07), transparent 60%),
-    #f1ff6b;
+  background: radial-gradient(60% 120% at 25% 20%, rgba(0, 0, 0, 0.07), transparent 60%), #f1ff6b;
   color: #0b0b0a;
 }
 .toneGradient {
   background:
     radial-gradient(100% 80% at 10% 0%, rgba(255, 255, 255, 0.18), transparent 55%),
-    radial-gradient(60% 60% at 95% 100%, rgba(255, 255, 255, 0.14), transparent 60%),
-    #2e7fff;
+    radial-gradient(60% 60% at 95% 100%, rgba(255, 255, 255, 0.14), transparent 60%), #2e7fff;
   color: #ffffff;
 }
 .toneImage {
@@ -596,8 +593,7 @@
   border-radius: 50%;
   background:
     radial-gradient(circle at 70% 78%, #00e1ff 0%, transparent 52%),
-    radial-gradient(circle at 60% 60%, #0a6cff 0%, transparent 70%),
-    #050505;
+    radial-gradient(circle at 60% 60%, #0a6cff 0%, transparent 70%), #050505;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
 }
 

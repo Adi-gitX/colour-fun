@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
+import { useMemo } from 'react';
 
-import { DotMatrixBase } from "@/components/ui/dotmatrix-core";
-import { useDotMatrixPhases } from "@/components/ui/dotmatrix-hooks";
-import { rowMajorIndex } from "@/components/ui/dotmatrix-core";
-import { usePrefersReducedMotion } from "@/components/ui/dotmatrix-hooks";
-import { useSteppedCycle } from "@/components/ui/dotmatrix-hooks";
-import type { DotAnimationResolver, DotMatrixCommonProps } from "@/components/ui/dotmatrix-core";
+import { DotMatrixBase } from '@/components/ui/dotmatrix-core';
+import { useDotMatrixPhases } from '@/components/ui/dotmatrix-hooks';
+import { rowMajorIndex } from '@/components/ui/dotmatrix-core';
+import { usePrefersReducedMotion } from '@/components/ui/dotmatrix-hooks';
+import { useSteppedCycle } from '@/components/ui/dotmatrix-hooks';
+import type { DotAnimationResolver, DotMatrixCommonProps } from '@/components/ui/dotmatrix-core';
 
 export type DotmSquare2Props = DotMatrixCommonProps;
 
@@ -49,21 +49,25 @@ function buildRowCyclePath(): number[] {
 
 export function DotmSquare2({
   speed = 1.15,
-  pattern = "full",
+  pattern = 'full',
   animated = true,
   hoverAnimated = false,
   ...rest
 }: DotmSquare2Props) {
   const reducedMotion = usePrefersReducedMotion();
-  const { phase: matrixPhase, onMouseEnter, onMouseLeave } = useDotMatrixPhases({
+  const {
+    phase: matrixPhase,
+    onMouseEnter,
+    onMouseLeave,
+  } = useDotMatrixPhases({
     animated: Boolean(animated && !reducedMotion),
     hoverAnimated: Boolean(hoverAnimated && !reducedMotion),
-    speed
+    speed,
   });
   const route = useMemo(() => buildRowCyclePath(), []);
   const routeLen = route.length;
   const head = useSteppedCycle({
-    active: !reducedMotion && matrixPhase !== "idle" && routeLen > 0,
+    active: !reducedMotion && matrixPhase !== 'idle' && routeLen > 0,
     cycleMsBase: 1500,
     steps: routeLen,
     speed,
@@ -83,7 +87,7 @@ export function DotmSquare2({
   const animationResolver = useMemo<DotAnimationResolver>(() => {
     return ({ isActive, index }) => {
       if (!isActive) {
-        return { className: "dmx-inactive" };
+        return { className: 'dmx-inactive' };
       }
 
       if (routeLen <= 0) {

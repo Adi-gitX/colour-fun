@@ -21,7 +21,13 @@ interface Props {
   title?: string;
 }
 
-export function DotMark({ size = 28, animate = false, tile = false, className = '', title = 'Garden' }: Props) {
+export function DotMark({
+  size = 28,
+  animate = false,
+  tile = false,
+  className = '',
+  title = 'Garden',
+}: Props) {
   const gap = size / 5;
   const r = gap * 0.34;
   return (

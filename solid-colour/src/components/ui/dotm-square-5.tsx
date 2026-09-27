@@ -1,48 +1,55 @@
-"use client";
+'use client';
 
-import type { CSSProperties } from "react";
+import type { CSSProperties } from 'react';
 
-import { DotMatrixBase } from "@/components/ui/dotmatrix-core";
-import { useDotMatrixPhases } from "@/components/ui/dotmatrix-hooks";
-import { diagonalSnakeNormFromIndex, diagonalSnakeOrderValue } from "@/components/ui/dotmatrix-core";
-import { usePrefersReducedMotion } from "@/components/ui/dotmatrix-hooks";
-import type { DotAnimationResolver, DotMatrixCommonProps } from "@/components/ui/dotmatrix-core";
+import { DotMatrixBase } from '@/components/ui/dotmatrix-core';
+import { useDotMatrixPhases } from '@/components/ui/dotmatrix-hooks';
+import {
+  diagonalSnakeNormFromIndex,
+  diagonalSnakeOrderValue,
+} from '@/components/ui/dotmatrix-core';
+import { usePrefersReducedMotion } from '@/components/ui/dotmatrix-hooks';
+import type { DotAnimationResolver, DotMatrixCommonProps } from '@/components/ui/dotmatrix-core';
 
 export type DotmSquare5Props = DotMatrixCommonProps;
 
 const animationResolver: DotAnimationResolver = ({ isActive, index, reducedMotion, phase }) => {
   if (!isActive) {
-    return { className: "dmx-inactive" };
+    return { className: 'dmx-inactive' };
   }
 
   const order = diagonalSnakeOrderValue(index);
   const pathNorm = diagonalSnakeNormFromIndex(index);
-  const style = { "--dmx-diagonal-snake-order": order } as CSSProperties;
+  const style = { '--dmx-diagonal-snake-order': order } as CSSProperties;
 
-  if (reducedMotion || phase === "idle") {
+  if (reducedMotion || phase === 'idle') {
     return {
       style: {
         ...style,
-        opacity: 0.16 + pathNorm * 0.78
-      }
+        opacity: 0.16 + pathNorm * 0.78,
+      },
     };
   }
 
-  return { className: "dmx-diagonal-snake", style };
+  return { className: 'dmx-diagonal-snake', style };
 };
 
 export function DotmSquare5({
   speed = 1.35,
-  pattern = "full",
+  pattern = 'full',
   animated = true,
   hoverAnimated = false,
   ...rest
 }: DotmSquare5Props) {
   const reducedMotion = usePrefersReducedMotion();
-  const { phase: matrixPhase, onMouseEnter, onMouseLeave } = useDotMatrixPhases({
+  const {
+    phase: matrixPhase,
+    onMouseEnter,
+    onMouseLeave,
+  } = useDotMatrixPhases({
     animated: Boolean(animated && !reducedMotion),
     hoverAnimated: Boolean(hoverAnimated && !reducedMotion),
-    speed
+    speed,
   });
 
   return (

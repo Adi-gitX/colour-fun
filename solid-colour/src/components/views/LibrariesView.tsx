@@ -35,8 +35,8 @@ export function LibrariesView() {
           <div className="eyebrow">The list</div>
           <h1 className={styles.title}>Sites</h1>
           <p className={styles.subtitle}>
-            The sites Garden trusts first. When you ask for something, these are weighed against what the web says
-            today, and only the best few come back.
+            The sites Garden trusts first. When you ask for something, these are weighed against
+            what the web says today, and only the best few come back.
           </p>
         </div>
         <dl className={styles.stats}>
@@ -79,7 +79,12 @@ export function LibrariesView() {
                     </Button>
                     {site.github && (
                       <Button asChild variant="link" size="xs" className={styles.visit}>
-                        <a href={site.github} target="_blank" rel="noreferrer noopener" aria-label={`${site.name} on GitHub`}>
+                        <a
+                          href={site.github}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                          aria-label={`${site.name} on GitHub`}
+                        >
                           <Github /> GitHub
                         </a>
                       </Button>

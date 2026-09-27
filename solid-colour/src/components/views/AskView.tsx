@@ -1,13 +1,27 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowUpRight, Blocks, Check, Copy, Eye, Layers, RotateCcw, Sparkles, TriangleAlert } from 'lucide-react';
+import {
+  ArrowUpRight,
+  Blocks,
+  Check,
+  Copy,
+  Eye,
+  Layers,
+  RotateCcw,
+  Sparkles,
+  TriangleAlert,
+} from 'lucide-react';
 import { findSites } from '../../lib/find';
 import type { Evidence, FindEvent, SiteResult, SiteType } from '../../lib/find';
 import sites from '../../data/sites.json';
 import { Button } from '../ui/button';
 import { Kbd } from '../ui/kbd';
 import { PromptInput, type PromptInputOption } from '../ui/ai-chat-input';
-import { Conversation, ConversationContent, ConversationScrollButton } from '../ai-elements/conversation';
+import {
+  Conversation,
+  ConversationContent,
+  ConversationScrollButton,
+} from '../ai-elements/conversation';
 import { Message, MessageContent } from '../ai-elements/message';
 import { Loader } from '../ai-elements/loader';
 import { DotMark } from '../brand/DotMark';
@@ -112,14 +126,35 @@ function Elapsed({ since }: { since: number }) {
   return <span className={styles.elapsed}>{Math.max(0, Math.round((now - since) / 1000))}s</span>;
 }
 
-function SiteCard({ site, copied, copy }: { site: SiteResult; copied: string | null; copy: (k: string, t: string) => void }) {
+function SiteCard({
+  site,
+  copied,
+  copy,
+}: {
+  site: SiteResult;
+  copied: string | null;
+  copy: (k: string, t: string) => void;
+}) {
   const [imageOk, setImageOk] = useState(Boolean(site.image));
   const key = `link:${site.url}`;
   return (
     <article className={styles.card}>
-      <a className={styles.preview} href={site.url} target="_blank" rel="noreferrer noopener" tabIndex={-1} aria-hidden>
+      <a
+        className={styles.preview}
+        href={site.url}
+        target="_blank"
+        rel="noreferrer noopener"
+        tabIndex={-1}
+        aria-hidden
+      >
         {imageOk && site.image ? (
-          <img src={site.image} alt="" loading="lazy" referrerPolicy="no-referrer" onError={() => setImageOk(false)} />
+          <img
+            src={site.image}
+            alt=""
+            loading="lazy"
+            referrerPolicy="no-referrer"
+            onError={() => setImageOk(false)}
+          />
         ) : (
           <span className={styles.previewEmpty}>
             <img
@@ -137,7 +172,12 @@ function SiteCard({ site, copied, copy }: { site: SiteResult; copied: string | n
         <div className={styles.cardHead}>
           <div className={styles.cardTitleBlock}>
             <h3 className={styles.cardTitle}>{site.name}</h3>
-            <p className={styles.cardMeta}>{host(site.url)}{site.url.replace(/\/$/, '') !== new URL(site.url).origin ? ` · ${new URL(site.url).pathname}` : ''}</p>
+            <p className={styles.cardMeta}>
+              {host(site.url)}
+              {site.url.replace(/\/$/, '') !== new URL(site.url).origin
+                ? ` · ${new URL(site.url).pathname}`
+                : ''}
+            </p>
           </div>
           <div className={styles.badges}>
             {site.type && <span className={styles.badge}>{TYPE_LABEL[site.type]}</span>}
@@ -157,7 +197,13 @@ function SiteCard({ site, copied, copy }: { site: SiteResult; copied: string | n
           <div className={styles.evidence}>
             <span className={styles.evidenceLabel}>Backed by</span>
             {site.evidence.map((ev) => (
-              <a key={ev.url} href={ev.url} target="_blank" rel="noreferrer noopener" title={ev.url}>
+              <a
+                key={ev.url}
+                href={ev.url}
+                target="_blank"
+                rel="noreferrer noopener"
+                title={ev.url}
+              >
                 {host(ev.url)}
               </a>
             ))}
@@ -169,7 +215,13 @@ function SiteCard({ site, copied, copy }: { site: SiteResult; copied: string | n
               Visit {site.domain} <ArrowUpRight />
             </a>
           </Button>
-          <Button type="button" variant="ghost" size="sm" onClick={() => copy(key, site.url)} className={styles.copyLink}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => copy(key, site.url)}
+            className={styles.copyLink}
+          >
             {copied === key ? <Check /> : <Copy />} {copied === key ? 'Copied' : 'Copy link'}
           </Button>
         </div>
@@ -215,7 +267,9 @@ function Progress({ turn, since }: { turn: Turn; since: number }) {
           Searched with {turn.via.search} · judged by {turn.via.judge}
         </p>
       )}
-      {turn.queries.length > 0 && <p className={styles.trailQueries}>Searched: {turn.queries.join(' · ')}</p>}
+      {turn.queries.length > 0 && (
+        <p className={styles.trailQueries}>Searched: {turn.queries.join(' · ')}</p>
+      )}
       <ul>
         {turn.sources.map((s) => (
           <li key={s.url}>
@@ -348,19 +402,33 @@ export function AskView() {
                 <Message from="user" className={styles.userRow}>
                   <MessageContent className={styles.bubble}>{t.query}</MessageContent>
                   {t.filter !== 'any' && (
-                    <span className={styles.bubbleScope}>{FILTERS.find((f) => f.value === t.filter)?.label} only</span>
+                    <span className={styles.bubbleScope}>
+                      {FILTERS.find((f) => f.value === t.filter)?.label} only
+                    </span>
                   )}
                 </Message>
-                <AnswerTurn turn={t} onRetry={() => void run(t.query, t.filter, t.count, t.id)} copied={copied} copy={copy} />
+                <AnswerTurn
+                  turn={t}
+                  onRetry={() => void run(t.query, t.filter, t.count, t.id)}
+                  copied={copied}
+                  copy={copy}
+                />
               </div>
             ))}
           </ConversationContent>
-          <ConversationScrollButton className={styles.scrollButton} aria-label="Scroll to the latest" />
+          <ConversationScrollButton
+            className={styles.scrollButton}
+            aria-label="Scroll to the latest"
+          />
         </Conversation>
       )}
 
       {/* One composer for both states: it glides from the hero to the dock instead of remounting. */}
-      <motion.div layout="position" transition={{ type: 'spring', stiffness: 320, damping: 34 }} className={styles.dock}>
+      <motion.div
+        layout="position"
+        transition={{ type: 'spring', stiffness: 320, damping: 34 }}
+        className={styles.dock}
+      >
         <PromptInput
           inputRef={inputRef}
           className={styles.prompt}
@@ -386,7 +454,9 @@ export function AskView() {
           <span className={styles.hints}>
             <Kbd>↵</Kbd> send <Kbd>⇧ ↵</Kbd> new line
           </span>
-          <span className={styles.engine}>Searched live across the web and {sites.length} hand-picked sites</span>
+          <span className={styles.engine}>
+            Searched live across the web and {sites.length} hand-picked sites
+          </span>
           <Button type="button" variant="ghost" size="xs" onClick={reset} className={styles.reset}>
             <RotateCcw /> New thread
           </Button>
