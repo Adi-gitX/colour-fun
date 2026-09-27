@@ -10,8 +10,7 @@ import { LibrariesView } from './components/views/LibrariesView';
 import { WallpapersView } from './components/views/WallpapersView';
 import { CommandPalette } from './components/CommandPalette';
 import { ShortcutsOverlay } from './components/ShortcutsOverlay';
-import { DotMark } from './components/brand/DotMark';
-import { APP_VERSION } from './constants/version';
+import { SiteFooter } from './components/SiteFooter';
 import { useAppStore } from './store/appStore';
 import { TooltipProvider } from './components/ui/tooltip';
 import './components/dotmatrix-loader.css';
@@ -45,18 +44,7 @@ function App() {
         <main className="main-content">
           <Header />
           {renderContent()}
-          {currentSection !== 'home' && (
-            <footer className="footer">
-              <div className="footer-content">
-                <div className="footer-brand">
-                  <DotMark size={14} />
-                  <span>Garden</span>
-                  <span className="version">v{APP_VERSION}</span>
-                </div>
-                <p>Every component installs from its own library and keeps its own licence.</p>
-              </div>
-            </footer>
-          )}
+          {currentSection !== 'home' && <SiteFooter />}
         </main>
         <DownloadModal />
         <ColorPicker />

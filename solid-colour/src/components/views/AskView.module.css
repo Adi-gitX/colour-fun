@@ -5,101 +5,17 @@
 
 .root {
   position: relative;
-  isolation: isolate;
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: calc(100dvh - var(--header-height));
   min-height: 0;
-  overflow: hidden;
 }
 .root[data-state='landing'] {
-  justify-content: center;
-  padding: 0 20px 8vh;
-  overflow-y: auto;
+  padding: 0 16px;
 }
-
-/* Soft three-colour glow under the hero; it fades down once a thread starts. */
-.aurora {
-  position: absolute;
-  z-index: -1;
-  left: 50%;
-  bottom: -38%;
-  width: min(1200px, 150vw);
-  aspect-ratio: 2 / 1;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  background:
-    radial-gradient(closest-side at 30% 55%, var(--glow-a), transparent),
-    radial-gradient(closest-side at 55% 45%, var(--glow-b), transparent),
-    radial-gradient(closest-side at 75% 60%, var(--glow-c), transparent);
-  filter: blur(60px);
-  pointer-events: none;
-  transition:
-    opacity 0.8s ease,
-    transform 0.8s ease;
-  animation: auroraDrift 18s ease-in-out infinite alternate;
-}
-.root[data-state='chat'] .aurora {
-  opacity: 0.35;
-  bottom: -62%;
-}
-@keyframes auroraDrift {
-  from {
-    transform: translateX(-52%) scale(1);
-  }
-  to {
-    transform: translateX(-48%) scale(1.08);
-  }
-}
-
-/* ===== Hero ===== */
-.hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 18px;
-  width: 100%;
-  max-width: 960px;
-  margin-bottom: 32px;
-  text-align: center;
-  animation: slideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-.pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  height: 28px;
-  padding: 0 12px;
-  border: 1px solid var(--border-medium);
-  border-radius: var(--radius-pill);
-  background: color-mix(in oklab, var(--bg-card) 70%, transparent);
-  backdrop-filter: blur(8px);
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-.pillDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #22c55e;
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18);
-}
-.welcome {
-  margin: 0;
-  font-size: clamp(26px, 3.4vw, 46px);
-  line-height: 1.12;
-}
-.welcomeMuted {
-  display: block;
-  color: var(--text-secondary);
-}
-.welcomeNote {
-  margin: 0;
-  max-width: 56ch;
-  font-size: 14.5px;
-  line-height: 1.65;
-  color: var(--text-secondary);
+.root[data-state='chat'] {
+  height: calc(100dvh - var(--header-height));
+  overflow: hidden;
 }
 
 /* ===== Dock (composer) ===== */
@@ -107,12 +23,25 @@
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 760px;
+  max-width: 680px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+}
+.root[data-state='landing'] .dock {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 20px;
+  z-index: 40;
+  width: auto;
+  margin: 0 auto;
+  pointer-events: none;
+}
+.root[data-state='landing'] .dock > * {
+  pointer-events: auto;
 }
 .root[data-state='chat'] .dock {
   max-width: none;
@@ -120,7 +49,7 @@
   background: linear-gradient(to bottom, transparent, var(--bg-primary) 30%);
 }
 .root[data-state='chat'] .dock > * {
-  max-width: 760px;
+  max-width: 720px;
 }
 .prompt {
   margin: 0 auto;
@@ -156,42 +85,9 @@
 }
 .reset {
   flex-shrink: 0;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-weight: 400;
   color: var(--text-secondary);
-}
-
-.suggestions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  max-width: 760px;
-  margin-top: 20px;
-}
-.suggestion {
-  height: 30px;
-  padding: 0 14px;
-  border-radius: var(--radius-pill);
-  font-family: var(--font-mono);
-  font-size: 12.5px;
-  font-weight: 400;
-  color: var(--text-secondary);
-  background: color-mix(in oklab, var(--bg-card) 60%, transparent) !important;
-  backdrop-filter: blur(8px);
-  border-color: var(--border-light);
-  box-shadow: none;
-  animation: slideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-  transition:
-    border-color 0.15s ease,
-    color 0.15s ease,
-    transform 0.15s ease;
-}
-.suggestion:hover {
-  border-color: var(--border-hover);
-  color: var(--text-primary);
-  transform: translateY(-1px);
 }
 
 /* ===== Thread ===== */
@@ -230,7 +126,7 @@
   border-radius: 18px 18px 6px 18px;
   background: var(--bg-card) !important;
   color: var(--text-primary);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 14px;
   line-height: 1.55;
   white-space: pre-wrap;
@@ -247,7 +143,7 @@
   max-width: 100%;
   flex: 1;
   min-width: 0;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
 }
 .avatar {
   width: 32px;
@@ -329,22 +225,23 @@
 .card {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-lg);
-  background: var(--bg-card);
+  padding: 8px;
+  border-radius: 22px;
+  background: var(--bg-frame);
   overflow: hidden;
-  transition: border-color 0.18s;
+  transition: box-shadow 0.25s ease;
   min-width: 0;
 }
 .card:hover {
-  border-color: var(--border-hover);
+  box-shadow: var(--shadow-lg);
 }
 .preview {
   position: relative;
   aspect-ratio: 16 / 8;
   background: #fff;
   overflow: hidden;
-  border-bottom: 1px solid var(--border-light);
+  border-radius: 15px;
+  box-shadow: var(--shadow-card);
 }
 .preview img {
   width: 100%;
@@ -361,12 +258,13 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: var(--bg-primary);
-  border-bottom: 1px solid var(--border-light);
+  background: var(--bg-card);
+  border-radius: 15px;
+  box-shadow: var(--shadow-card);
   color: var(--text-tertiary);
 }
 .previewLibrary {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -382,7 +280,7 @@
   border-radius: var(--radius-xs);
   background: rgba(0, 0, 0, 0.75);
   color: #fafafa;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 10.5px;
   letter-spacing: 0.06em;
 }
@@ -395,7 +293,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 14px 16px 16px;
+  padding: 14px 8px 6px;
   min-width: 0;
 }
 .cardHead {
@@ -408,7 +306,9 @@
   min-width: 0;
 }
 .cardTitle {
-  font-size: 14.5px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
   margin: 0 0 3px;
   color: var(--text-primary);
 }
@@ -465,7 +365,7 @@
   padding: 0 10px;
   font-size: 12px;
   font-weight: 400;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
 }
 .tabList [data-slot='tabs-trigger']::after {
   bottom: -1px !important;
@@ -487,8 +387,8 @@
 .copyBlock {
   position: relative;
   border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
-  background: var(--bg-primary);
+  border-radius: 12px;
+  background: var(--bg-card);
 }
 .copyText {
   margin: 0;
@@ -511,14 +411,14 @@
   width: 64px;
   pointer-events: none;
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  background: linear-gradient(to right, transparent, var(--bg-primary) 55%);
+  background: linear-gradient(to right, transparent, var(--bg-card) 55%);
 }
 .copyBtn {
   position: absolute;
   top: 6px;
   right: 6px;
   z-index: 1;
-  background: var(--bg-primary);
+  background: var(--bg-card);
 }
 
 @media (max-width: 900px) {
@@ -543,10 +443,22 @@
     height: 28px;
   }
   .root[data-state='landing'] {
-    justify-content: flex-start;
-    padding: 9vh 16px 24px;
+    padding: 0 16px;
   }
-  .root[data-state='chat'] .dock {
+  .root[data-state='landing'] .dock {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 20px;
+  z-index: 40;
+  width: auto;
+  margin: 0 auto;
+  pointer-events: none;
+}
+.root[data-state='landing'] .dock > * {
+  pointer-events: auto;
+}
+.root[data-state='chat'] .dock {
     padding: 8px 12px 10px;
   }
   .hints,
@@ -556,4 +468,8 @@
   .reset {
     margin-left: auto;
   }
+}
+
+.dockMeta[hidden] {
+  display: none;
 }

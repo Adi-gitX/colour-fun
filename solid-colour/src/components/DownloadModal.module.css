@@ -79,7 +79,7 @@
 }
 
 .previewName {
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-weight: 400;
   font-size: 20px;
   letter-spacing: -0.02em;
@@ -124,7 +124,7 @@
   background: var(--bg-primary);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-sm);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 400;
   color: var(--text-tertiary);
@@ -159,7 +159,7 @@
   background: var(--bg-primary);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-sm);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 13px;
   color: var(--text-primary);
   cursor: pointer;
@@ -214,7 +214,7 @@
 }
 
 .sizeInput label {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 11px;
   color: var(--text-secondary);
 }
@@ -225,7 +225,7 @@
   background: var(--bg-primary);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-sm);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 13px;
   color: var(--text-primary);
   width: 100%;
@@ -258,14 +258,14 @@
 }
 
 .downloadSize {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 12.5px;
   font-weight: 400;
   color: var(--text-primary);
 }
 
 .downloadEst {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 11px;
   color: var(--text-secondary);
   letter-spacing: 0.02em;
@@ -281,7 +281,7 @@
   background: var(--accent-primary);
   border: 1px solid var(--accent-primary);
   border-radius: var(--radius-sm);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 12.5px;
   font-weight: 400;
   color: var(--accent-on-primary);

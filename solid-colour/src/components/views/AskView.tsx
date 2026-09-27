@@ -13,18 +13,9 @@ import { Kbd } from '../ui/kbd';
 import { PromptInput, type PromptInputOption } from '../ui/ai-chat-input';
 import { Conversation, ConversationContent, ConversationScrollButton } from '../ai-elements/conversation';
 import { Message, MessageContent } from '../ai-elements/message';
-import { Suggestion } from '../ai-elements/suggestion';
 import { Loader } from '../ai-elements/loader';
+import { LandingHero, LandingSections } from './Landing';
 import styles from './AskView.module.css';
-
-const EXAMPLES = [
-  'a loader for a checkout page',
-  'a submit form with validation',
-  'a landing page hero with an aurora background',
-  'a testimonial carousel',
-  'a pricing table with monthly and yearly',
-  'a glassmorphism button',
-];
 
 /** Where results may install from; `any` leaves the ranking untouched. */
 type Source = 'any' | 'shadcn' | 'npm' | 'copy';
@@ -300,7 +291,6 @@ export function AskView() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const libs = libraries as Array<{ indexed: number }>;
   const libraryCount = libs.filter((l) => l.indexed > 0).length;
-  const componentCount = libs.reduce((n, l) => n + l.indexed, 0);
   const busy = messages.some((m) => m.role === 'assistant' && m.status === 'thinking');
   const landing = messages.length === 0;
 
@@ -342,22 +332,8 @@ export function AskView() {
 
   return (
     <div className={styles.root} data-state={landing ? 'landing' : 'chat'}>
-      <div className={styles.aurora} aria-hidden />
-
       {landing ? (
-        <section className={styles.hero}>
-          <span className={styles.pill}>
-            <span className={styles.pillDot} aria-hidden />
-            {libraryCount} libraries · {componentCount.toLocaleString()} components indexed
-          </span>
-          <h1 className={styles.welcome}>
-            Describe the component. <span className={styles.welcomeMuted}>Get the install command.</span>
-          </h1>
-          <p className={styles.welcomeNote}>
-            Ask in plain words. Garden searches every indexed library at once and hands back a one-line install for
-            your terminal or your coding agent.
-          </p>
-        </section>
+        <LandingHero onStart={() => inputRef.current?.focus()} />
       ) : (
         <Conversation className={styles.thread}>
           <ConversationContent className={styles.threadInner}>
@@ -390,7 +366,7 @@ export function AskView() {
           value={query}
           onChange={setQuery}
           onSubmit={(text) => void send(text)}
-          placeholder={landing ? 'I need a loader for a checkout page…' : 'Ask for another component…'}
+          placeholder={landing ? 'Describe a component you need…' : 'Ask for another component…'}
           inputLabel="What do you need?"
           models={SOURCES}
           model={source}
@@ -399,12 +375,13 @@ export function AskView() {
           effortIndex={countIndex}
           onEffortChange={setCountIndex}
           allowAttachments={false}
-          collapsible={false}
-          expandedWidth={760}
+          collapsible={landing}
+          collapsedWidth={340}
+          expandedWidth={landing ? 640 : 720}
           busy={busy}
-          autoFocus
+          autoFocus={!landing}
         />
-        <div className={styles.dockMeta}>
+        <div className={styles.dockMeta} hidden={landing}>
           <span className={styles.hints}>
             <Kbd>↵</Kbd> send <Kbd>⇧ ↵</Kbd> new line
           </span>
@@ -418,17 +395,18 @@ export function AskView() {
       </motion.div>
 
       {landing && (
-        <div className={styles.suggestions}>
-          {EXAMPLES.map((ex, i) => (
-            <Suggestion
-              key={ex}
-              suggestion={ex}
-              onClick={(s) => void send(s)}
-              className={styles.suggestion}
-              style={{ animationDelay: `${120 + i * 40}ms` }}
-            />
-          ))}
-        </div>
+        <>
+          <LandingSections
+            onAsk={(text) => {
+              window.scrollTo({ top: 0 });
+              void send(text);
+            }}
+            onStart={() => {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+              inputRef.current?.focus({ preventScroll: true });
+            }}
+          />
+        </>
       )}
     </div>
   );

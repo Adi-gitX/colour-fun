@@ -30,7 +30,7 @@
 }
 
 .count {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 11.5px;
   font-weight: 400;
   color: var(--text-secondary);
@@ -38,7 +38,7 @@
 }
 
 .description {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 13px;
   color: var(--text-tertiary);
   line-height: 1.5;

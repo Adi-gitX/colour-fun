@@ -20,8 +20,8 @@ export default defineConfig({
         short_name: 'Garden',
         description:
           'Component libraries, design systems, UI inspiration, palettes, gradients and tools — curated, searchable, fast.',
-        theme_color: '#0a0a0a',
-        background_color: '#0a0a0a',
+        theme_color: '#ffffff',
+        background_color: '#ffffff',
         display: 'standalone',
         icons: [
           {

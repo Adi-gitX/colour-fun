@@ -118,7 +118,7 @@ interface AppState {
 export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
-      theme: 'dark',
+      theme: 'light',
       toggleTheme: () => {
         const newTheme = get().theme === 'dark' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-theme', newTheme);
@@ -262,7 +262,7 @@ if (typeof window !== 'undefined') {
     if (legacy) localStorage.setItem('garden-storage', legacy);
   }
   const stored = localStorage.getItem('garden-storage');
-  let initialTheme: 'light' | 'dark' = 'dark';
+  let initialTheme: 'light' | 'dark' = 'light';
   if (stored) {
     try {
       const { state } = JSON.parse(stored);

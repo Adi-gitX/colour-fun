@@ -15,7 +15,7 @@
 }
 
 .initial {
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: 36px;
   font-weight: 800;
   letter-spacing: -0.02em;

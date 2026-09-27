@@ -112,6 +112,7 @@
 }
 
 .hexInput {
+  font-family: var(--font-mono);
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -119,7 +120,7 @@
 
 .hexInput label,
 .rgbInput label {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: var(--tracking-eyebrow);
@@ -133,7 +134,7 @@
   background: var(--bg-primary);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-sm);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 12.5px;
   font-weight: 400;
   color: var(--text-primary);
@@ -166,7 +167,7 @@
 }
 
 .recentColors label {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: var(--tracking-eyebrow);
@@ -209,7 +210,7 @@
   background: var(--bg-primary);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-sm);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 12.5px;
   font-weight: 400;
   color: var(--text-tertiary);
@@ -235,7 +236,7 @@
   background: var(--accent-primary);
   border: 1px solid var(--accent-primary);
   border-radius: var(--radius-sm);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 12.5px;
   font-weight: 400;
   color: var(--accent-on-primary);

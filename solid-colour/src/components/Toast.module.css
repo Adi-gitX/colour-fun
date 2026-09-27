@@ -50,7 +50,7 @@
 
 .message {
   flex: 1;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 12.5px;
   color: var(--text-primary);
   margin: 0;

@@ -378,7 +378,9 @@ export const PromptInput = React.forwardRef<HTMLDivElement, PromptInputProps>(
     },
     ref
   ) => {
-    const [expanded, setExpanded] = useState(!collapsible);
+    const [expandedState, setExpanded] = useState(!collapsible);
+    // Turning `collapsible` off (e.g. when the input docks into a thread) always shows it open.
+    const expanded = expandedState || !collapsible;
     const [isSmoothResize, setIsSmoothResize] = useState(false);
     const [localValue, setLocalValue] = useState(defaultValue);
     const [localModel, setLocalModel] = useState(models[0]?.value ?? "");
@@ -835,6 +837,7 @@ export const PromptInput = React.forwardRef<HTMLDivElement, PromptInputProps>(
               ref={textareaRef}
               value={value}
               onChange={(e) => handleValueChange(e.target.value)}
+              onFocus={() => { if (!expanded) expand(); }}
               onScroll={updateFades}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {

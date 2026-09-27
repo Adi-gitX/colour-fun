@@ -15,8 +15,11 @@ async function open(page: Page, path = '/') {
 test.describe('ask thread', () => {
   test('starts empty, then shows the request and result cards', async ({ page }) => {
     await open(page);
-    await expect(page.getByRole('heading', { level: 1 })).toContainText('Describe the component');
-    await page.getByRole('button', { name: 'a loader for a checkout page' }).click();
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Describe it');
+    // The composer floats as a collapsed pill on the landing page; opening it and sending starts the thread.
+    await page.getByRole('button', { name: 'Open prompt input' }).click();
+    await page.getByLabel('What do you need?').fill('a loader for a checkout page');
+    await page.keyboard.press('Enter');
     // The request is echoed as a message, then answered with cards carrying an install tab.
     await expect(page.getByText('a loader for a checkout page').first()).toBeVisible();
     await expect(page.locator('article').first()).toBeVisible({ timeout: 30_000 });

@@ -55,7 +55,7 @@
   border: 0;
   outline: none;
   color: var(--text-primary);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 14px;
   letter-spacing: -0.005em;
 }
@@ -71,7 +71,7 @@
   padding: 0 6px;
   border-radius: var(--radius-xs);
   font-size: 10.5px;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-weight: 500;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -100,7 +100,7 @@
   padding: 40px 16px;
   text-align: center;
   color: var(--text-secondary);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 13px;
 }
 
@@ -121,7 +121,7 @@
   margin: 0 6px;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 13px;
   color: var(--text-secondary);
   transition:
@@ -148,7 +148,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 500;
   color: var(--text-primary);
@@ -201,7 +201,7 @@
 
 .itemMeta {
   flex: none;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 10.5px;
   color: var(--text-tertiary);
   letter-spacing: 0.02em;
@@ -214,7 +214,7 @@
   align-items: center;
   padding: 8px 16px;
   border-top: 1px solid var(--border-light);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 11px;
   color: var(--text-tertiary);
   background: var(--bg-secondary);
@@ -238,7 +238,7 @@
   height: 18px;
   padding: 0 5px;
   border-radius: var(--radius-xs);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 10px;
   font-weight: 500;
   letter-spacing: 0.04em;
@@ -258,7 +258,7 @@
   background: var(--bg-active);
   border: 1px solid var(--border-light);
   color: var(--text-secondary);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 12px;
   cursor: pointer;
   transition: all 0.12s ease;

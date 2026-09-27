@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Menu, Moon, Search, Settings, Sun, X } from 'lucide-react';
+import { Command, Menu, Moon, Settings, Sun, X } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import type { Section } from '../store/appStore';
 import { colors } from '../data/colors';
@@ -8,7 +8,6 @@ import { gradients } from '../data/gradients';
 import { imageUrls } from '../data/images';
 import { DotMark } from './brand/DotMark';
 import { Button } from './ui/button';
-import { Kbd } from './ui/kbd';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import styles from './Header.module.css';
 
@@ -105,8 +104,10 @@ export const Header = () => {
           onClick={() => go('home')}
           aria-label="Garden home"
         >
-          <DotMark size={20} />
-          <span className={styles.brandText}>Grdn</span>
+          <span className={styles.brandMark}>
+            <DotMark size={16} />
+          </span>
+          <span className={styles.brandText}>Garden</span>
         </button>
 
         <nav className={styles.nav} aria-label="Primary">
@@ -124,25 +125,9 @@ export const Header = () => {
         </nav>
 
         <div className={styles.right}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className={styles.searchBtn}
-                onClick={openPalette}
-                aria-label="Open command palette"
-              >
-                <Search />
-                <span className={styles.searchBtnLabel}>Search</span>
-                <Kbd className={styles.searchBtnKbd}>{isMac ? '⌘' : 'Ctrl'} K</Kbd>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" sideOffset={6}>
-              Search everything
-            </TooltipContent>
-          </Tooltip>
+          <IconAction label={`Search  ${isMac ? '⌘' : 'Ctrl'} K`} onClick={openPalette} aria-label="Open command palette">
+            <Command />
+          </IconAction>
           <IconAction
             label={theme === 'dark' ? 'Switch to light' : 'Switch to dark'}
             onClick={toggleTheme}
